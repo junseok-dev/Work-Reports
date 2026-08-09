@@ -1,0 +1,57 @@
+<section id="architecture">
+        <div class="section-head">
+          <div class="section-no">03</div>
+          <div>
+            <h2>서비스 아키텍처와 답변 흐름</h2>
+            <p class="section-summary">웹 화면과 상담 API는 EC2에서 실행되고, 운영 데이터는 RDS, 문서와 검색 인덱스의 영구본은 S3에 저장됩니다.</p>
+          </div>
+        </div>
+
+        <div class="architecture" role="img" aria-label="챗봇 서비스의 계층별 시스템 구성">
+          <div class="layer">
+            <div class="layer-title">이용 영역</div>
+            <div class="layer-items"><span class="pill">사용자 채팅</span><span class="pill">관리자 화면</span></div>
+          </div>
+          <div class="connector" aria-hidden="true">↓ HTTPS</div>
+          <div class="layer">
+            <div class="layer-title">EC2 애플리케이션</div>
+            <div class="layer-items"><span class="pill">React 웹</span><span class="pill">FastAPI</span><span class="pill">SSE 스트리밍</span><span class="pill">안전 검사·분류·검색·답변</span></div>
+          </div>
+          <div class="connector" aria-hidden="true">↓ 조회·저장·외부 호출</div>
+          <div class="layer">
+            <div class="layer-title">데이터</div>
+            <div class="layer-items"><span class="pill">Aurora RDS · 운영 기준</span><span class="pill">FAISS · 실행 검색</span><span class="pill">S3 · 문서·인덱스 영구 보관</span></div>
+          </div>
+          <div class="connector" aria-hidden="true">↔</div>
+          <div class="layer">
+            <div class="layer-title">외부 서비스</div>
+            <div class="layer-items"><span class="pill">OpenAI</span><span class="pill">공식 홈페이지</span><span class="pill">Google OAuth</span><span class="pill">채널톡</span><span class="pill">LangSmith</span></div>
+          </div>
+        </div>
+
+        <h3>질문 한 건이 처리되는 순서</h3>
+        <div class="flow" aria-label="질문 처리 순서">
+          <div class="flow-step"><b>01</b><span>질문·최근 대화 접수</span></div>
+          <div class="flow-step"><b>02</b><span>개인정보·공격 요청 안전 검사</span></div>
+          <div class="flow-step"><b>03</b><span>FAQ·문서 검색·상담 연결 분류</span></div>
+          <div class="flow-step"><b>04</b><span>승인 문서와 최신 일정 조회</span></div>
+          <div class="flow-step"><b>05</b><span>필요 시 OpenAI가 답변 작성</span></div>
+          <div class="flow-step"><b>06</b><span>답변과 상담 버튼 실시간 전송</span></div>
+          <div class="flow-step"><b>07</b><span>처리 방식·오류·비용 기록</span></div>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <h4>FAQ 경로</h4>
+            <p>반복 질문과 일정 문의는 관리자가 등록한 기준 답변과 홈페이지 최신 스냅샷을 우선 사용합니다.</p>
+          </article>
+          <article class="card">
+            <h4>문서 검색 경로</h4>
+            <p>비교·추천·상세 설명은 질문과 가까운 승인 문서 구간을 찾고, 그 근거를 사용해 답변합니다.</p>
+          </article>
+          <article class="card">
+            <h4>사람 상담 경로</h4>
+            <p>취소·환불 또는 사람 확인이 필요한 질문은 요청을 기록하고 채널톡 연결 버튼을 제공합니다.</p>
+          </article>
+        </div>
+      </section>

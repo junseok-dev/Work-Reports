@@ -1,0 +1,39 @@
+<section id="ownership">
+        <div class="section-head">
+          <div class="section-no">07</div>
+          <div>
+            <h2>운영 소유권과 담당자 변경</h2>
+            <p class="section-summary">챗봇 소스는 담당자의 개인 GitHub 저장소에서 관리합니다. 담당자가 바뀔 때는 새 저장소 복제보다 GitHub Repository Transfer를 우선합니다.</p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <h4>평상시</h4>
+            <p>차기 담당자를 collaborator로 미리 등록하고, 코드와 관리자 운영을 최소 2명이 이해하도록 합니다.</p>
+          </article>
+          <article class="card">
+            <h4>담당자 변경 시</h4>
+            <p>저장소 전체를 차기 담당자의 개인 GitHub 계정으로 이전해 커밋·이슈·설정의 연속성을 유지합니다.</p>
+          </article>
+          <article class="card">
+            <h4>이전 후</h4>
+            <p>GitHub Secrets, EC2 runner, 서버 작업 폴더의 <code>origin</code>과 첫 배포를 차례로 확인합니다.</p>
+          </article>
+        </div>
+
+        <h3>빠른 이관 체크리스트</h3>
+        <ol>
+          <li>차기 담당자의 저장소·AWS·OpenAI·Google·EC2 접근 권한을 먼저 확인합니다.</li>
+          <li>RDS 백업, S3 데이터와 <code>ENCRYPTION_KEY</code>의 복구 가능성을 확인합니다.</li>
+          <li>GitHub Repository Transfer를 실행하고 차기 담당자가 수락합니다.</li>
+          <li>Actions Secrets와 self-hosted runner 상태를 확인합니다.</li>
+          <li>EC2와 개발 PC의 <code>origin</code>을 새 저장소 주소로 변경합니다.</li>
+          <li>첫 배포 후 사용자 채팅, 관리자 로그인, 문서 검색과 상담 연결을 점검합니다.</li>
+          <li>모든 확인이 끝난 뒤 기존 담당자의 권한을 정리합니다.</li>
+        </ol>
+
+        <div class="callout danger">
+          <p><strong>비밀정보 원칙:</strong> API 키, DB 접속 문자열과 암호화 키의 실제 값은 이 보고서나 Git 저장소에 기록하지 않습니다. 특히 <code>ENCRYPTION_KEY</code>는 기존 암호화 데이터를 복구하는 데 필요하므로 승인된 비밀 저장소에 별도 보관합니다.</p>
+        </div>
+      </section>

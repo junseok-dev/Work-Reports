@@ -1,0 +1,46 @@
+<section id="operations">
+        <div class="section-head">
+          <div class="section-no">05</div>
+          <div>
+            <h2>운영·배포·비용</h2>
+            <p class="section-summary">자동화된 작업과 사람이 점검해야 하는 항목을 구분하고, 완료 월 데이터를 기준으로 운영 비용을 추정했습니다.</p>
+          </div>
+        </div>
+
+        <div class="grid-4">
+          <article class="metric"><strong>약 15.3만원</strong><span>AWS 월평균</span><small>2026년 6·7월 완료 월 평균</small></article>
+          <article class="metric"><strong>약 $4.80</strong><span>OpenAI 월 추정</span><small>56일간 잔액 감소 기준 참고값</small></article>
+          <article class="metric"><strong>약 16.0만원</strong><span>월 통합 예시</span><small>환율 1달러=1,400원 가정</small></article>
+          <article class="metric"><strong>약 184만원</strong><span>AWS 연간 예상</span><small>완료 월 평균 × 12</small></article>
+        </div>
+
+        <div class="callout warning">
+          <p><strong>비용 범위:</strong> AWS 금액은 해당 AWS 계정 전체 비용이라 챗봇 외 자원이 포함될 수 있습니다. OpenAI 금액은 중간 추가 충전이 없다는 전제의 잔액 감소 추정치이며, 최종 비용은 청구서로 확정해야 합니다.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <caption>정기 운영 점검</caption>
+            <thead><tr><th>주기</th><th>확인 항목</th><th>정상 기준</th></tr></thead>
+            <tbody>
+              <tr><td>상시 자동</td><td>공식 홈페이지 만료 확인과 최신 정보 수집</td><td>실패 시 마지막 정상 스냅샷 유지</td></tr>
+              <tr><td>매일 권장</td><td><code>/health</code>, 대표 질문, 상담 버튼, 관리자 로그인</td><td>정상 응답·답변·버튼·로그인</td></tr>
+              <tr><td>주 1회</td><td>오류·fallback·상담 로그, 홈페이지 동기화, OpenAI 사용량</td><td>반복 오류 없음·최신 정보·예산 범위</td></tr>
+              <tr><td>콘텐츠 변경 시</td><td>문서·FAQ 반영, FAISS 상태, 회귀 질문</td><td>새 정보 반영과 기존 핵심 답변 유지</td></tr>
+              <tr><td>월 1회</td><td>AWS·OpenAI 비용, RDS·S3 백업, 관리자 권한</td><td>이상 비용 없음·복구 가능·최소 권한</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>배포와 장애 확인</h3>
+        <div class="grid-2">
+          <article class="card">
+            <h4>배포 흐름</h4>
+            <p><code>main</code> 반영 → EC2 self-hosted runner가 소스 동기화 → GitHub Secrets로 환경 구성 → 프론트 빌드 → <code>chatbot.service</code> 재시작 → 상태 점검 순서입니다.</p>
+          </article>
+          <article class="card">
+            <h4>장애 확인 순서</h4>
+            <p>사용자 화면 → <code>/health</code> → 관리자 로그인 → 최근 배포·콘텐츠 변경 → systemd 로그 → RDS·S3·OpenAI 연결 순서로 범위를 좁힙니다.</p>
+          </article>
+        </div>
+      </section>
