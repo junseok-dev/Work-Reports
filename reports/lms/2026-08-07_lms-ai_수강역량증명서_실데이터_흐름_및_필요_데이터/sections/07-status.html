@@ -1,0 +1,14 @@
+<section id="status">
+        <h2>7. 현재 구현 상태 — 실데이터 통합 연동</h2>
+        <p class="lead">2026-08-07 로컬 코드 기준이다. AWS 실행 기반과 별도로 운영 DB 원천이 증명서 화면까지 연결되는 데이터·서비스 구현 상태를 정리한다.</p>
+        <div class="status-grid">
+          <div class="status-card partial"><h3><span>FE 증명서 화면</span><span class="status-label partial">일부 구현</span></h3><p>증명서 7개 탭 화면은 있으나 운영 실데이터가 아니라 mock·fixture 중심이다.</p></div>
+          <div class="status-card todo"><h3><span>운영 DB 추출</span><span class="status-label todo">미구현</span></h3><p>수료 트리거, 증명서 원천 조회와 수강생 단위 데이터 취합이 구현되지 않았다.</p></div>
+          <div class="status-card todo"><h3><span>데이터 전처리</span><span class="status-label todo">미구현</span></h3><p>Parquet 변환, 타입 통일, 검증·정규화와 데이터 없음 상태 생성이 구현되지 않았다.</p></div>
+          <div class="status-card todo"><h3><span>S3 데이터 연동</span><span class="status-label todo">미구현</span></h3><p>기수·수강생·버전별 저장, manifest와 FastAPI S3 Repository가 구현되지 않았다.</p></div>
+          <div class="status-card partial"><h3><span>AI 분석 실데이터 연결</span><span class="status-label partial">골격만 구현</span></h3><p>분석 API는 있으나 S3 정제 입력 조회, AI 허용 필터와 분석 결과 저장은 구현되지 않았다.</p></div>
+          <div class="status-card todo"><h3><span>Spring BE Snapshot</span><span class="status-label todo">미구현</span></h3><p>분석 요청·완료 수신, S3 전체 취합, 검토·승인과 CertificateSnapshot 동결이 없다.</p></div>
+          <div class="status-card todo"><h3><span>FE 실데이터 전환</span><span class="status-label todo">미구현</span></h3><p>선택한 운영 연동안의 실응답 연결, 데이터 없음 상태와 런타임 mock 제거가 남았다.</p></div>
+          <div class="status-card todo"><h3><span>전체 E2E</span><span class="status-label todo">미검증</span></h3><p>DB→S3→FastAPI→선택한 제공 경로→FE 흐름을 실제 수료자 기준으로 검증해야 한다.</p></div>
+        </div>
+      </section>

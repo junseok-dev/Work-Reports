@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LMS-AI 수강역량증명서 실데이터 흐름 및 필요 데이터</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #5f6b76;
+      --line: #d9e0e6;
+      --soft: #f6f8fa;
+      --blue: #eaf3ff;
+      --blue-line: #7eafe8;
+      --purple: #f3edff;
+      --purple-line: #ad95df;
+      --green: #ebf8f0;
+      --green-line: #81c49b;
+      --amber: #fff6df;
+      --amber-line: #d8b15a;
+      --red: #fff0ef;
+      --red-line: #dc8c85;
+      --navy: #24364b;
+      --shadow: 0 18px 48px rgba(26, 38, 50, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #eef2f5;
+      line-height: 1.55;
+    }
+
+    a { color: #1769aa; }
+
+    .page {
+      width: min(1480px, calc(100% - 40px));
+      margin: 24px auto 56px;
+      background: #fff;
+      border: 1px solid #dfe4e8;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .report-header {
+      padding: 38px 46px 34px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 85% 20%, rgba(121, 174, 226, 0.28), transparent 28%),
+        linear-gradient(135deg, #1e2d3e, #304b66);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #a9c7e4;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 980px;
+      margin: 0;
+      font-size: clamp(28px, 3vw, 43px);
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+    }
+
+    .header-summary {
+      max-width: 980px;
+      margin: 16px 0 0;
+      color: #d9e6f2;
+      font-size: 15px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #edf6ff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: 14px 46px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfd;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .toolbar nav { display: flex; flex-wrap: wrap; gap: 12px; }
+    .toolbar a { color: #465461; text-decoration: none; font-weight: 700; }
+
+    section { scroll-margin-top: 24px; }
+
+    .side-nav {
+      position: fixed;
+      top: 50%;
+      left: 16px;
+      z-index: 50;
+      transform: translateY(-50%);
+      color: #33404c;
+      font-size: 12px;
+    }
+
+    .side-nav summary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      min-height: 112px;
+      padding: 12px 9px;
+      border: 1px solid #b9c5cf;
+      border-radius: 12px;
+      background: var(--navy);
+      box-shadow: 0 10px 26px rgba(25, 39, 53, 0.18);
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      list-style: none;
+      writing-mode: vertical-rl;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .side-nav summary::-webkit-details-marker { display: none; }
+
+    .side-nav[open] {
+      width: 184px;
+      overflow: hidden;
+      border: 1px solid #cbd4dc;
+      border-radius: 13px;
+      background: #fff;
+      box-shadow: 0 16px 36px rgba(25, 39, 53, 0.2);
+    }
+
+    .side-nav[open] summary {
+      min-height: 0;
+      justify-content: flex-start;
+      padding: 11px 13px;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      letter-spacing: 0;
+      writing-mode: horizontal-tb;
+    }
+
+    .side-nav nav {
+      display: grid;
+      gap: 2px;
+      padding: 8px;
+    }
+
+    .side-nav a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 8px;
+      border-radius: 7px;
+      color: #465461;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .side-nav a:hover,
+    .side-nav a:focus-visible {
+      background: #edf4fa;
+      color: #174f7a;
+      outline: none;
+    }
+
+    .side-index {
+      display: grid;
+      width: 20px;
+      height: 20px;
+      flex: none;
+      place-items: center;
+      border-radius: 50%;
+      background: #e6edf3;
+      color: var(--navy);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    button {
+      flex: none;
+      border: 1px solid #cbd3da;
+      border-radius: 8px;
+      padding: 7px 10px;
+      background: #fff;
+      color: #33404c;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      padding: 28px 46px 50px;
+    }
+
+    section + section { margin-top: 52px; }
+
+    #architecture { order: -1; margin-top: 0; }
+    #decisions { margin-top: 52px; }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: 24px;
+      letter-spacing: -0.025em;
+    }
+
+    h3 {
+      margin: 26px 0 12px;
+      font-size: 17px;
+      letter-spacing: -0.015em;
+    }
+
+    .lead { margin: -8px 0 22px; color: var(--muted); font-size: 14px; }
+
+    .decisions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .decision {
+      min-width: 0;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--soft);
+    }
+
+    .decision strong { display: block; margin-bottom: 5px; font-size: 14px; }
+    .decision span { color: var(--muted); font-size: 12px; }
+
+    .diagram-shell {
+      width: 100%;
+      border: 1px solid #cfd7de;
+      border-radius: 17px;
+      overflow: hidden;
+      background-color: #fbfcfd;
+      background-image: radial-gradient(circle, #c8cfd5 1px, transparent 1.1px);
+      background-size: 16px 16px;
+    }
+
+    .architecture-stack {
+      display: grid;
+      gap: 24px;
+    }
+
+    .architecture-stack .diagram-shell svg {
+      height: min(48vh, 480px);
+      aspect-ratio: auto;
+    }
+
+    .diagram-shell svg {
+      display: block;
+      width: 100%;
+      height: min(48vh, 480px);
+    }
+
+    .diagram-note {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      padding: 12px 18px;
+      border-top: 1px solid #d8dee4;
+      background: rgba(255, 255, 255, 0.88);
+      color: #4f5b66;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .box { fill: #fff; stroke: #667078; stroke-width: 2; rx: 10; }
+    .bucket { fill: rgba(232, 243, 255, 0.78); stroke: #60788f; stroke-width: 2.3; rx: 18; }
+    .certificate-group { fill: rgba(239, 247, 255, 0.94); stroke: #74a9e8; stroke-width: 1.8; rx: 12; }
+    .tab-folder { fill: #fff; stroke: #82afe4; stroke-width: 1.2; rx: 7; }
+    .lane-bg { fill: rgba(255, 255, 255, 0.84); stroke: #cdd5dc; stroke-width: 1.5; rx: 16; }
+    .lane-badge { fill: #25313d; rx: 13; }
+    .lane-badge-direct { fill: #6d5bb5; }
+    .lane-title { fill: #fff; font-size: 15px; font-weight: 850; text-anchor: middle; }
+    .lane-summary { fill: #4f5b66; font-size: 12px; font-weight: 650; }
+    .folder { fill: var(--blue); stroke: var(--blue-line); }
+    .ai-box { fill: var(--purple); stroke: var(--purple-line); }
+    .result-box { fill: var(--green); stroke: var(--green-line); }
+    .connector { fill: none; stroke: #667078; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+    .connector-both { marker-start: url(#arrow); }
+    .connector-dashed { stroke-dasharray: 6 6; }
+    .tree-line { fill: none; stroke: #8b949c; stroke-width: 1.5; }
+    .svg-title { fill: #202a33; font-size: 16px; font-weight: 800; text-anchor: middle; }
+    .svg-sub { fill: #56626d; font-size: 12px; font-weight: 550; text-anchor: middle; }
+    .svg-group { fill: #202a33; font-size: 17px; font-weight: 850; text-anchor: middle; }
+    .svg-path { fill: #35414c; font: 700 10px ui-monospace, SFMono-Regular, Consolas, monospace; text-anchor: middle; }
+    .edge-label { fill: #59636b; font-size: 10.5px; font-weight: 750; text-anchor: middle; paint-order: stroke; stroke: #fbfcfd; stroke-width: 4px; }
+    .step { fill: #25313d; }
+    .step-text { fill: #fff; font-size: 9px; font-weight: 850; text-anchor: middle; dominant-baseline: central; }
+
+    .table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 12.5px;
+    }
+
+    th {
+      padding: 12px 13px;
+      color: #34414d;
+      background: #f1f4f7;
+      border-bottom: 1px solid #cfd7de;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    td {
+      padding: 13px;
+      border-top: 1px solid #e4e8ec;
+      color: #39444e;
+      vertical-align: top;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    tbody tr:first-child td { border-top: 0; }
+    tbody tr:nth-child(even) td { background: #fbfcfd; }
+    td strong { color: #19242e; }
+
+    .index-table {
+      table-layout: fixed;
+      font-size: 11.5px;
+    }
+
+    .index-table th {
+      color: #fff;
+      background: #249f9c;
+      border-color: #1e8987;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .index-table td:first-child,
+    .index-table .domain-cell,
+    .index-table .source-cell {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .index-table .domain-cell {
+      background: #eaf7f6 !important;
+      color: #234d4c;
+      font-weight: 800;
+    }
+
+    .index-table .source-cell {
+      background: #f4fbfa !important;
+      color: #3f5554;
+      font-weight: 700;
+    }
+
+    .index-table code {
+      color: #34414d;
+      font-size: 10.5px;
+      overflow-wrap: anywhere;
+    }
+
+    .state {
+      display: inline-flex;
+      margin: 2px 3px 2px 0;
+      padding: 2px 6px;
+      border: 1px solid #cbd4dc;
+      border-radius: 999px;
+      background: #f7f9fa;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 10.5px;
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 14px 17px;
+      border-left: 4px solid #638eb7;
+      border-radius: 6px 11px 11px 6px;
+      background: #eef6fd;
+      color: #3c4f60;
+      font-size: 13px;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .status-card {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+    }
+
+    .status-card h3 {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+    .status-card p { margin: 0; color: var(--muted); font-size: 12px; }
+    .status-card.done { border-color: var(--green-line); background: var(--green); }
+    .status-card.partial { border-color: var(--amber-line); background: var(--amber); }
+    .status-card.todo { border-color: var(--red-line); background: var(--red); }
+
+    .aws-role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .aws-role {
+      padding: 15px 17px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8fafb;
+    }
+
+    .aws-role strong { display: block; margin-bottom: 5px; font-size: 14px; color: var(--navy); }
+    .aws-role span { color: var(--muted); font-size: 12px; }
+
+    .aws-flow {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 18px;
+      margin: 16px 0;
+    }
+
+    .aws-step {
+      position: relative;
+      min-height: 108px;
+      padding: 14px 11px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      text-align: center;
+    }
+
+    .aws-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 41px;
+      right: -17px;
+      color: #8b9aa7;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .aws-step strong { display: block; margin-bottom: 6px; font-size: 13px; color: var(--navy); }
+    .aws-step span { display: block; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .aws-step.done { border-color: var(--green-line); background: var(--green); }
+    .aws-step.partial { border-color: var(--amber-line); background: var(--amber); }
+    .aws-step.todo { border-color: var(--red-line); background: var(--red); }
+
+    .status-label {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 800;
+    }
+
+    .status-label.done { color: #27613e; background: #dff3e6; }
+    .status-label.partial { color: #79530e; background: #fff0c7; }
+    .status-label.todo { color: #8b3030; background: #fbe0e0; }
+    .status-label.unknown { color: #53616e; background: #e9eef2; }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      counter-reset: roadmap;
+    }
+
+    .roadmap div {
+      position: relative;
+      min-height: 96px;
+      padding: 16px 16px 16px 48px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fbfcfd;
+      font-size: 12.5px;
+    }
+
+    .roadmap div::before {
+      counter-increment: roadmap;
+      content: counter(roadmap);
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      display: grid;
+      width: 23px;
+      height: 23px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--navy);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .report-footer {
+      padding: 20px 46px 26px;
+      border-top: 1px solid var(--line);
+      background: #f8fafb;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1000px) {
+      .decisions, .status-grid, .roadmap, .aws-role-grid { grid-template-columns: repeat(2, 1fr); }
+      .aws-flow { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .aws-step::after { display: none; }
+      .page { width: min(100% - 20px, 1480px); margin-top: 10px; }
+      .report-header, .content { padding-left: 24px; padding-right: 24px; }
+      .toolbar { padding-left: 24px; padding-right: 24px; }
+      .diagram-shell svg { aspect-ratio: 2.4 / 1; }
+      table { font-size: 11.5px; }
+      th, td { padding: 9px; }
+    }
+
+    @media (max-width: 700px) {
+      .decisions, .status-grid, .roadmap, .aws-role-grid, .aws-flow { grid-template-columns: 1fr; }
+      .toolbar nav { display: none; }
+      .report-header { padding-top: 28px; }
+      .diagram-shell svg { height: auto; aspect-ratio: 2 / 1; }
+      table { table-layout: auto; font-size: 10.5px; }
+      .side-nav { top: auto; left: 12px; bottom: 14px; transform: none; }
+      .side-nav[open] { width: min(220px, calc(100vw - 24px)); }
+      .side-nav summary { min-height: 92px; }
+    }
+
+    @page { size: A4 landscape; margin: 10mm; }
+
+    @media print {
+      html, body { width: auto; background: #fff; }
+      .page { width: 100%; margin: 0; overflow: visible; border: 0; box-shadow: none; }
+      .toolbar, .side-nav, button { display: none; }
+      .report-header { min-height: 170mm; print-color-adjust: exact; break-after: page; }
+      section { break-before: page; break-inside: auto; }
+      .diagram-shell, .diagram-note, .decision, .aws-role, .aws-step, .status-card { break-inside: avoid; }
+      .table-wrap { overflow: visible; break-inside: auto; }
+      tr { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <article class="page">
+    <header class="report-header">
+      <p class="eyebrow">LMS-AI · Data Flow Report</p>
+      <h1>수강역량증명서 실데이터 흐름 및 필요 데이터</h1>
+      <p class="header-summary">수료 이후 운영 DB의 실제 데이터를 S3에 기수·학생별로 정제하고, Spring BE 경유형과 FastAPI 직접 연동형 두 후보를 비교해 최종 연동안 하나를 확정하기 위한 데이터 요구사항 및 AWS 배포 구현 현황을 정리한다.</p>
+      <div class="meta">
+        <span class="badge">작성일 2026-08-07</span>
+        <span class="badge">상태 목표 구조 · 구현 현황 병기</span>
+        <span class="badge">범위 LMS-AI 데이터 흐름</span>
+        <span class="badge">연동안 택1 · 현재 미확정</span>
+        <span class="badge">상담노트 제외</span>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <nav aria-label="보고서 목차">
+        <a href="../../../">← 전체 보고서</a>
+        <a href="#architecture">데이터 흐름</a>
+        <a href="#decisions">결정사항</a>
+        <a href="#certificate-data">증명서 데이터</a>
+        <a href="#ai-data">AI 데이터</a>
+        <a href="#derived-data">파생데이터</a>
+        <a href="#aws-status">AWS 현황</a>
+        <a href="#status">현재 상태</a>
+      </nav>
+      <button type="button" onclick="window.print()">인쇄 / PDF</button>
+    </div>
+
+    <main class="content">
+<section id="architecture">
+        <h2>1. 실데이터 처리 흐름 — 2개 후보 비교 후 최종 택1</h2>
+        <p class="lead">원천 처리와 S3 저장 방식은 같고 화면으로 제공하는 마지막 구간만 다르다. 후보 A는 Spring BE가 발급본을 동결하고, 후보 B는 FE가 FastAPI 결과를 직접 조회한다. 아래 두 구조 중 운영안 하나만 확정한다.</p>
+        <div class="callout"><strong>아키텍처 결정 필요:</strong> 두 그림은 병행 운영안이 아니다. 인증·권한·Snapshot 책임과 개발 범위를 비교한 뒤 후보 A 또는 후보 B 하나를 선택해야 한다.</div>
+
+        <div class="architecture-stack">
+          <div class="diagram-shell" id="architecture-be">
+          <svg viewBox="0 0 1500 500" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="flow-be-title flow-be-desc">
+            <title id="flow-be-title">후보 A Spring BE 경유 구조</title>
+            <desc id="flow-be-desc">Spring BE가 FastAPI를 호출하고 S3의 입력과 결과를 취합하여 스냅샷으로 동결한 후 FE에 제공한다.</desc>
+            <defs>
+              <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M1 1 L10 6 L1 11" fill="none" stroke="#667078" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </marker>
+            </defs>
+
+            <!-- CASE 1: Spring BE 경유 -->
+            <rect class="lane-bg" x="20" y="18" width="1460" height="464"/>
+            <rect class="lane-badge" x="42" y="40" width="240" height="38"/>
+            <text class="lane-title" x="162" y="65">후보 A · Spring BE 경유</text>
+            <text class="lane-summary" x="305" y="65">정식 발급 · 권한검사 · 검토/승인 · CertificateSnapshot 동결</text>
+
+            <path class="connector" d="M165 250 H190"/>
+            <path class="connector" d="M305 250 H330"/>
+            <path class="connector" d="M450 250 H480"/>
+            <path class="connector connector-both" d="M800 250 H840"/>
+            <path class="connector connector-both connector-dashed" d="M1020 250 H1060"/>
+            <path class="connector" d="M1280 250 H1335"/>
+
+            <circle class="step" cx="65" cy="175" r="11"/><text class="step-text" x="65" y="175">1</text>
+            <rect class="box" x="50" y="190" width="115" height="120"/>
+            <text class="svg-title" x="107" y="238">수료 확정</text>
+            <text class="svg-sub" x="107" y="269">또는 복구 배치</text>
+
+            <circle class="step" cx="205" cy="175" r="11"/><text class="step-text" x="205" y="175">2</text>
+            <rect class="box" x="190" y="190" width="115" height="120"/>
+            <text class="svg-title" x="247" y="238">운영 DB 조회</text>
+            <text class="svg-sub" x="247" y="269">학생 개인 원천</text>
+
+            <circle class="step" cx="345" cy="175" r="11"/><text class="step-text" x="345" y="175">3</text>
+            <rect class="box" x="330" y="190" width="120" height="120"/>
+            <text class="svg-title" x="390" y="229">변환·전처리</text>
+            <text class="svg-sub" x="390" y="257">Parquet · 타입 통일</text>
+            <text class="svg-sub" x="390" y="281">검증 · 정규화</text>
+
+            <circle class="step" cx="468" cy="102" r="11"/><text class="step-text" x="468" y="102">4</text>
+            <rect class="bucket" x="480" y="85" width="320" height="355"/>
+            <text class="svg-title" x="640" y="112">S3 저장소 1개</text>
+            <text class="svg-sub" x="640" y="130" style="font-size:9.5px;font-weight:700">내부 데이터 영역 3개</text>
+
+            <rect class="certificate-group" x="495" y="142" width="290" height="168"/>
+            <text class="svg-title" x="640" y="163" style="font-size:12px">수강역량증명서 탭 데이터</text>
+            <text class="svg-path" x="640" y="179" style="font-size:8.5px">기수 ID(cohort_id) / 수강생 UUID / 버전</text>
+
+            <rect class="tab-folder" x="510" y="190" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="208" style="font-size:9.5px;font-weight:750">종합요약 탭</text>
+            <rect class="tab-folder" x="645" y="190" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="208" style="font-size:9.5px;font-weight:750">기술검증 탭</text>
+
+            <rect class="tab-folder" x="510" y="226" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="244" style="font-size:9.5px;font-weight:750">프로젝트 탭</text>
+            <rect class="tab-folder" x="645" y="226" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="244" style="font-size:9.5px;font-weight:750">문제해결 탭</text>
+
+            <rect class="tab-folder" x="510" y="262" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="280" style="font-size:9.5px;font-weight:750">평가·추천 탭</text>
+            <rect class="tab-folder" x="645" y="262" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="280" style="font-size:9.5px;font-weight:750">이력서 탭</text>
+
+            <rect class="box ai-box" x="495" y="318" width="290" height="60"/>
+            <text class="svg-title" x="640" y="342" style="font-size:12px">AI 분석 데이터</text>
+            <text class="svg-sub" x="640" y="363" style="font-size:9.5px">정제 입력 객체 → 분석 결과 객체</text>
+
+            <rect class="box result-box" x="495" y="386" width="290" height="40"/>
+            <text class="svg-sub" x="640" y="411" style="font-size:11px;font-weight:750">파생데이터</text>
+
+            <circle class="step" cx="855" cy="165" r="11"/><text class="step-text" x="855" y="165">5</text>
+            <rect class="box ai-box" x="840" y="180" width="180" height="140"/>
+            <text class="svg-title" x="930" y="218">LMS-AI FastAPI</text>
+            <text class="svg-sub" x="930" y="249">S3 조회·파생 계산</text>
+            <text class="svg-sub" x="930" y="273">AI 분석·결과 검증</text>
+            <text class="svg-sub" x="930" y="297">S3 결과 저장</text>
+
+            <circle class="step" cx="1075" cy="135" r="11"/><text class="step-text" x="1075" y="135">6</text>
+            <rect class="box result-box" x="1060" y="150" width="220" height="200"/>
+            <text class="svg-title" x="1170" y="194">Spring BE</text>
+            <text class="svg-sub" x="1170" y="225">FastAPI 분석 요청</text>
+            <text class="svg-sub" x="1170" y="250">완료 수신·S3 취합</text>
+            <text class="svg-sub" x="1170" y="275">검토·승인</text>
+            <text class="svg-sub" x="1170" y="302">CertificateSnapshot 동결</text>
+
+            <path class="connector" d="M800 410 V452 H1060 V325"/>
+            <text class="edge-label" x="930" y="444">분석 완료 후 S3의 전체 데이터 취합</text>
+
+            <text class="edge-label" x="1307" y="233">BE API</text>
+            <circle class="step" cx="1350" cy="175" r="11"/><text class="step-text" x="1350" y="175">7</text>
+            <rect class="box" x="1335" y="190" width="125" height="120"/>
+            <text class="svg-title" x="1397" y="238">FE</text>
+            <text class="svg-sub" x="1397" y="269">동결본 7개 탭</text>
+
+          </svg>
+          <div class="diagram-note"><strong>후보 A 핵심:</strong> S3의 AI 분석 데이터는 하나의 영역이며 입력·결과 객체만 구분한다. FastAPI 처리 후 Spring BE가 전체 데이터를 취합·승인하고 발급본을 동결한다.</div>
+          </div>
+
+          <div class="diagram-shell" id="architecture-direct">
+          <svg viewBox="0 0 1500 500" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="flow-direct-title flow-direct-desc">
+            <title id="flow-direct-title">후보 B Spring BE 미경유 구조</title>
+            <desc id="flow-direct-desc">FE가 FastAPI를 직접 호출하고 FastAPI가 S3 데이터 조회와 분석 결과 응답을 담당한다.</desc>
+            <defs>
+              <marker id="arrow-direct" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M1 1 L10 6 L1 11" fill="none" stroke="#667078" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </marker>
+            </defs>
+            <g transform="translate(0,-299)">
+            <!-- CASE 2: FastAPI 직접 -->
+            <rect class="lane-bg" x="20" y="317" width="1460" height="464"/>
+            <rect class="lane-badge lane-badge-direct" x="42" y="339" width="270" height="38"/>
+            <text class="lane-title" x="177" y="364">후보 B · Spring BE 미경유</text>
+            <text class="lane-summary" x="335" y="364">분석 결과를 빠르게 조회 · FastAPI가 인증/권한/응답 계약을 직접 담당</text>
+
+            <path class="connector" style="marker-end:url(#arrow-direct)" d="M165 549 H190"/>
+            <path class="connector" style="marker-end:url(#arrow-direct)" d="M305 549 H330"/>
+            <path class="connector" style="marker-end:url(#arrow-direct)" d="M450 549 H480"/>
+            <path class="connector connector-both" style="marker-start:url(#arrow-direct);marker-end:url(#arrow-direct)" d="M800 549 H850"/>
+            <path class="connector" style="marker-end:url(#arrow-direct)" d="M1080 549 H1260"/>
+
+            <circle class="step" cx="65" cy="474" r="11"/><text class="step-text" x="65" y="474">1</text>
+            <rect class="box" x="50" y="489" width="115" height="120"/>
+            <text class="svg-title" x="107" y="537">수료 확정</text>
+            <text class="svg-sub" x="107" y="568">또는 복구 배치</text>
+
+            <circle class="step" cx="205" cy="474" r="11"/><text class="step-text" x="205" y="474">2</text>
+            <rect class="box" x="190" y="489" width="115" height="120"/>
+            <text class="svg-title" x="247" y="537">운영 DB 조회</text>
+            <text class="svg-sub" x="247" y="568">학생 개인 원천</text>
+
+            <circle class="step" cx="345" cy="474" r="11"/><text class="step-text" x="345" y="474">3</text>
+            <rect class="box" x="330" y="489" width="120" height="120"/>
+            <text class="svg-title" x="390" y="528">변환·전처리</text>
+            <text class="svg-sub" x="390" y="556">Parquet · 타입 통일</text>
+            <text class="svg-sub" x="390" y="580">검증 · 정규화</text>
+
+            <circle class="step" cx="468" cy="401" r="11"/><text class="step-text" x="468" y="401">4</text>
+            <rect class="bucket" x="480" y="384" width="320" height="355"/>
+            <text class="svg-title" x="640" y="411">S3 저장소 1개</text>
+            <text class="svg-sub" x="640" y="429" style="font-size:9.5px;font-weight:700">내부 데이터 영역 3개</text>
+
+            <rect class="certificate-group" x="495" y="441" width="290" height="168"/>
+            <text class="svg-title" x="640" y="462" style="font-size:12px">수강역량증명서 탭 데이터</text>
+            <text class="svg-path" x="640" y="478" style="font-size:8.5px">기수 ID(cohort_id) / 수강생 UUID / 버전</text>
+
+            <rect class="tab-folder" x="510" y="489" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="507" style="font-size:9.5px;font-weight:750">종합요약 탭</text>
+            <rect class="tab-folder" x="645" y="489" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="507" style="font-size:9.5px;font-weight:750">기술검증 탭</text>
+
+            <rect class="tab-folder" x="510" y="525" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="543" style="font-size:9.5px;font-weight:750">프로젝트 탭</text>
+            <rect class="tab-folder" x="645" y="525" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="543" style="font-size:9.5px;font-weight:750">문제해결 탭</text>
+
+            <rect class="tab-folder" x="510" y="561" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="579" style="font-size:9.5px;font-weight:750">평가·추천 탭</text>
+            <rect class="tab-folder" x="645" y="561" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="579" style="font-size:9.5px;font-weight:750">이력서 탭</text>
+
+            <rect class="box ai-box" x="495" y="617" width="290" height="60"/>
+            <text class="svg-title" x="640" y="641" style="font-size:12px">AI 분석 데이터</text>
+            <text class="svg-sub" x="640" y="662" style="font-size:9.5px">정제 입력 객체 → 분석 결과 객체</text>
+
+            <rect class="box result-box" x="495" y="685" width="290" height="40"/>
+            <text class="svg-sub" x="640" y="710" style="font-size:11px;font-weight:750">파생데이터</text>
+
+            <circle class="step" cx="865" cy="444" r="11"/><text class="step-text" x="865" y="444">5</text>
+            <rect class="box ai-box" x="850" y="459" width="230" height="180"/>
+            <text class="svg-title" x="965" y="505">LMS-AI FastAPI</text>
+            <text class="svg-sub" x="965" y="536">인증·권한검사</text>
+            <text class="svg-sub" x="965" y="562">S3 조회·파생 계산</text>
+            <text class="svg-sub" x="965" y="588">AI 분석·결과 저장</text>
+            <text class="svg-sub" x="965" y="614">상태·결과 API 응답</text>
+
+            <text class="edge-label" x="1170" y="532">FastAPI JSON · 상태 응답</text>
+            <circle class="step" cx="1275" cy="474" r="11"/><text class="step-text" x="1275" y="474">6</text>
+            <rect class="box" x="1260" y="489" width="170" height="120"/>
+            <text class="svg-title" x="1345" y="537">FE</text>
+            <text class="svg-sub" x="1345" y="568">최신 결과 7개 탭</text>
+
+            </g>
+          </svg>
+          <div class="diagram-note"><strong>후보 B 핵심:</strong> S3의 AI 분석 데이터는 하나의 영역이며 입력·결과 객체만 구분한다. Spring BE 없이 FE가 FastAPI의 최신 결과를 직접 받는다.</div>
+          </div>
+        </div>
+      </section>
+
+<section id="decisions">
+        <h2>2. 이번 설계의 기준</h2>
+        <div class="decisions">
+          <div class="decision"><strong>S3 저장소는 1개</strong><span>증명서 탭·AI 분석·파생데이터 3개 영역으로 나누고, 증명서 탭 영역은 기수 ID·수강생 UUID·버전 아래 6개 폴더로 구성한다.</span></div>
+          <div class="decision"><strong>항목별 상태 유지</strong><span>데이터가 없더라도 탭과 섹션을 유지하고 상태 메시지를 표시한다.</span></div>
+          <div class="decision"><strong>상담노트 제외</strong><span>운영 DB·S3·FastAPI·증명서 화면의 현재 범위에 두지 않는다.</span></div>
+          <div class="decision"><strong>운영 연동 구조는 택1</strong><span>두 도식은 비교 후보이며, 운영 전 Spring BE 경유형 또는 FastAPI 직접형 중 하나를 확정한다. 두 경로를 동시에 운영한다는 의미가 아니다.</span></div>
+        </div>
+      </section>
+
+<section id="certificate-data">
+        <h2>3. 수강역량증명서에 필요한 정제 데이터</h2>
+        <p class="lead">기존 데이터 수집 인덱스와 같은 8열 형식으로 정리했다. 원천 DB 테이블을 그대로 복사하지 않고 증명서가 표시·계산할 수 있는 학생별 데이터로 정규화한다.</p>
+        <div class="table-wrap">
+          <table class="index-table">
+            <colgroup><col style="width:4%"><col style="width:12%"><col style="width:17%"><col style="width:9%"><col style="width:15%"><col style="width:15%"><col style="width:16%"><col style="width:12%"></colgroup>
+            <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>출처</th><th>매핑 키</th><th>타입·예시</th><th>S3 정제 필드명</th><th>사용처·처리 기준</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td class="domain-cell" rowspan="4">수강생·프로필</td><td>수강생 UUID</td><td class="source-cell" rowspan="4">운영 DB</td><td>학생 PK</td><td>UUID</td><td><code>student_uuid</code></td><td>전체 탭</td></tr>
+              <tr><td>2</td><td>수강생 이름</td><td><code>student_uuid</code></td><td>text</td><td><code>student_name</code></td><td>전체 탭 상단 수강생 정보</td></tr>
+              <tr><td>3</td><td>관심 기술</td><td><code>student_uuid</code></td><td>text[]</td><td><code>interest_skills</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>4</td><td>관심 직무</td><td><code>student_uuid</code></td><td>text[]</td><td><code>target_jobs</code></td><td>AI 분석 탭</td></tr>
+
+              <tr><td>5</td><td class="domain-cell" rowspan="5">과정·수료</td><td>과정 ID</td><td class="source-cell" rowspan="5">운영 DB</td><td>과정 PK</td><td>UUID/text</td><td><code>course_id</code></td><td>전체 탭</td></tr>
+              <tr><td>6</td><td>기수 ID</td><td>기수 PK</td><td>UUID/text</td><td><code>cohort_id</code></td><td>기수별 저장 경로 구분</td></tr>
+              <tr><td>7</td><td>과정·기수명</td><td><code>course_id + cohort_id</code></td><td>text</td><td><code>course_name, cohort_name</code></td><td>전체 탭 상단 과정·기수 정보</td></tr>
+              <tr><td>8</td><td>과정 시작·종료일</td><td><code>cohort_id</code></td><td>date range</td><td><code>course_start_at, course_end_at</code></td><td>전체 탭</td></tr>
+              <tr><td>9</td><td>수료 상태·수료일</td><td><code>student_uuid + cohort_id</code></td><td>enum, date</td><td><code>completion_status, completed_at</code></td><td>증명서 발급 가능 여부 확인</td></tr>
+
+              <tr><td>10</td><td class="domain-cell" rowspan="4">출결</td><td>전체 인정 수업 시간</td><td class="source-cell" rowspan="4">HRD-Net·운영 DB</td><td><code>student_uuid + cohort_id</code></td><td>number (minutes)</td><td><code>required_minutes</code></td><td>종합요약 탭</td></tr>
+              <tr><td>11</td><td>인정 출석 시간</td><td><code>student_uuid + cohort_id</code></td><td>number (minutes)</td><td><code>recognized_minutes</code></td><td>종합요약 탭</td></tr>
+              <tr><td>12</td><td>출결 일자·상태</td><td><code>student_uuid + attendance_date</code></td><td>date, enum</td><td><code>attendance_date, attendance_status</code></td><td>종합요약 탭</td></tr>
+              <tr><td>13</td><td>출결 사유·인정 근거</td><td><code>student_uuid + attendance_date</code></td><td>text, enum</td><td><code>reason, recognition_type</code></td><td>출결 인정 여부 검증</td></tr>
+
+              <tr><td>14</td><td class="domain-cell" rowspan="4">학습 참여·제출</td><td>블로그 작성·제출</td><td class="source-cell" rowspan="4">운영 DB</td><td><code>student_uuid + cohort_id</code></td><td>number, status</td><td><code>blog_submitted_count</code></td><td>종합요약 탭</td></tr>
+              <tr><td>15</td><td>과제 대상·제출·완료</td><td><code>student_uuid + assignment_id</code></td><td>number, enum</td><td><code>assignment_total, submitted, completed</code></td><td>종합요약 탭</td></tr>
+              <tr><td>16</td><td>스터디 참여</td><td><code>student_uuid + study_id</code></td><td>number, enum</td><td><code>study_participation</code></td><td>종합요약 탭</td></tr>
+              <tr><td>17</td><td>멘토링 참여</td><td><code>student_uuid + mentoring_id</code></td><td>number, enum</td><td><code>mentoring_participation</code></td><td>종합요약 탭</td></tr>
+
+              <tr><td>18</td><td class="domain-cell" rowspan="6">평가</td><td>평가 ID·평가명</td><td class="source-cell" rowspan="6">운영 DB</td><td><code>student_uuid + assessment_id</code></td><td>UUID, text</td><td><code>assessment_id, assessment_name</code></td><td>종합요약·기술검증 탭</td></tr>
+              <tr><td>19</td><td>평가 유형</td><td><code>assessment_id</code></td><td>enum (ACHIEVEMENT/CS)</td><td><code>assessment_type</code></td><td>기술검증 탭</td></tr>
+              <tr><td>20</td><td>평가 카테고리</td><td><code>assessment_id</code></td><td>text/code</td><td><code>assessment_category</code></td><td>기술검증·AI 분석 탭</td></tr>
+              <tr><td>21</td><td>획득 점수·만점</td><td><code>student_uuid + assessment_id</code></td><td>number</td><td><code>score, max_score</code></td><td>종합요약·기술검증 탭</td></tr>
+              <tr><td>22</td><td>채점 상태</td><td><code>student_uuid + assessment_id</code></td><td>enum</td><td><code>grading_status</code></td><td>채점 완료 평가만 반영</td></tr>
+              <tr><td>23</td><td>응시·제출 일시</td><td><code>student_uuid + assessment_id</code></td><td>datetime</td><td><code>taken_at</code></td><td>기술검증 탭</td></tr>
+
+              <tr><td>24</td><td class="domain-cell" rowspan="5">기술 인증</td><td>인증 ID·유형</td><td class="source-cell" rowspan="5">운영 DB·외부 인증</td><td><code>student_uuid + certification_id</code></td><td>UUID, enum</td><td><code>certification_id, certification_type</code></td><td>기술검증 탭</td></tr>
+              <tr><td>25</td><td>인증명·발급기관</td><td><code>certification_id</code></td><td>text</td><td><code>name, issuer</code></td><td>기술검증·이력서 탭</td></tr>
+              <tr><td>26</td><td>점수·등급</td><td><code>certification_id</code></td><td>number, text</td><td><code>score, grade</code></td><td>기술검증 탭</td></tr>
+              <tr><td>27</td><td>취득일</td><td><code>certification_id</code></td><td>date</td><td><code>acquired_at</code></td><td>기술검증·이력서 탭</td></tr>
+              <tr><td>28</td><td>승인 상태·증빙 참조</td><td><code>certification_id</code></td><td>enum, reference</td><td><code>approval_status, evidence_ref</code></td><td>승인 완료 인증만 반영</td></tr>
+
+              <tr><td>29</td><td class="domain-cell" rowspan="8">프로젝트</td><td>프로젝트 ID·프로젝트명</td><td class="source-cell" rowspan="8">운영 DB·GitHub</td><td><code>student_uuid + project_id</code></td><td>UUID, text</td><td><code>project_id, project_name</code></td><td>종합요약·프로젝트 탭</td></tr>
+              <tr><td>30</td><td>기간·도메인·인증 상태</td><td><code>project_id</code></td><td>date range, text, enum</td><td><code>period, domain, certification_status</code></td><td>프로젝트·AI 분석 탭</td></tr>
+              <tr><td>31</td><td>개인 역할·팀 규모</td><td><code>student_uuid + project_id</code></td><td>text[], number</td><td><code>roles, team_size</code></td><td>프로젝트·AI 분석 탭</td></tr>
+              <tr><td>32</td><td>전체·담당·완료 업무 수</td><td><code>student_uuid + project_id</code></td><td>number</td><td><code>task_total, assigned_count, completed_count</code></td><td>프로젝트·AI 분석 탭</td></tr>
+              <tr><td>33</td><td>본인 수행·기여 내용</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>personal_contributions</code></td><td>프로젝트·AI 분석 탭</td></tr>
+              <tr><td>34</td><td>활용 기술</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>tech_stacks</code></td><td>프로젝트·AI 분석 탭</td></tr>
+              <tr><td>35</td><td>산출물·인증 결과</td><td><code>project_id</code></td><td>reference[], text[]</td><td><code>artifacts, verified_outcomes</code></td><td>프로젝트·AI 분석 탭</td></tr>
+              <tr><td>36</td><td>커밋 활동 집계</td><td><code>student_uuid + project_id</code></td><td>number</td><td><code>commit_total, active_days, longest_streak</code></td><td>프로젝트 탭</td></tr>
+
+              <tr><td>37</td><td class="domain-cell" rowspan="8">문제해결</td><td>사례 ID·제목</td><td class="source-cell" rowspan="8">운영 DB</td><td><code>student_uuid + troubleshooting_id</code></td><td>UUID, text</td><td><code>case_id, title</code></td><td>문제해결 탭</td></tr>
+              <tr><td>38</td><td>문제 카테고리</td><td><code>troubleshooting_id</code></td><td>enum/text</td><td><code>category</code></td><td>문제해결·AI 분석 탭</td></tr>
+              <tr><td>39</td><td>문제 상황</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>situation</code></td><td>문제해결 탭</td></tr>
+              <tr><td>40</td><td>해결 과정</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>solution</code></td><td>문제해결 탭</td></tr>
+              <tr><td>41</td><td>결과</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>result</code></td><td>문제해결 탭</td></tr>
+              <tr><td>42</td><td>안전 요약</td><td><code>troubleshooting_id</code></td><td>text (masked)</td><td><code>safe_summary</code></td><td>문제해결·AI 분석 탭</td></tr>
+              <tr><td>43</td><td>독립 해결·지원 활용·소요일</td><td><code>troubleshooting_id</code></td><td>boolean, number</td><td><code>independent, resolution_days</code></td><td>문제해결·AI 분석 탭</td></tr>
+              <tr><td>44</td><td>인증 상태·인증일</td><td><code>troubleshooting_id</code></td><td>enum, datetime</td><td><code>certification_status, certified_at</code></td><td>인증 완료 사례만 반영</td></tr>
+
+              <tr><td>45</td><td class="domain-cell" rowspan="6">평가·추천</td><td>평가 역할</td><td class="source-cell" rowspan="6">운영 DB</td><td><code>student_uuid + evaluation_id</code></td><td>enum (PEER/MENTOR/INSTRUCTOR/MANAGER)</td><td><code>evaluator_role</code></td><td>종합요약 / 평가·추천 탭</td></tr>
+              <tr><td>46</td><td>공통 4축 점수</td><td><code>student_uuid + evaluation_id</code></td><td>number (1~5)</td><td><code>tech, collaboration, problem_solving, responsibility</code></td><td>종합요약 / 평가·추천 탭</td></tr>
+              <tr><td>47</td><td>평가일·정책 버전</td><td><code>evaluation_id</code></td><td>datetime, text</td><td><code>evaluated_at, policy_version</code></td><td>평가 시점·적용 기준 검증</td></tr>
+              <tr><td>48</td><td>추천 작성자 역할·맥락</td><td><code>student_uuid + recommendation_id</code></td><td>enum, text</td><td><code>author_role, context</code></td><td>종합요약 / 평가·추천 탭</td></tr>
+              <tr><td>49</td><td>추천 내용·작성일</td><td><code>recommendation_id</code></td><td>text, datetime</td><td><code>recommendation_text, created_at</code></td><td>종합요약 / 평가·추천 탭</td></tr>
+              <tr><td>50</td><td>팀원 한줄 코멘트·공개 후보</td><td><code>student_uuid + peer_comment_id</code></td><td>text, boolean</td><td><code>peer_comment, public_candidate</code></td><td>평가·추천 탭</td></tr>
+
+              <tr><td>51</td><td class="domain-cell" rowspan="5">이력서</td><td>이력서 버전·수정일</td><td class="source-cell" rowspan="5">운영 DB</td><td><code>student_uuid + resume_id</code></td><td>text, datetime</td><td><code>resume_version, updated_at</code></td><td>이력서 탭</td></tr>
+              <tr><td>52</td><td>연락처·외부 프로필</td><td><code>resume_id</code></td><td>text, URL</td><td><code>contact, github_url, blog_url</code></td><td>이력서 탭</td></tr>
+              <tr><td>53</td><td>학력·경력·수상·교육·활동</td><td><code>resume_id</code></td><td>object[]</td><td><code>educations, careers, awards, trainings, activities</code></td><td>이력서 탭</td></tr>
+              <tr><td>54</td><td>기술·프로젝트·자기소개</td><td><code>resume_id</code></td><td>object[], text[]</td><td><code>skills, projects, cover_letters</code></td><td>이력서 탭</td></tr>
+              <tr><td>55</td><td>피드백·섹션 공개 설정</td><td><code>resume_id</code></td><td>object[], boolean map</td><td><code>feedbacks, visibility</code></td><td>이력서 탭</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><strong>데이터 없음 원칙:</strong> 이미 정의된 탭과 섹션은 숨기지 않는다. 값은 <code>null</code>로 유지하고 <span class="state">NO_DATA</span><span class="state">PARTIAL</span><span class="state">NOT_READY</span><span class="state">FAILED</span> 상태와 안내 문구를 함께 제공한다.</div>
+      </section>
+
+<section id="ai-data">
+        <h2>4. AI 분석에 필요한 정제 데이터</h2>
+        <p class="lead">AI에는 전체 증명서 원문이 아니라 사용이 허용된 개인 수행 근거와 <code>evidence_ref</code>를 전달한다. 아래 항목을 S3의 학생별 AI 입력 데이터셋으로 정규화한다.</p>
+        <div class="table-wrap">
+          <table class="index-table">
+            <colgroup><col style="width:4%"><col style="width:12%"><col style="width:17%"><col style="width:9%"><col style="width:15%"><col style="width:15%"><col style="width:16%"><col style="width:12%"></colgroup>
+            <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>출처</th><th>매핑 키</th><th>타입·예시</th><th>S3 정제 필드명</th><th>사용처·처리 기준</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td class="domain-cell" rowspan="5">공통 AI 메타</td><td>수강생 UUID</td><td class="source-cell" rowspan="5">S3 정제 데이터</td><td>학생 PK</td><td>UUID</td><td><code>student_uuid</code></td><td>AI 분석 처리</td></tr>
+              <tr><td>2</td><td>기수 ID·입력 버전</td><td><code>student_uuid + cohort_id</code></td><td>text, integer</td><td><code>cohort_id, input_version</code></td><td>동일 입력 결과 재검증</td></tr>
+              <tr><td>3</td><td>분석 정책 버전</td><td><code>input_version</code></td><td>text (ai-policy-v1)</td><td><code>policy_version</code></td><td>적용 AI 정책 확인</td></tr>
+              <tr><td>4</td><td>근거 참조·유형</td><td><code>source_type + source_id</code></td><td>reference, enum</td><td><code>evidence_ref, evidence_type</code></td><td>AI 결과와 원천 근거 연결</td></tr>
+              <tr><td>5</td><td>AI 사용 허용·준비 상태</td><td><code>student_uuid + input_version</code></td><td>boolean, enum</td><td><code>ai_allowed, readiness_status</code></td><td>AI 분석 실행 가능 여부 확인</td></tr>
+
+              <tr><td>6</td><td class="domain-cell" rowspan="8">직무 적합도</td><td>관심 직무</td><td class="source-cell" rowspan="8">S3 정제 데이터</td><td><code>student_uuid</code></td><td>text[]</td><td><code>target_jobs</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>7</td><td>관심 기술</td><td><code>student_uuid</code></td><td>text[]</td><td><code>interest_skills</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>8</td><td>프로젝트 도메인</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>project_domains</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>9</td><td>프로젝트 역할·담당 업무</td><td><code>student_uuid + project_id</code></td><td>object[]</td><td><code>project_roles, assigned_tasks</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>10</td><td>평가 카테고리·유형</td><td><code>student_uuid + assessment_id</code></td><td>code, enum</td><td><code>assessment_category, assessment_type</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>11</td><td>평가 환산 점수</td><td><code>student_uuid + assessment_id</code></td><td>number (0~100)</td><td><code>normalized_score</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>12</td><td>승인 기술 인증</td><td><code>student_uuid + certification_id</code></td><td>object[]</td><td><code>approved_certifications</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>13</td><td>인증 문제해결 카테고리</td><td><code>student_uuid + case_id</code></td><td>text[]</td><td><code>verified_case_categories</code></td><td>AI 분석 탭</td></tr>
+
+              <tr><td>14</td><td class="domain-cell" rowspan="7">프로젝트 분석</td><td>프로젝트 ID·인증 상태</td><td class="source-cell" rowspan="7">S3 정제 데이터</td><td><code>student_uuid + project_id</code></td><td>UUID, enum</td><td><code>project_id, verification_status</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>15</td><td>보드 전체 업무 수</td><td><code>project_id</code></td><td>integer</td><td><code>board_task_total</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>16</td><td>본인 담당·완료 업무 수</td><td><code>student_uuid + project_id</code></td><td>integer</td><td><code>assigned_task_count, completed_task_count</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>17</td><td>본인 기여 내용</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>contributions</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>18</td><td>개인 역할·기술</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>roles, technologies</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>19</td><td>개인 산출물 참조</td><td><code>student_uuid + project_id</code></td><td>reference[]</td><td><code>artifact_refs</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>20</td><td>프로젝트 동료평가 4축</td><td><code>student_uuid + project_id</code></td><td>number[4] (1~5)</td><td><code>peer_axis_scores</code></td><td>AI 분석 탭</td></tr>
+
+              <tr><td>21</td><td class="domain-cell" rowspan="8">문제해결 분석</td><td>인증 사례 ID·상태</td><td class="source-cell" rowspan="8">S3 정제 데이터</td><td><code>student_uuid + case_id</code></td><td>UUID, enum</td><td><code>case_id, verification_status</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>22</td><td>사례 카테고리</td><td><code>case_id</code></td><td>text/code</td><td><code>case_category</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>23</td><td>상황 요약</td><td><code>case_id</code></td><td>masked text</td><td><code>situation_summary</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>24</td><td>해결 과정 요약</td><td><code>case_id</code></td><td>masked text</td><td><code>solution_summary</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>25</td><td>검증 결과 요약</td><td><code>case_id</code></td><td>masked text</td><td><code>result_summary</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>26</td><td>사례별 해결 소요일</td><td><code>case_id</code></td><td>number (days)</td><td><code>resolution_days</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>27</td><td>독립 해결·지원 활용</td><td><code>case_id</code></td><td>boolean, enum[]</td><td><code>resolved_independently, support_types</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>28</td><td>발생 일시·기술 태그</td><td><code>case_id</code></td><td>datetime, text[]</td><td><code>occurred_at, technology_tags</code></td><td>AI 분석 탭</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">원문 PII, 운영 메모, 개별 평가자 식별정보, 미승인 기록은 AI 입력 데이터셋에 포함하지 않는다. 평균·중앙 해결 소요일 등 집계값은 다음 절의 파생데이터로 계산한다.</p>
+      </section>
+
+<section id="derived-data">
+        <h2>5. FastAPI가 만드는 파생데이터</h2>
+        <p class="lead">파생데이터는 원천 수집 항목이 아니라 FastAPI가 정해진 산식으로 만드는 값이다. 계산 입력, 정책, 결과 필드, 사용처와 데이터 없음 처리를 함께 명세한다.</p>
+        <div class="table-wrap">
+          <table class="index-table calculation-table">
+            <colgroup><col style="width:4%"><col style="width:14%"><col style="width:20%"><col style="width:23%"><col style="width:19%"><col style="width:20%"></colgroup>
+            <thead><tr><th>No.</th><th>파생데이터</th><th>계산 입력</th><th>계산식·정책</th><th>결과 필드·타입</th><th>사용처·데이터 없음 처리</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>출석률</strong></td><td>인정 출석 시간, 전체 인정 수업 시간</td><td><code>recognized_minutes / required_minutes × 100</code>. 소수점·상한 처리 기준은 계산 정책 버전에 고정</td><td><code>attendance_rate: number</code></td><td>종합요약 탭<br>전체 인정 시간이 없으면 <code>NO_DATA</code></td></tr>
+              <tr><td>2</td><td><strong>평가 환산점수·성취도</strong></td><td>획득 점수, 만점, 평가 유형, 채점 상태</td><td>채점 완료된 유효 결과만 100점 기준으로 환산하고 반영 대상의 평균 계산</td><td><code>normalized_score: number</code><br><code>achievement_score: number</code></td><td>종합요약·기술검증·AI 분석 탭<br>유효 평가가 없으면 <code>NO_DATA</code></td></tr>
+              <tr><td>3</td><td><strong>역할별 4축 점수</strong></td><td>동료·멘토·강사·운영의 기술기여, 소통협업, 문제해결, 책임감 1~5점</td><td>역할별 평균 후 <code>(평균-1)/4×100</code>. 누락 역할을 0점으로 채우거나 임의 재가중하지 않음</td><td><code>role_axis_scores: object</code></td><td>종합요약·평가·추천 탭<br>일부 역할이 없으면 <code>PARTIAL</code></td></tr>
+              <tr><td>4</td><td><strong>6축 역량점수</strong></td><td>역할별 4축, 출석·학습 참여, 평가 성취도</td><td>각 축을 0~100으로 정규화하고 버전별 산식으로 6축 값을 생성</td><td><code>competency_axes: object</code></td><td>종합요약 탭<br>필수 입력이 부족하면 해당 축 <code>NO_DATA</code></td></tr>
+              <tr><td>5</td><td><strong>종합점수·등급</strong></td><td>유효한 6축 역량점수, 점수 정책 버전</td><td>정책 버전의 가중치와 등급 임계값 적용. 누락 축을 0점으로 대체하지 않음</td><td><code>overall_score: number</code><br><code>grade: string</code></td><td>종합요약 탭<br>필수 축 부족 시 <code>PARTIAL</code></td></tr>
+              <tr><td>6</td><td><strong>프로젝트 수행지표</strong></td><td>프로젝트, 개인 역할, 전체·담당·완료 업무, 기여, 기술, 인증 상태</td><td>프로젝트·인증 수와 업무 완료율을 계산하고 검증된 기여·기술만 집계</td><td><code>project_metrics: object</code><br><code>task_completion_rate: number</code></td><td>종합요약·프로젝트·AI 분석 탭<br>프로젝트가 없으면 <code>NO_DATA</code></td></tr>
+              <tr><td>7</td><td><strong>문제해결 지표·AI 준비 상태</strong></td><td>인증 사례, 카테고리, 해결 소요일, 독립 해결, 지원 활용, 근거 존재 여부</td><td>인증 사례만 대상으로 카테고리 분포·평균/중앙 소요일·근거 준비 상태 생성. 사례 수만으로 역량점수 생성 금지</td><td><code>problem_solving_metrics: object</code><br><code>ai_readiness_status: enum</code></td><td>문제해결·AI 분석 탭<br>인증 사례가 없으면 <code>NOT_READY</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">저장 기준은 <strong>기수 ID + 수강생 UUID + 입력 버전</strong>이다. 결과에는 <code>calculation_policy_version</code>과 <code>generated_at</code>을 함께 저장해 동일 입력의 재검증이 가능하게 한다.</p>
+      </section>
+
+<section id="aws-status">
+        <h2>6. AWS 구현 현황 — 전체 흐름에서 어디까지 왔나</h2>
+        <p class="lead">AWS는 데이터 처리 단계를 추가하는 것이 아니라 FastAPI를 실행하고 데이터를 보관하는 기반이다. 현재는 컨테이너·배포 정의까지 준비됐고, 실제 ECS 상시 실행과 S3 실데이터 연결부터는 남아 있다.</p>
+
+        <div class="aws-role-grid">
+          <div class="aws-role"><strong>ECR · 프로그램 이미지 보관</strong><span>FastAPI 소스와 실행 환경을 묶은 Docker 이미지를 저장한다. 수강생 데이터는 저장하지 않는다.</span></div>
+          <div class="aws-role"><strong>ECS/Fargate · FastAPI 실행</strong><span>ECR 이미지를 태스크로 실행해 파생 계산·AI 분석 API를 제공한다. 결과 영구 저장소는 아니다.</span></div>
+          <div class="aws-role"><strong>S3 · 증명서 데이터 보관</strong><span>기수·수강생·버전별 정제 데이터, 파생데이터와 AI 분석 데이터를 저장한다.</span></div>
+        </div>
+
+        <div class="aws-flow" aria-label="AWS 배포와 데이터 연결 구현 단계">
+          <div class="aws-step done"><strong>FastAPI·Docker</strong><span>구현·로컬 실행 검증</span></div>
+          <div class="aws-step partial"><strong>ECR</strong><span>저장소·초기 이미지 생성 기록<br>현재 이미지 재확인 필요</span></div>
+          <div class="aws-step partial"><strong>ECS 태스크</strong><span>Fargate 정의 준비<br>실행 상태 미확인</span></div>
+          <div class="aws-step todo"><strong>ECS 서비스·망</strong><span>상시 실행·내부 호출 경로<br>완료 확인 필요</span></div>
+          <div class="aws-step todo"><strong>S3 실데이터</strong><span>버킷 정책·업로드·조회<br>미구현</span></div>
+          <div class="aws-step todo"><strong>Spring BE</strong><span>분석 취합·Snapshot 동결<br>미구현</span></div>
+          <div class="aws-step todo"><strong>FE</strong><span>실데이터 조회·mock 제거<br>미구현</span></div>
+        </div>
+
+        <div class="callout"><strong>판정 기준:</strong> 2026-08-07 로컬 코드와 기존 작업 기록 기준이다. 현재 환경에는 AWS 자격 증명이 없어 콘솔의 실제 리소스·실행 태스크를 재조회하지 못했다. 따라서 과거 생성 기록은 <em>현재 운영 완료</em>가 아니라 <em>재확인 필요</em>로 표기한다.</div>
+
+        <div class="table-wrap">
+          <table class="index-table">
+            <colgroup><col style="width:16%"><col style="width:14%"><col style="width:29%"><col style="width:41%"></colgroup>
+            <thead><tr><th>AWS 구성</th><th>현재 판정</th><th>확인된 내용</th><th>앞으로 남은 작업</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Docker 이미지</strong></td><td><span class="status-label done">구현됨</span></td><td>Python 3.12·FastAPI·포트 5177·<code>/health</code>를 포함한 Dockerfile과 로컬 smoke 기록이 있다.</td><td>fixture가 포함된 현재 이미지를 실데이터 Repository 기반으로 전환하고, 운영용 이미지의 커밋 SHA·digest를 고정한다.</td></tr>
+              <tr><td><strong>ECR</strong></td><td><span class="status-label unknown">현재 상태 미확인</span></td><td><code>lms-ai</code> 저장소와 초기 이미지 생성 기록, GitHub Actions의 SHA·latest push 단계가 있다.</td><td>저장소·현재 이미지 digest를 AWS에서 재확인하고 최신 이미지를 push한다. 이미지 수명주기 정책도 설정한다.</td></tr>
+              <tr><td><strong>ECS 태스크 정의</strong></td><td><span class="status-label partial">정의 준비됨</span></td><td>Fargate x86_64, 0.25 vCPU·512MB, 포트 5177, Secrets Manager 주입, CloudWatch 로그 설정 파일이 있다.</td><td>태스크 정의의 <code>wget</code> 헬스체크는 현재 이미지에 해당 도구 설치가 없어 실패할 수 있다. Dockerfile과 같은 Python 기반 검사로 통일한 뒤 새 revision을 등록한다.</td></tr>
+              <tr><td><strong>ECS 클러스터·서비스</strong></td><td><span class="status-label unknown">실행 여부 미확인</span></td><td>클러스터와 태스크 정의 생성 기록은 있으나 ECS 서비스, desired/running count, 현재 revision은 확인되지 않았다.</td><td>서비스를 생성 또는 재확인하고 desired count를 설정한 뒤 태스크가 안정적으로 유지되는지 검증한다.</td></tr>
+              <tr><td><strong>IAM·Secrets Manager</strong></td><td><span class="status-label partial">일부 준비 기록</span></td><td>실행 역할과 OpenAI 키 secret 생성·주입 기록이 있다. 현재 태스크 정의에는 execution role만 있다.</td><td>ECR pull·로그·secret 권한을 재검증한다. FastAPI가 S3를 읽고 쓸 수 있도록 최소 권한의 별도 task role과 <code>taskRoleArn</code>을 추가한다.</td></tr>
+              <tr><td><strong>VPC·보안그룹·호출 경로</strong></td><td><span class="status-label todo">미확정</span></td><td>Spring BE가 내부 FastAPI를 호출한다는 방향만 정해져 있다.</td><td>기존 BE VPC의 private subnet을 우선 재사용하고, 보안그룹·내부 DNS/Service Connect 또는 내부 ALB 중 한 가지를 확정한다. OpenAI 호출용 outbound 경로도 확인한다.</td></tr>
+              <tr><td><strong>S3</strong></td><td><span class="status-label todo">미구현</span></td><td>이 보고서의 1개 저장소·3개 논리 영역·기수/수강생/버전 구조는 목표 설계다.</td><td>버킷·prefix, 암호화, 버전 관리, 보존 정책, manifest를 확정하고 전처리 업로드 및 FastAPI S3 Repository를 구현한다.</td></tr>
+              <tr><td><strong>CloudWatch</strong></td><td><span class="status-label partial">설정 준비됨</span></td><td><code>/ecs/lms-ai</code> 로그 그룹 생성 기록과 <code>awslogs</code> 설정이 있다. 실제 로그 유입은 확인되지 않았다.</td><td>실행 로그·오류 추적을 확인하고 보존 기간, ECS unhealthy/재시작, 5xx 알람을 설정한다.</td></tr>
+              <tr><td><strong>GitHub Actions</strong></td><td><span class="status-label partial">워크플로 준비됨</span></td><td><code>develop</code>에서 ECR push 후 ECS 롤링 배포하는 workflow가 있다. <code>DEPLOY_ENABLED=true</code>일 때만 실행된다.</td><td>AWS·GitHub 변수와 secret 상태를 확인해 배포를 활성화한다. 장기 access key는 가능하면 OIDC 역할로 전환하고 롤백을 시험한다.</td></tr>
+              <tr><td><strong>실데이터 E2E</strong></td><td><span class="status-label todo">미구현</span></td><td>DB→S3→ECS FastAPI→Spring BE→FE 전체 성공 기록이 없다.</td><td>수료자 1명 기준으로 추출·전처리·AI 분석·Snapshot 동결·화면 표시와 데이터 없음 상태까지 종단 검증한다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+<section id="status">
+        <h2>7. 현재 구현 상태 — 실데이터 통합 연동</h2>
+        <p class="lead">2026-08-07 로컬 코드 기준이다. AWS 실행 기반과 별도로 운영 DB 원천이 증명서 화면까지 연결되는 데이터·서비스 구현 상태를 정리한다.</p>
+        <div class="status-grid">
+          <div class="status-card partial"><h3><span>FE 증명서 화면</span><span class="status-label partial">일부 구현</span></h3><p>증명서 7개 탭 화면은 있으나 운영 실데이터가 아니라 mock·fixture 중심이다.</p></div>
+          <div class="status-card todo"><h3><span>운영 DB 추출</span><span class="status-label todo">미구현</span></h3><p>수료 트리거, 증명서 원천 조회와 수강생 단위 데이터 취합이 구현되지 않았다.</p></div>
+          <div class="status-card todo"><h3><span>데이터 전처리</span><span class="status-label todo">미구현</span></h3><p>Parquet 변환, 타입 통일, 검증·정규화와 데이터 없음 상태 생성이 구현되지 않았다.</p></div>
+          <div class="status-card todo"><h3><span>S3 데이터 연동</span><span class="status-label todo">미구현</span></h3><p>기수·수강생·버전별 저장, manifest와 FastAPI S3 Repository가 구현되지 않았다.</p></div>
+          <div class="status-card partial"><h3><span>AI 분석 실데이터 연결</span><span class="status-label partial">골격만 구현</span></h3><p>분석 API는 있으나 S3 정제 입력 조회, AI 허용 필터와 분석 결과 저장은 구현되지 않았다.</p></div>
+          <div class="status-card todo"><h3><span>Spring BE Snapshot</span><span class="status-label todo">미구현</span></h3><p>분석 요청·완료 수신, S3 전체 취합, 검토·승인과 CertificateSnapshot 동결이 없다.</p></div>
+          <div class="status-card todo"><h3><span>FE 실데이터 전환</span><span class="status-label todo">미구현</span></h3><p>선택한 운영 연동안의 실응답 연결, 데이터 없음 상태와 런타임 mock 제거가 남았다.</p></div>
+          <div class="status-card todo"><h3><span>전체 E2E</span><span class="status-label todo">미검증</span></h3><p>DB→S3→FastAPI→선택한 제공 경로→FE 흐름을 실제 수료자 기준으로 검증해야 한다.</p></div>
+        </div>
+      </section>
+
+<section id="roadmap-section">
+        <h2>8. AWS를 포함한 남은 작업 순서</h2>
+        <div class="roadmap">
+          <div><strong>필드 계약 확정</strong><br>7개 탭 필드와 운영 DB 원천, 필수·선택·공개·AI 허용 범위를 연결한다.</div>
+          <div><strong>추출·전처리 구현</strong><br>수료 트리거, DB 조회, Parquet 변환, 검증·정규화를 구현한다.</div>
+          <div><strong>S3 정책 확정</strong><br>파티셔닝, manifest, 파일 크기, 버전·재처리·보존 정책을 정한다.</div>
+          <div><strong>FastAPI 실연결</strong><br>S3 조회, 파생 계산, AI 허용 필터, 작업 상태와 결과 저장을 구현한다.</div>
+          <div><strong>ECR 이미지 확정</strong><br>헬스체크를 수정하고 현재 소스를 SHA 이미지로 빌드·push해 digest를 확인한다.</div>
+          <div><strong>ECS 실행 기반 완성</strong><br>task role, 서비스, private network, 보안그룹과 내부 호출 주소를 구성한다.</div>
+          <div><strong>배포·관측 검증</strong><br>Actions 배포를 활성화하고 CloudWatch 로그·알람·롤링 배포·롤백을 시험한다.</div>
+          <div><strong>BE Snapshot</strong><br>완료 알림 뒤 S3 입력+결과를 취합하고 검토·승인·공개 payload를 동결한다.</div>
+          <div><strong>FE 전환·mock 제거</strong><br>Spring BE Snapshot만 조회하도록 연결하고 런타임 mock·fallback을 제거한다.</div>
+        </div>
+      </section>
+</main>
+
+    <footer class="report-footer">
+      본 보고서는 LMS-AI 데이터 흐름의 목표 설계와 현재 구현 간 차이를 팀 공유하기 위한 문서다. LMS-FE·LMS-AI·LMS-BE 런타임 코드는 변경하지 않았다.
+    </footer>
+  </article>
+  <details class="side-nav">
+    <summary aria-label="빠른 이동 메뉴 열기">빠른 이동</summary>
+    <nav aria-label="보고서 빠른 이동">
+      <a href="#architecture"><span class="side-index">1</span>데이터 흐름</a>
+      <a href="#decisions"><span class="side-index">2</span>설계 기준</a>
+      <a href="#certificate-data"><span class="side-index">3</span>증명서 데이터</a>
+      <a href="#ai-data"><span class="side-index">4</span>AI 데이터</a>
+      <a href="#derived-data"><span class="side-index">5</span>파생데이터</a>
+      <a href="#aws-status"><span class="side-index">6</span>AWS 현황</a>
+      <a href="#status"><span class="side-index">7</span>통합 연동 상태</a>
+      <a href="#roadmap-section"><span class="side-index">8</span>남은 작업</a>
+    </nav>
+  </details>
+  <script>
+    document.querySelectorAll('.side-nav a').forEach((link) => {
+      link.addEventListener('click', () => link.closest('details')?.removeAttribute('open'));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<section id="aws-status">
+        <h2>6. AWS 구현 현황 — 전체 흐름에서 어디까지 왔나</h2>
+        <p class="lead">AWS는 데이터 처리 단계를 추가하는 것이 아니라 FastAPI를 실행하고 데이터를 보관하는 기반이다. 현재는 컨테이너·배포 정의까지 준비됐고, 실제 ECS 상시 실행과 S3 실데이터 연결부터는 남아 있다.</p>
+
+        <div class="aws-role-grid">
+          <div class="aws-role"><strong>ECR · 프로그램 이미지 보관</strong><span>FastAPI 소스와 실행 환경을 묶은 Docker 이미지를 저장한다. 수강생 데이터는 저장하지 않는다.</span></div>
+          <div class="aws-role"><strong>ECS/Fargate · FastAPI 실행</strong><span>ECR 이미지를 태스크로 실행해 파생 계산·AI 분석 API를 제공한다. 결과 영구 저장소는 아니다.</span></div>
+          <div class="aws-role"><strong>S3 · 증명서 데이터 보관</strong><span>기수·수강생·버전별 정제 데이터, 파생데이터와 AI 분석 데이터를 저장한다.</span></div>
+        </div>
+
+        <div class="aws-flow" aria-label="AWS 배포와 데이터 연결 구현 단계">
+          <div class="aws-step done"><strong>FastAPI·Docker</strong><span>구현·로컬 실행 검증</span></div>
+          <div class="aws-step partial"><strong>ECR</strong><span>저장소·초기 이미지 생성 기록<br>현재 이미지 재확인 필요</span></div>
+          <div class="aws-step partial"><strong>ECS 태스크</strong><span>Fargate 정의 준비<br>실행 상태 미확인</span></div>
+          <div class="aws-step todo"><strong>ECS 서비스·망</strong><span>상시 실행·내부 호출 경로<br>완료 확인 필요</span></div>
+          <div class="aws-step todo"><strong>S3 실데이터</strong><span>버킷 정책·업로드·조회<br>미구현</span></div>
+          <div class="aws-step todo"><strong>Spring BE</strong><span>분석 취합·Snapshot 동결<br>미구현</span></div>
+          <div class="aws-step todo"><strong>FE</strong><span>실데이터 조회·mock 제거<br>미구현</span></div>
+        </div>
+
+        <div class="callout"><strong>판정 기준:</strong> 2026-08-07 로컬 코드와 기존 작업 기록 기준이다. 현재 환경에는 AWS 자격 증명이 없어 콘솔의 실제 리소스·실행 태스크를 재조회하지 못했다. 따라서 과거 생성 기록은 <em>현재 운영 완료</em>가 아니라 <em>재확인 필요</em>로 표기한다.</div>
+
+        <div class="table-wrap">
+          <table class="index-table">
+            <colgroup><col style="width:16%"><col style="width:14%"><col style="width:29%"><col style="width:41%"></colgroup>
+            <thead><tr><th>AWS 구성</th><th>현재 판정</th><th>확인된 내용</th><th>앞으로 남은 작업</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Docker 이미지</strong></td><td><span class="status-label done">구현됨</span></td><td>Python 3.12·FastAPI·포트 5177·<code>/health</code>를 포함한 Dockerfile과 로컬 smoke 기록이 있다.</td><td>fixture가 포함된 현재 이미지를 실데이터 Repository 기반으로 전환하고, 운영용 이미지의 커밋 SHA·digest를 고정한다.</td></tr>
+              <tr><td><strong>ECR</strong></td><td><span class="status-label unknown">현재 상태 미확인</span></td><td><code>lms-ai</code> 저장소와 초기 이미지 생성 기록, GitHub Actions의 SHA·latest push 단계가 있다.</td><td>저장소·현재 이미지 digest를 AWS에서 재확인하고 최신 이미지를 push한다. 이미지 수명주기 정책도 설정한다.</td></tr>
+              <tr><td><strong>ECS 태스크 정의</strong></td><td><span class="status-label partial">정의 준비됨</span></td><td>Fargate x86_64, 0.25 vCPU·512MB, 포트 5177, Secrets Manager 주입, CloudWatch 로그 설정 파일이 있다.</td><td>태스크 정의의 <code>wget</code> 헬스체크는 현재 이미지에 해당 도구 설치가 없어 실패할 수 있다. Dockerfile과 같은 Python 기반 검사로 통일한 뒤 새 revision을 등록한다.</td></tr>
+              <tr><td><strong>ECS 클러스터·서비스</strong></td><td><span class="status-label unknown">실행 여부 미확인</span></td><td>클러스터와 태스크 정의 생성 기록은 있으나 ECS 서비스, desired/running count, 현재 revision은 확인되지 않았다.</td><td>서비스를 생성 또는 재확인하고 desired count를 설정한 뒤 태스크가 안정적으로 유지되는지 검증한다.</td></tr>
+              <tr><td><strong>IAM·Secrets Manager</strong></td><td><span class="status-label partial">일부 준비 기록</span></td><td>실행 역할과 OpenAI 키 secret 생성·주입 기록이 있다. 현재 태스크 정의에는 execution role만 있다.</td><td>ECR pull·로그·secret 권한을 재검증한다. FastAPI가 S3를 읽고 쓸 수 있도록 최소 권한의 별도 task role과 <code>taskRoleArn</code>을 추가한다.</td></tr>
+              <tr><td><strong>VPC·보안그룹·호출 경로</strong></td><td><span class="status-label todo">미확정</span></td><td>Spring BE가 내부 FastAPI를 호출한다는 방향만 정해져 있다.</td><td>기존 BE VPC의 private subnet을 우선 재사용하고, 보안그룹·내부 DNS/Service Connect 또는 내부 ALB 중 한 가지를 확정한다. OpenAI 호출용 outbound 경로도 확인한다.</td></tr>
+              <tr><td><strong>S3</strong></td><td><span class="status-label todo">미구현</span></td><td>이 보고서의 1개 저장소·3개 논리 영역·기수/수강생/버전 구조는 목표 설계다.</td><td>버킷·prefix, 암호화, 버전 관리, 보존 정책, manifest를 확정하고 전처리 업로드 및 FastAPI S3 Repository를 구현한다.</td></tr>
+              <tr><td><strong>CloudWatch</strong></td><td><span class="status-label partial">설정 준비됨</span></td><td><code>/ecs/lms-ai</code> 로그 그룹 생성 기록과 <code>awslogs</code> 설정이 있다. 실제 로그 유입은 확인되지 않았다.</td><td>실행 로그·오류 추적을 확인하고 보존 기간, ECS unhealthy/재시작, 5xx 알람을 설정한다.</td></tr>
+              <tr><td><strong>GitHub Actions</strong></td><td><span class="status-label partial">워크플로 준비됨</span></td><td><code>develop</code>에서 ECR push 후 ECS 롤링 배포하는 workflow가 있다. <code>DEPLOY_ENABLED=true</code>일 때만 실행된다.</td><td>AWS·GitHub 변수와 secret 상태를 확인해 배포를 활성화한다. 장기 access key는 가능하면 OIDC 역할로 전환하고 롤백을 시험한다.</td></tr>
+              <tr><td><strong>실데이터 E2E</strong></td><td><span class="status-label todo">미구현</span></td><td>DB→S3→ECS FastAPI→Spring BE→FE 전체 성공 기록이 없다.</td><td>수료자 1명 기준으로 추출·전처리·AI 분석·Snapshot 동결·화면 표시와 데이터 없음 상태까지 종단 검증한다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>

@@ -1,0 +1,14 @@
+<section id="roadmap-section">
+        <h2>8. AWS를 포함한 남은 작업 순서</h2>
+        <div class="roadmap">
+          <div><strong>필드 계약 확정</strong><br>7개 탭 필드와 운영 DB 원천, 필수·선택·공개·AI 허용 범위를 연결한다.</div>
+          <div><strong>추출·전처리 구현</strong><br>수료 트리거, DB 조회, Parquet 변환, 검증·정규화를 구현한다.</div>
+          <div><strong>S3 정책 확정</strong><br>파티셔닝, manifest, 파일 크기, 버전·재처리·보존 정책을 정한다.</div>
+          <div><strong>FastAPI 실연결</strong><br>S3 조회, 파생 계산, AI 허용 필터, 작업 상태와 결과 저장을 구현한다.</div>
+          <div><strong>ECR 이미지 확정</strong><br>헬스체크를 수정하고 현재 소스를 SHA 이미지로 빌드·push해 digest를 확인한다.</div>
+          <div><strong>ECS 실행 기반 완성</strong><br>task role, 서비스, private network, 보안그룹과 내부 호출 주소를 구성한다.</div>
+          <div><strong>배포·관측 검증</strong><br>Actions 배포를 활성화하고 CloudWatch 로그·알람·롤링 배포·롤백을 시험한다.</div>
+          <div><strong>BE Snapshot</strong><br>완료 알림 뒤 S3 입력+결과를 취합하고 검토·승인·공개 payload를 동결한다.</div>
+          <div><strong>FE 전환·mock 제거</strong><br>Spring BE Snapshot만 조회하도록 연결하고 런타임 mock·fallback을 제거한다.</div>
+        </div>
+      </section>

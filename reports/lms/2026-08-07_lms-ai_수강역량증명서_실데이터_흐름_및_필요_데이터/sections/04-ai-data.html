@@ -1,0 +1,44 @@
+<section id="ai-data">
+        <h2>4. AI 분석에 필요한 정제 데이터</h2>
+        <p class="lead">AI에는 전체 증명서 원문이 아니라 사용이 허용된 개인 수행 근거와 <code>evidence_ref</code>를 전달한다. 아래 항목을 S3의 학생별 AI 입력 데이터셋으로 정규화한다.</p>
+        <div class="table-wrap">
+          <table class="index-table">
+            <colgroup><col style="width:4%"><col style="width:12%"><col style="width:17%"><col style="width:9%"><col style="width:15%"><col style="width:15%"><col style="width:16%"><col style="width:12%"></colgroup>
+            <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>출처</th><th>매핑 키</th><th>타입·예시</th><th>S3 정제 필드명</th><th>사용처·처리 기준</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td class="domain-cell" rowspan="5">공통 AI 메타</td><td>수강생 UUID</td><td class="source-cell" rowspan="5">S3 정제 데이터</td><td>학생 PK</td><td>UUID</td><td><code>student_uuid</code></td><td>AI 분석 처리</td></tr>
+              <tr><td>2</td><td>기수 ID·입력 버전</td><td><code>student_uuid + cohort_id</code></td><td>text, integer</td><td><code>cohort_id, input_version</code></td><td>동일 입력 결과 재검증</td></tr>
+              <tr><td>3</td><td>분석 정책 버전</td><td><code>input_version</code></td><td>text (ai-policy-v1)</td><td><code>policy_version</code></td><td>적용 AI 정책 확인</td></tr>
+              <tr><td>4</td><td>근거 참조·유형</td><td><code>source_type + source_id</code></td><td>reference, enum</td><td><code>evidence_ref, evidence_type</code></td><td>AI 결과와 원천 근거 연결</td></tr>
+              <tr><td>5</td><td>AI 사용 허용·준비 상태</td><td><code>student_uuid + input_version</code></td><td>boolean, enum</td><td><code>ai_allowed, readiness_status</code></td><td>AI 분석 실행 가능 여부 확인</td></tr>
+
+              <tr><td>6</td><td class="domain-cell" rowspan="8">직무 적합도</td><td>관심 직무</td><td class="source-cell" rowspan="8">S3 정제 데이터</td><td><code>student_uuid</code></td><td>text[]</td><td><code>target_jobs</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>7</td><td>관심 기술</td><td><code>student_uuid</code></td><td>text[]</td><td><code>interest_skills</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>8</td><td>프로젝트 도메인</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>project_domains</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>9</td><td>프로젝트 역할·담당 업무</td><td><code>student_uuid + project_id</code></td><td>object[]</td><td><code>project_roles, assigned_tasks</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>10</td><td>평가 카테고리·유형</td><td><code>student_uuid + assessment_id</code></td><td>code, enum</td><td><code>assessment_category, assessment_type</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>11</td><td>평가 환산 점수</td><td><code>student_uuid + assessment_id</code></td><td>number (0~100)</td><td><code>normalized_score</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>12</td><td>승인 기술 인증</td><td><code>student_uuid + certification_id</code></td><td>object[]</td><td><code>approved_certifications</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>13</td><td>인증 문제해결 카테고리</td><td><code>student_uuid + case_id</code></td><td>text[]</td><td><code>verified_case_categories</code></td><td>AI 분석 탭</td></tr>
+
+              <tr><td>14</td><td class="domain-cell" rowspan="7">프로젝트 분석</td><td>프로젝트 ID·인증 상태</td><td class="source-cell" rowspan="7">S3 정제 데이터</td><td><code>student_uuid + project_id</code></td><td>UUID, enum</td><td><code>project_id, verification_status</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>15</td><td>보드 전체 업무 수</td><td><code>project_id</code></td><td>integer</td><td><code>board_task_total</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>16</td><td>본인 담당·완료 업무 수</td><td><code>student_uuid + project_id</code></td><td>integer</td><td><code>assigned_task_count, completed_task_count</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>17</td><td>본인 기여 내용</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>contributions</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>18</td><td>개인 역할·기술</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>roles, technologies</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>19</td><td>개인 산출물 참조</td><td><code>student_uuid + project_id</code></td><td>reference[]</td><td><code>artifact_refs</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>20</td><td>프로젝트 동료평가 4축</td><td><code>student_uuid + project_id</code></td><td>number[4] (1~5)</td><td><code>peer_axis_scores</code></td><td>AI 분석 탭</td></tr>
+
+              <tr><td>21</td><td class="domain-cell" rowspan="8">문제해결 분석</td><td>인증 사례 ID·상태</td><td class="source-cell" rowspan="8">S3 정제 데이터</td><td><code>student_uuid + case_id</code></td><td>UUID, enum</td><td><code>case_id, verification_status</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>22</td><td>사례 카테고리</td><td><code>case_id</code></td><td>text/code</td><td><code>case_category</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>23</td><td>상황 요약</td><td><code>case_id</code></td><td>masked text</td><td><code>situation_summary</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>24</td><td>해결 과정 요약</td><td><code>case_id</code></td><td>masked text</td><td><code>solution_summary</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>25</td><td>검증 결과 요약</td><td><code>case_id</code></td><td>masked text</td><td><code>result_summary</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>26</td><td>사례별 해결 소요일</td><td><code>case_id</code></td><td>number (days)</td><td><code>resolution_days</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>27</td><td>독립 해결·지원 활용</td><td><code>case_id</code></td><td>boolean, enum[]</td><td><code>resolved_independently, support_types</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>28</td><td>발생 일시·기술 태그</td><td><code>case_id</code></td><td>datetime, text[]</td><td><code>occurred_at, technology_tags</code></td><td>AI 분석 탭</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">원문 PII, 운영 메모, 개별 평가자 식별정보, 미승인 기록은 AI 입력 데이터셋에 포함하지 않는다. 평균·중앙 해결 소요일 등 집계값은 다음 절의 파생데이터로 계산한다.</p>
+      </section>

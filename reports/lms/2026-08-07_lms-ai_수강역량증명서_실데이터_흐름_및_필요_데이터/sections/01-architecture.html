@@ -1,0 +1,193 @@
+<section id="architecture">
+        <h2>1. 실데이터 처리 흐름 — 2개 후보 비교 후 최종 택1</h2>
+        <p class="lead">원천 처리와 S3 저장 방식은 같고 화면으로 제공하는 마지막 구간만 다르다. 후보 A는 Spring BE가 발급본을 동결하고, 후보 B는 FE가 FastAPI 결과를 직접 조회한다. 아래 두 구조 중 운영안 하나만 확정한다.</p>
+        <div class="callout"><strong>아키텍처 결정 필요:</strong> 두 그림은 병행 운영안이 아니다. 인증·권한·Snapshot 책임과 개발 범위를 비교한 뒤 후보 A 또는 후보 B 하나를 선택해야 한다.</div>
+
+        <div class="architecture-stack">
+          <div class="diagram-shell" id="architecture-be">
+          <svg viewBox="0 0 1500 500" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="flow-be-title flow-be-desc">
+            <title id="flow-be-title">후보 A Spring BE 경유 구조</title>
+            <desc id="flow-be-desc">Spring BE가 FastAPI를 호출하고 S3의 입력과 결과를 취합하여 스냅샷으로 동결한 후 FE에 제공한다.</desc>
+            <defs>
+              <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M1 1 L10 6 L1 11" fill="none" stroke="#667078" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </marker>
+            </defs>
+
+            <!-- CASE 1: Spring BE 경유 -->
+            <rect class="lane-bg" x="20" y="18" width="1460" height="464"/>
+            <rect class="lane-badge" x="42" y="40" width="240" height="38"/>
+            <text class="lane-title" x="162" y="65">후보 A · Spring BE 경유</text>
+            <text class="lane-summary" x="305" y="65">정식 발급 · 권한검사 · 검토/승인 · CertificateSnapshot 동결</text>
+
+            <path class="connector" d="M165 250 H190"/>
+            <path class="connector" d="M305 250 H330"/>
+            <path class="connector" d="M450 250 H480"/>
+            <path class="connector connector-both" d="M800 250 H840"/>
+            <path class="connector connector-both connector-dashed" d="M1020 250 H1060"/>
+            <path class="connector" d="M1280 250 H1335"/>
+
+            <circle class="step" cx="65" cy="175" r="11"/><text class="step-text" x="65" y="175">1</text>
+            <rect class="box" x="50" y="190" width="115" height="120"/>
+            <text class="svg-title" x="107" y="238">수료 확정</text>
+            <text class="svg-sub" x="107" y="269">또는 복구 배치</text>
+
+            <circle class="step" cx="205" cy="175" r="11"/><text class="step-text" x="205" y="175">2</text>
+            <rect class="box" x="190" y="190" width="115" height="120"/>
+            <text class="svg-title" x="247" y="238">운영 DB 조회</text>
+            <text class="svg-sub" x="247" y="269">학생 개인 원천</text>
+
+            <circle class="step" cx="345" cy="175" r="11"/><text class="step-text" x="345" y="175">3</text>
+            <rect class="box" x="330" y="190" width="120" height="120"/>
+            <text class="svg-title" x="390" y="229">변환·전처리</text>
+            <text class="svg-sub" x="390" y="257">Parquet · 타입 통일</text>
+            <text class="svg-sub" x="390" y="281">검증 · 정규화</text>
+
+            <circle class="step" cx="468" cy="102" r="11"/><text class="step-text" x="468" y="102">4</text>
+            <rect class="bucket" x="480" y="85" width="320" height="355"/>
+            <text class="svg-title" x="640" y="112">S3 저장소 1개</text>
+            <text class="svg-sub" x="640" y="130" style="font-size:9.5px;font-weight:700">내부 데이터 영역 3개</text>
+
+            <rect class="certificate-group" x="495" y="142" width="290" height="168"/>
+            <text class="svg-title" x="640" y="163" style="font-size:12px">수강역량증명서 탭 데이터</text>
+            <text class="svg-path" x="640" y="179" style="font-size:8.5px">기수 ID(cohort_id) / 수강생 UUID / 버전</text>
+
+            <rect class="tab-folder" x="510" y="190" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="208" style="font-size:9.5px;font-weight:750">종합요약 탭</text>
+            <rect class="tab-folder" x="645" y="190" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="208" style="font-size:9.5px;font-weight:750">기술검증 탭</text>
+
+            <rect class="tab-folder" x="510" y="226" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="244" style="font-size:9.5px;font-weight:750">프로젝트 탭</text>
+            <rect class="tab-folder" x="645" y="226" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="244" style="font-size:9.5px;font-weight:750">문제해결 탭</text>
+
+            <rect class="tab-folder" x="510" y="262" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="280" style="font-size:9.5px;font-weight:750">평가·추천 탭</text>
+            <rect class="tab-folder" x="645" y="262" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="280" style="font-size:9.5px;font-weight:750">이력서 탭</text>
+
+            <rect class="box ai-box" x="495" y="318" width="290" height="60"/>
+            <text class="svg-title" x="640" y="342" style="font-size:12px">AI 분석 데이터</text>
+            <text class="svg-sub" x="640" y="363" style="font-size:9.5px">정제 입력 객체 → 분석 결과 객체</text>
+
+            <rect class="box result-box" x="495" y="386" width="290" height="40"/>
+            <text class="svg-sub" x="640" y="411" style="font-size:11px;font-weight:750">파생데이터</text>
+
+            <circle class="step" cx="855" cy="165" r="11"/><text class="step-text" x="855" y="165">5</text>
+            <rect class="box ai-box" x="840" y="180" width="180" height="140"/>
+            <text class="svg-title" x="930" y="218">LMS-AI FastAPI</text>
+            <text class="svg-sub" x="930" y="249">S3 조회·파생 계산</text>
+            <text class="svg-sub" x="930" y="273">AI 분석·결과 검증</text>
+            <text class="svg-sub" x="930" y="297">S3 결과 저장</text>
+
+            <circle class="step" cx="1075" cy="135" r="11"/><text class="step-text" x="1075" y="135">6</text>
+            <rect class="box result-box" x="1060" y="150" width="220" height="200"/>
+            <text class="svg-title" x="1170" y="194">Spring BE</text>
+            <text class="svg-sub" x="1170" y="225">FastAPI 분석 요청</text>
+            <text class="svg-sub" x="1170" y="250">완료 수신·S3 취합</text>
+            <text class="svg-sub" x="1170" y="275">검토·승인</text>
+            <text class="svg-sub" x="1170" y="302">CertificateSnapshot 동결</text>
+
+            <path class="connector" d="M800 410 V452 H1060 V325"/>
+            <text class="edge-label" x="930" y="444">분석 완료 후 S3의 전체 데이터 취합</text>
+
+            <text class="edge-label" x="1307" y="233">BE API</text>
+            <circle class="step" cx="1350" cy="175" r="11"/><text class="step-text" x="1350" y="175">7</text>
+            <rect class="box" x="1335" y="190" width="125" height="120"/>
+            <text class="svg-title" x="1397" y="238">FE</text>
+            <text class="svg-sub" x="1397" y="269">동결본 7개 탭</text>
+
+          </svg>
+          <div class="diagram-note"><strong>후보 A 핵심:</strong> S3의 AI 분석 데이터는 하나의 영역이며 입력·결과 객체만 구분한다. FastAPI 처리 후 Spring BE가 전체 데이터를 취합·승인하고 발급본을 동결한다.</div>
+          </div>
+
+          <div class="diagram-shell" id="architecture-direct">
+          <svg viewBox="0 0 1500 500" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="flow-direct-title flow-direct-desc">
+            <title id="flow-direct-title">후보 B Spring BE 미경유 구조</title>
+            <desc id="flow-direct-desc">FE가 FastAPI를 직접 호출하고 FastAPI가 S3 데이터 조회와 분석 결과 응답을 담당한다.</desc>
+            <defs>
+              <marker id="arrow-direct" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M1 1 L10 6 L1 11" fill="none" stroke="#667078" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </marker>
+            </defs>
+            <g transform="translate(0,-299)">
+            <!-- CASE 2: FastAPI 직접 -->
+            <rect class="lane-bg" x="20" y="317" width="1460" height="464"/>
+            <rect class="lane-badge lane-badge-direct" x="42" y="339" width="270" height="38"/>
+            <text class="lane-title" x="177" y="364">후보 B · Spring BE 미경유</text>
+            <text class="lane-summary" x="335" y="364">분석 결과를 빠르게 조회 · FastAPI가 인증/권한/응답 계약을 직접 담당</text>
+
+            <path class="connector" style="marker-end:url(#arrow-direct)" d="M165 549 H190"/>
+            <path class="connector" style="marker-end:url(#arrow-direct)" d="M305 549 H330"/>
+            <path class="connector" style="marker-end:url(#arrow-direct)" d="M450 549 H480"/>
+            <path class="connector connector-both" style="marker-start:url(#arrow-direct);marker-end:url(#arrow-direct)" d="M800 549 H850"/>
+            <path class="connector" style="marker-end:url(#arrow-direct)" d="M1080 549 H1260"/>
+
+            <circle class="step" cx="65" cy="474" r="11"/><text class="step-text" x="65" y="474">1</text>
+            <rect class="box" x="50" y="489" width="115" height="120"/>
+            <text class="svg-title" x="107" y="537">수료 확정</text>
+            <text class="svg-sub" x="107" y="568">또는 복구 배치</text>
+
+            <circle class="step" cx="205" cy="474" r="11"/><text class="step-text" x="205" y="474">2</text>
+            <rect class="box" x="190" y="489" width="115" height="120"/>
+            <text class="svg-title" x="247" y="537">운영 DB 조회</text>
+            <text class="svg-sub" x="247" y="568">학생 개인 원천</text>
+
+            <circle class="step" cx="345" cy="474" r="11"/><text class="step-text" x="345" y="474">3</text>
+            <rect class="box" x="330" y="489" width="120" height="120"/>
+            <text class="svg-title" x="390" y="528">변환·전처리</text>
+            <text class="svg-sub" x="390" y="556">Parquet · 타입 통일</text>
+            <text class="svg-sub" x="390" y="580">검증 · 정규화</text>
+
+            <circle class="step" cx="468" cy="401" r="11"/><text class="step-text" x="468" y="401">4</text>
+            <rect class="bucket" x="480" y="384" width="320" height="355"/>
+            <text class="svg-title" x="640" y="411">S3 저장소 1개</text>
+            <text class="svg-sub" x="640" y="429" style="font-size:9.5px;font-weight:700">내부 데이터 영역 3개</text>
+
+            <rect class="certificate-group" x="495" y="441" width="290" height="168"/>
+            <text class="svg-title" x="640" y="462" style="font-size:12px">수강역량증명서 탭 데이터</text>
+            <text class="svg-path" x="640" y="478" style="font-size:8.5px">기수 ID(cohort_id) / 수강생 UUID / 버전</text>
+
+            <rect class="tab-folder" x="510" y="489" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="507" style="font-size:9.5px;font-weight:750">종합요약 탭</text>
+            <rect class="tab-folder" x="645" y="489" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="507" style="font-size:9.5px;font-weight:750">기술검증 탭</text>
+
+            <rect class="tab-folder" x="510" y="525" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="543" style="font-size:9.5px;font-weight:750">프로젝트 탭</text>
+            <rect class="tab-folder" x="645" y="525" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="543" style="font-size:9.5px;font-weight:750">문제해결 탭</text>
+
+            <rect class="tab-folder" x="510" y="561" width="125" height="28"/>
+            <text class="svg-sub" x="572" y="579" style="font-size:9.5px;font-weight:750">평가·추천 탭</text>
+            <rect class="tab-folder" x="645" y="561" width="125" height="28"/>
+            <text class="svg-sub" x="707" y="579" style="font-size:9.5px;font-weight:750">이력서 탭</text>
+
+            <rect class="box ai-box" x="495" y="617" width="290" height="60"/>
+            <text class="svg-title" x="640" y="641" style="font-size:12px">AI 분석 데이터</text>
+            <text class="svg-sub" x="640" y="662" style="font-size:9.5px">정제 입력 객체 → 분석 결과 객체</text>
+
+            <rect class="box result-box" x="495" y="685" width="290" height="40"/>
+            <text class="svg-sub" x="640" y="710" style="font-size:11px;font-weight:750">파생데이터</text>
+
+            <circle class="step" cx="865" cy="444" r="11"/><text class="step-text" x="865" y="444">5</text>
+            <rect class="box ai-box" x="850" y="459" width="230" height="180"/>
+            <text class="svg-title" x="965" y="505">LMS-AI FastAPI</text>
+            <text class="svg-sub" x="965" y="536">인증·권한검사</text>
+            <text class="svg-sub" x="965" y="562">S3 조회·파생 계산</text>
+            <text class="svg-sub" x="965" y="588">AI 분석·결과 저장</text>
+            <text class="svg-sub" x="965" y="614">상태·결과 API 응답</text>
+
+            <text class="edge-label" x="1170" y="532">FastAPI JSON · 상태 응답</text>
+            <circle class="step" cx="1275" cy="474" r="11"/><text class="step-text" x="1275" y="474">6</text>
+            <rect class="box" x="1260" y="489" width="170" height="120"/>
+            <text class="svg-title" x="1345" y="537">FE</text>
+            <text class="svg-sub" x="1345" y="568">최신 결과 7개 탭</text>
+
+            </g>
+          </svg>
+          <div class="diagram-note"><strong>후보 B 핵심:</strong> S3의 AI 분석 데이터는 하나의 영역이며 입력·결과 객체만 구분한다. Spring BE 없이 FE가 FastAPI의 최신 결과를 직접 받는다.</div>
+          </div>
+        </div>
+      </section>
