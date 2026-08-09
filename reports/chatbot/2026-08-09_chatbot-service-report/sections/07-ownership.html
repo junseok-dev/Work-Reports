@@ -33,6 +33,108 @@
           <li>모든 확인이 끝난 뒤 기존 담당자의 권한을 정리합니다.</li>
         </ol>
 
+        <h3>비밀정보 발급·인계·등록 방법</h3>
+        <div class="callout warning">
+          <p><strong>가장 중요한 구분:</strong> <code>ENCRYPTION_KEY</code>는 새로 발급받는 외부 서비스 키가 아닙니다. 운영 중인 정확한 기존 값을 안전하게 인계받아야 하며, 이 값 없이 새 키를 만들면 기존에 암호화된 대화·FAQ·프롬프트·문서 데이터를 읽지 못할 수 있습니다. 반면 OpenAI·AWS·LangSmith 키는 새 담당자 권한으로 재발급하고 검증 후 기존 키를 폐기할 수 있습니다.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <caption>현재 배포 워크플로가 사용하는 GitHub Actions 값</caption>
+            <thead><tr><th>등록 이름</th><th>어디서 어떻게 준비하는가</th><th>인계·교체 시 주의사항</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>OPENAI_API_KEY</code></td>
+                <td><a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">OpenAI Platform API Keys</a>에서 운영 Project를 선택하고 새 키를 생성합니다. 개인 실험용 키와 분리하고, 애플리케이션에 필요한 권한만 부여합니다.</td>
+                <td>전체 값은 생성 시에만 안전하게 보관합니다. 새 키로 대표 질문과 임베딩을 검증한 뒤 기존 키를 폐기합니다. 브라우저 코드에는 넣지 않습니다.</td>
+              </tr>
+              <tr>
+                <td><code>ENCRYPTION_KEY</code></td>
+                <td>기존 담당자의 승인된 비밀 저장소에서 <strong>운영 중인 원본 값</strong>을 인계받습니다. 완전히 신규 환경에서만 아래 Fernet 명령으로 생성합니다.</td>
+                <td><strong>기존 운영 환경에서 임의 재생성 금지.</strong> 분실하면 암호화된 기존 데이터의 복구가 불가능할 수 있으므로 별도 금고와 복구 절차를 둡니다.</td>
+              </tr>
+              <tr>
+                <td><code>DATABASE_URL</code></td>
+                <td>AWS RDS 콘솔의 Aurora 클러스터 endpoint, DB 이름, 포트, 운영 DB 계정과 비밀번호로 <code>postgresql://USER:PASSWORD@HOST:5432/DB</code> 형식의 문자열을 만듭니다.</td>
+                <td>DB 암호를 모르면 조회하려 하지 말고 승인된 절차로 재설정합니다. 암호에 <code>@</code>, <code>:</code>, <code>/</code> 등이 있으면 URL 인코딩합니다.</td>
+              </tr>
+              <tr>
+                <td><code>AWS_ACCESS_KEY_ID</code><br><code>AWS_SECRET_ACCESS_KEY</code></td>
+                <td>AWS IAM에서 챗봇 S3에 필요한 최소 권한만 가진 운영 주체의 자격 증명을 준비합니다. 두 값은 한 쌍이며 Secret Access Key는 생성 시 저장해야 합니다.</td>
+                <td>현재 배포와의 호환을 위해 인계 시 먼저 확인합니다. 장기적으로는 장기 키 대신 EC2 IAM Role을 사용하면 GitHub에 AWS 키를 저장할 필요를 줄일 수 있습니다.</td>
+              </tr>
+              <tr>
+                <td><code>AWS_S3_BUCKET</code></td>
+                <td>AWS S3 콘솔에서 계정 <strong>249173798473</strong>의 운영 버킷 이름을 확인합니다. 앱의 기본 prefix는 <code>document-chatbot</code>입니다.</td>
+                <td>암호는 아니지만 잘못 바꾸면 문서·FAQ·FAISS를 찾지 못합니다. 버킷과 prefix를 한 세트로 확인합니다.</td>
+              </tr>
+              <tr>
+                <td><code>VITE_GOOGLE_CLIENT_ID</code></td>
+                <td><a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console → Credentials</a>에서 OAuth 2.0 Web application client를 만들고 서비스 주소를 Authorized JavaScript origins에 등록합니다.</td>
+                <td>클라이언트 ID 자체는 암호가 아닙니다. 운영 origin <code>https://chatbot.encorecampus.ai</code>과 필요한 개발 origin만 허용하고 로그인 화면을 검증합니다.</td>
+              </tr>
+              <tr>
+                <td><code>JWT_SECRET</code></td>
+                <td>외부에서 받는 값이 아니라 아래 명령으로 충분히 긴 난수를 생성합니다.</td>
+                <td>교체하면 기존 관리자 로그인 세션이 무효화될 수 있습니다. 기본값을 운영에 사용하지 않습니다.</td>
+              </tr>
+              <tr>
+                <td><code>LANGSMITH_API_KEY</code></td>
+                <td><a href="https://smith.langchain.com/settings" target="_blank" rel="noopener">LangSmith Settings → API Keys</a>에서 운영용 service key를 생성하고 해당 workspace 범위로 제한합니다.</td>
+                <td>개인 PAT보다 서비스용 키를 우선합니다. 새 키로 trace 수집을 확인한 후 기존 키를 폐기합니다.</td>
+              </tr>
+              <tr>
+                <td><code>LANGSMITH_PROJECT</code></td>
+                <td>LangSmith에서 기존 운영 프로젝트 이름을 확인합니다. 현재 기본 이름은 <code>document-chatbot</code>입니다.</td>
+                <td>암호는 아니지만 이름이 달라지면 trace가 다른 프로젝트로 분리됩니다.</td>
+              </tr>
+              <tr>
+                <td><code>ADMIN_EMAIL</code></td>
+                <td>관리자 권한을 부여할 회사 Google 계정 이메일을 등록합니다.</td>
+                <td>암호는 아닙니다. 차기 담당자가 먼저 로그인 가능한지 확인한 후 기존 담당자를 제거합니다.</td>
+              </tr>
+              <tr>
+                <td><code>CHANNEL_TALK_URL</code></td>
+                <td>상담 운영 담당자가 관리하는 실제 채널톡 상담 연결 URL을 받아 등록합니다.</td>
+                <td>암호는 아닙니다. 배포 후 상담 버튼이 올바른 채널로 연결되는지 직접 확인합니다.</td>
+              </tr>
+              <tr>
+                <td><code>ADMIN_PASSWORD</code></td>
+                <td>현재 워크플로에 남아 있는 레거시 값입니다. 주 관리자 인증은 Google OAuth와 <code>ADMIN_EMAIL</code>을 기준으로 운영합니다.</td>
+                <td>신규 운영 절차의 주 인증수단으로 사용하지 않습니다. 코드 의존성을 확인한 뒤 별도 정리 작업으로 제거합니다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid-2">
+          <article class="card">
+            <h4>신규 환경에서만 생성하는 값</h4>
+            <pre class="tree"># ENCRYPTION_KEY — 기존 데이터가 없는 신규 환경 전용
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+
+# JWT_SECRET
+python -c "import secrets; print(secrets.token_urlsafe(48))"</pre>
+          </article>
+          <article class="card">
+            <h4>GitHub 등록 위치</h4>
+            <p><code>Repository → Settings → Secrets and variables → Actions → New repository secret</code>에서 표의 이름과 정확히 같은 이름으로 하나씩 등록합니다. 저장한 값은 화면에서 다시 전체 조회할 수 없으므로 먼저 승인된 비밀 저장소에 원본을 보관합니다.</p>
+          </article>
+        </div>
+
+        <h3>안전한 키 교체 순서</h3>
+        <ol>
+          <li>새 담당자가 각 서비스에 자신의 계정으로 접근할 수 있는지 확인하고 운영용 키를 발급합니다.</li>
+          <li><code>ENCRYPTION_KEY</code>와 DB 접속정보는 먼저 복구 가능 상태로 보관하고, 나머지 값을 GitHub Actions Secrets에 등록합니다.</li>
+          <li>현재 워크플로는 배포할 때 서버의 <code>backend/.env</code>를 다시 만들므로 Secret 변경 후 배포를 한 번 실행해야 반영됩니다.</li>
+          <li>Actions 성공, <code>/health</code>, 관리자 로그인, 대표 질문, 문서 검색, S3 접근, LangSmith trace와 상담 연결을 확인합니다.</li>
+          <li>검증이 모두 끝난 뒤에만 기존 OpenAI·AWS·LangSmith 키와 기존 담당자 권한을 폐기합니다.</li>
+        </ol>
+
+        <div class="callout">
+          <p><strong>AWS 권장 방향:</strong> AWS는 EC2에서 장기 Access Key를 저장하는 방식보다 IAM Role의 임시 자격 증명을 권장합니다. 가장 빠른 이관은 현행 키 구성을 먼저 정상화하는 것이지만, 후속 보안 개선에서는 EC2 instance profile에 S3 최소 권한을 부여하고 <code>AWS_ACCESS_KEY_ID</code>와 <code>AWS_SECRET_ACCESS_KEY</code> 의존성을 제거하는 것이 좋습니다.</p>
+        </div>
+
         <div class="callout danger">
           <p><strong>비밀정보 원칙:</strong> API 키, DB 접속 문자열과 암호화 키의 실제 값은 이 보고서나 Git 저장소에 기록하지 않습니다. 특히 <code>ENCRYPTION_KEY</code>는 기존 암호화 데이터를 복구하는 데 필요하므로 승인된 비밀 저장소에 별도 보관합니다.</p>
         </div>

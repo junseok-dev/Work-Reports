@@ -3,19 +3,36 @@
           <div class="section-no">05</div>
           <div>
             <h2>운영·배포·비용</h2>
-            <p class="section-summary">자동화된 작업과 사람이 점검해야 하는 항목을 구분하고, 완료 월 데이터를 기준으로 운영 비용을 추정했습니다.</p>
+            <p class="section-summary">AWS 비용은 n·Xavis에서 계정번호 <strong>249173798473</strong>의 일자별 사용 현황을 조회하고, 완료 월 데이터를 기준으로 예산을 추정했습니다.</p>
           </div>
         </div>
 
         <div class="grid-4">
           <article class="metric"><strong>약 15.3만원</strong><span>AWS 월평균</span><small>2026년 6·7월 완료 월 평균</small></article>
+          <article class="metric"><strong>36,938원</strong><span>2026년 8월 화면 금액</span><small>n·Xavis 캡처 시점의 부분 집계</small></article>
           <article class="metric"><strong>약 $4.80</strong><span>OpenAI 월 추정</span><small>56일간 잔액 감소 기준 참고값</small></article>
-          <article class="metric"><strong>약 16.0만원</strong><span>월 통합 예시</span><small>환율 1달러=1,400원 가정</small></article>
-          <article class="metric"><strong>약 184만원</strong><span>AWS 연간 예상</span><small>완료 월 평균 × 12</small></article>
+          <article class="metric"><strong>약 18.4만원</strong><span>AWS 월 예산안</span><small>완료 월 평균에 변동 여유 20%</small></article>
+        </div>
+
+        <div class="callout">
+          <p><strong>AWS 비용 조회 위치:</strong> <a href="https://nxavis.com/layout/usageReport/usageDailyReport" target="_blank" rel="noopener">n·Xavis 일자별 사용 현황</a>에서 그룹 <strong>엔코아 독장캠퍼스</strong>, 계정별 보기의 <strong>249173798473 · 엔코아 독장캠퍼스 5반 학생-30</strong>을 선택합니다. 월을 지정한 뒤 서비스 탭에서 Amazon RDS, EC2, VPC, Secrets Manager 등 서비스별 사용액을 확인합니다.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <caption>AWS 비용 관측값 · 계정 249173798473</caption>
+            <thead><tr><th>기간</th><th>표시 금액</th><th>해석</th></tr></thead>
+            <tbody>
+              <tr><td>2026년 6월</td><td>153,130원</td><td>완료 월 30일</td></tr>
+              <tr><td>2026년 7월</td><td>153,244원</td><td>완료 월 31일</td></tr>
+              <tr><td>2026년 8월</td><td>36,938원</td><td>첨부 화면 조회 시점의 부분 집계로 예측 기준에서는 제외</td></tr>
+              <tr><td>완료 월 평균</td><td>153,187원</td><td>6·7월 평균, 연간 단순 환산 약 1,838,244원</td></tr>
+            </tbody>
+          </table>
         </div>
 
         <div class="callout warning">
-          <p><strong>비용 범위:</strong> AWS 금액은 해당 AWS 계정 전체 비용이라 챗봇 외 자원이 포함될 수 있습니다. OpenAI 금액은 중간 추가 충전이 없다는 전제의 잔액 감소 추정치이며, 최종 비용은 청구서로 확정해야 합니다.</p>
+          <p><strong>비용 범위:</strong> AWS 금액은 계정 249173798473 전체 비용이라 챗봇 외 자원이 포함될 수 있습니다. 현재 월 금액은 집계 지연과 남은 기간 때문에 완료 월과 직접 비교하지 않습니다. OpenAI 금액은 중간 추가 충전이 없다는 전제의 잔액 감소 추정치이며, 최종 비용은 청구서로 확정해야 합니다.</p>
         </div>
 
         <div class="table-wrap">
