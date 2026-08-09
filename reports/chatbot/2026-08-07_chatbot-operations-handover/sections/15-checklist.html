@@ -1,0 +1,59 @@
+<section id="checklist">
+          <div class="section-head">
+            <div class="section-no">15 / 15</div>
+            <div><h2>최종 인계 체크리스트</h2><p class="section-summary">문서를 전달하는 것만으로 인계가 끝나지 않습니다. 신규 담당자가 직접 배포·수정·복구를 수행할 수 있어야 완료입니다.</p></div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <h3 style="margin-top:0">소스·문서</h3>
+              <ul class="checklist">
+                <li class="must">회사 관리 저장소 또는 승인된 보관소에 최종 코드 전달</li>
+                <li class="must">최종 기준 커밋 ID와 브랜치 기록</li>
+                <li>README와 이 인수인계 보고서 전달</li>
+                <li>회사 소유자가 repository admin 권한 보유</li>
+                <li>운영 URL·도메인·서버 경로 기록</li>
+              </ul>
+            </div>
+            <div>
+              <h3 style="margin-top:0">계정·비밀값</h3>
+              <ul class="checklist">
+                <li class="must">GitHub Actions Secrets 접근 및 갱신 권한</li>
+                <li class="must">AWS EC2·RDS·S3·IAM 접근</li>
+                <li class="must">ENCRYPTION_KEY 복구 사본과 접근 절차</li>
+                <li>OpenAI 조직·결제·사용량 접근</li>
+                <li>Google OAuth·ChannelTalk·LangSmith 접근</li>
+              </ul>
+            </div>
+            <div>
+              <h3>운영 실습</h3>
+              <ul class="checklist">
+                <li class="must">신규 담당자 계정으로 관리자 로그인</li>
+                <li>FAQ 1건 수정 후 답변 반영 확인</li>
+                <li>테스트 문서 업로드·승인·재색인 실습</li>
+                <li>대화 로그 조회·Excel 내보내기</li>
+                <li>홈페이지 동기화 상태 확인·수동 실행</li>
+              </ul>
+            </div>
+            <div>
+              <h3>배포·복구 실습</h3>
+              <ul class="checklist">
+                <li class="must">신규 담당자가 직접 main 배포 1회</li>
+                <li>GitHub Actions와 systemd 로그 확인</li>
+                <li>health·채팅·상담 연결·관리자 회귀 점검</li>
+                <li>RDS 백업 정책과 S3 데이터 확인</li>
+                <li>직전 정상 커밋 재배포 절차 합의</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3>인계 완료 승인</h3>
+          <div class="owner-grid">
+            <div class="owner-field"><label>작성자 확인</label><span class="editable" contenteditable="true">[이름 / 날짜 / 서명]</span></div>
+            <div class="owner-field"><label>인수자 확인</label><span class="editable" contenteditable="true">[이름 / 날짜 / 서명]</span></div>
+            <div class="owner-field"><label>서비스 책임자 승인</label><span class="editable" contenteditable="true">[이름 / 날짜 / 서명]</span></div>
+            <div class="owner-field"><label>미완료 항목 및 완료 예정일</label><span class="editable" contenteditable="true">[내용 / 담당 / 예정일]</span></div>
+          </div>
+
+          <div class="callout success"><p><strong>완료 기준:</strong> 신규 담당자가 원 작성자의 개인 계정이나 도움 없이 관리자 로그인, 콘텐츠 변경, 배포, 로그 확인, 기본 장애 진단과 복구 판단을 수행할 수 있으면 인계 완료로 봅니다.</p></div>
+        </section>

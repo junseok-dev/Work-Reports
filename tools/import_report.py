@@ -50,12 +50,14 @@ def main() -> None:
     if not main_match:
         raise SystemExit('원본에서 <main class="content">를 찾지 못했습니다.')
 
-    sections = SECTION_PATTERN.findall(main_match.group("body"))
-    if not sections:
+    main_body = main_match.group("body")
+    section_matches = list(SECTION_PATTERN.finditer(main_body))
+    if not section_matches:
         raise SystemExit("main.content 안에서 section을 찾지 못했습니다.")
 
     parsed: list[tuple[int, str, str]] = []
-    for fallback, section in enumerate(sections, 1):
+    for fallback, section_match in enumerate(section_matches, 1):
+        section = section_match.group(0)
         id_match = ID_PATTERN.search(section)
         number_match = NUMBER_PATTERN.search(section)
         section_id = id_match.group(1) if id_match else f"section-{fallback}"
@@ -67,11 +69,15 @@ def main() -> None:
         raise SystemExit("중복된 h2 번호가 있어 섹션 순서를 결정할 수 없습니다.")
 
     sections_dir.mkdir(parents=True, exist_ok=True)
+    before_sections = main_body[: section_matches[0].start()]
+    after_sections = main_body[section_matches[-1].end() :]
     shell = (
         html[: main_match.start("body")]
+        + before_sections
         + "\n"
         + MARKER
         + "\n"
+        + after_sections
         + html[main_match.end("body") :]
     )
     (sections_dir / "00-shell.html").write_text(shell, encoding="utf-8")
@@ -86,4 +92,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

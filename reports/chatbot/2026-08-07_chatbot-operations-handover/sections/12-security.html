@@ -1,0 +1,36 @@
+<section id="security">
+          <div class="section-head">
+            <div class="section-no">12 / 15</div>
+            <div><h2>계정·비밀정보 인계</h2><p class="section-summary">이 보고서에는 비밀번호, API 키, 데이터베이스 접속 정보를 기록하지 않습니다. 실제 값 대신 회사가 승인한 보관 위치와 접근 권한을 인계합니다.</p></div>
+          </div>
+
+          <div class="beginner-box"><h3>인계 원칙</h3><p>새 담당자는 개인 계정이나 퇴사자의 도움 없이 필요한 시스템에 접근할 수 있어야 합니다. 계정은 가능하면 회사 명의로 전환하고, 최소 2명 이상의 회사 관리자가 복구 권한을 보유하도록 구성합니다.</p></div>
+
+          <h3>필수 계정과 접근 권한</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>항목</th><th>용도</th><th>현재 보관 위치</th><th>인계 확인</th></tr></thead>
+              <tbody>
+                <tr><td><code>OPENAI_API_KEY</code></td><td>생성·라우팅·임베딩 API</td><td>GitHub Actions Secrets</td><td class="editable" contenteditable="true">[소유 계정/권한 확인]</td></tr>
+                <tr><td><code>DATABASE_URL</code></td><td>Aurora PostgreSQL 연결</td><td>GitHub Actions Secrets</td><td class="editable" contenteditable="true">[RDS 콘솔 접근 확인]</td></tr>
+                <tr><td>AWS Access Key / S3 Bucket</td><td>문서·FAISS 저장과 복구</td><td>GitHub Actions Secrets / AWS IAM</td><td class="editable" contenteditable="true">[IAM 주체/최소 권한 확인]</td></tr>
+                <tr><td><code>ENCRYPTION_KEY</code></td><td>Fernet 데이터 복호화</td><td>GitHub Actions Secrets</td><td class="editable" contenteditable="true">[별도 백업 위치 확인]</td></tr>
+                <tr><td><code>JWT_SECRET</code></td><td>관리자 8시간 세션 서명</td><td>GitHub Actions Secrets</td><td class="editable" contenteditable="true">[기본값 아님 확인]</td></tr>
+                <tr><td>Google OAuth Client ID</td><td>관리자 Google 로그인</td><td>Google Cloud + GitHub Secrets</td><td class="editable" contenteditable="true">[승인 도메인/소유자 확인]</td></tr>
+                <tr><td><code>ADMIN_EMAIL</code></td><td>최상위 관리자 부트스트랩</td><td>GitHub Actions Secrets</td><td class="editable" contenteditable="true">[회사 계정으로 설정]</td></tr>
+                <tr><td><code>CHANNEL_TALK_URL</code></td><td>상담 매니저 연결 버튼</td><td>GitHub Actions Secrets</td><td class="editable" contenteditable="true">[운영 채널/URL 확인]</td></tr>
+                <tr><td>LangSmith API / Project</td><td>LLM 호출 추적(선택)</td><td>GitHub Actions Secrets</td><td class="editable" contenteditable="true">[워크스페이스 권한 확인]</td></tr>
+                <tr><td>GitHub + self-hosted runner</td><td>소스·CI/CD</td><td>GitHub 저장소 / EC2</td><td class="editable" contenteditable="true">[회사 관리자 2명 이상]</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout danger"><p><strong>가장 중요한 키:</strong> <code>ENCRYPTION_KEY</code>를 잃으면 이미 암호화된 FAQ·프롬프트·문서·대화 내용을 복구할 수 없습니다. 소스 코드와 분리된 회사 관리 비밀 저장소에 복구 가능한 형태로 보관하고, 키 교체는 데이터 마이그레이션 계획 없이 진행하지 않습니다.</p></div>
+
+          <h3>현재 보안 동작</h3>
+          <div class="grid-3">
+            <div class="card"><h4>관리자 인증</h4><p>Google ID Token을 서버에서 검증하고, <code>ADMIN_EMAIL</code> 또는 <code>admin_users</code>에 등록된 이메일만 HS256 JWT를 발급받습니다.</p></div>
+            <div class="card"><h4>저장 데이터 암호화</h4><p>채팅 내용은 항상 암호화되며, FAQ·프롬프트·문서는 카테고리별 설정에 따라 <code>enc::</code> 접두사의 Fernet 암호문으로 저장됩니다.</p></div>
+            <div class="card"><h4>관리 작업 추적</h4><p>문서·FAQ·프롬프트 등 주요 관리자 작업은 <code>admin_audit_logs</code>에 행위자·대상·시각과 함께 기록됩니다.</p></div>
+          </div>
+        </section>

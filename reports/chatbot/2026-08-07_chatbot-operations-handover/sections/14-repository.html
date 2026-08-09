@@ -1,0 +1,35 @@
+<section id="repository">
+          <div class="section-head">
+            <div class="section-no">14 / 15</div>
+            <div><h2>개발 담당자용: 소스 코드 구조</h2><p class="section-summary">기능을 수정하거나 장애 원인을 코드에서 확인할 때 참고하는 파일 안내입니다. 콘텐츠·상담 담당자는 이 절을 참고 범위로 두어도 됩니다.</p></div>
+          </div>
+
+          <div class="repo-tree" aria-label="주요 레포 디렉터리">
+            <div><span>backend/app/main.py</span> <small>— 앱 기동, 라우터, 정적 프론트 제공, 홈페이지 동기화 시작</small></div>
+            <div>├─ <span>routers/chat.py</span> <small>— 채팅·SSE 요청의 전체 분기와 로그 저장</small></div>
+            <div>├─ <span>routers/admin.py</span> <small>— 문서·FAQ·프롬프트·로그·데이터·설정 API</small></div>
+            <div>├─ <span>routers/auth.py</span> <small>— Google OAuth 검증과 JWT 발급</small></div>
+            <div>├─ <span>services/router_service.py</span> <small>— 하이브리드 라우팅</small></div>
+            <div>├─ <span>services/rag_service.py</span> <small>— FAISS 검색·인덱스 생성·S3 동기화</small></div>
+            <div>├─ <span>services/openai_service.py</span> <small>— 모델 호출·스트리밍·상담 응답 규칙</small></div>
+            <div>├─ <span>services/website_course_service.py</span> <small>— 공식 홈페이지 수집·검증·스냅샷</small></div>
+            <div>├─ <span>services/admin_service.py</span> <small>— 문서 처리·승인·재색인</small></div>
+            <div>├─ <span>services/guardrail_service.py</span> <small>— 인젝션·개인정보·분노 정책</small></div>
+            <div>└─ <span>db/models.py</span> <small>— 운영 DB 테이블 정의</small></div>
+            <div><span>frontend/src/</span> <small>— React 사용자·관리자 UI</small></div>
+            <div>├─ <span>pages/ChatPage.tsx</span> <small>— 사용자 채팅 화면</small></div>
+            <div>├─ <span>pages/AdminPage.tsx</span> <small>— 관리자 대시보드</small></div>
+            <div>├─ <span>hooks/useChat.ts</span> <small>— 대화 상태·스트리밍·기록</small></div>
+            <div>└─ <span>services/api.ts</span> <small>— 백엔드 API 호출 모음</small></div>
+            <div><span>.github/workflows/deploy.yml</span> <small>— main 자동 배포</small></div>
+            <div><span>backend/tests/</span> <small>— 상담·취업·포맷·홈페이지 파서 테스트</small></div>
+            <div><span>scripts/</span> <small>— RAG 평가·진단 도구</small></div>
+          </div>
+
+          <h3>현재 DB 핵심 테이블</h3>
+          <div class="pill-row">
+            <span class="pill">admin_users</span><span class="pill">app_settings</span><span class="pill">chat_sessions</span><span class="pill">chat_messages</span><span class="pill">chat_logs</span><span class="pill">documents</span><span class="pill">chunks</span><span class="pill">faqs</span><span class="pill">prompt_configs</span><span class="pill">cancel_requests</span><span class="pill">processing_logs</span><span class="pill">admin_audit_logs</span><span class="pill">custom_tables</span><span class="pill">custom_columns</span><span class="pill">cdata_{id}</span>
+          </div>
+
+          <div class="callout"><p><strong>스키마 적용:</strong> 백엔드 import 시 SQLAlchemy 테이블 생성과 <code>migrate_database(engine)</code>가 실행됩니다. 별도의 일반 마이그레이션 도구를 사용하는 구조는 아니므로, 스키마 변경 전에는 migration 코드와 운영 DB 백업을 함께 검토합니다.</p></div>
+        </section>

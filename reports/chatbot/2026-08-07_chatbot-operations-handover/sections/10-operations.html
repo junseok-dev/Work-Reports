@@ -1,0 +1,64 @@
+<section id="operations">
+          <div class="section-head">
+            <div class="section-no">10 / 15</div>
+            <div><h2>정기 운영·비용</h2><p class="section-summary">자동화된 작업과 사람이 확인해야 하는 작업을 구분하고, 실제 사용량을 기준으로 운영 예산을 추정합니다.</p></div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>주기</th><th>확인 항목</th><th>정상 기준</th><th>담당</th></tr></thead>
+              <tbody>
+                <tr><td>상시 / 자동</td><td>공식 홈페이지 만료 확인(매시간), 실제 수집(마지막 성공 후 24시간)</td><td>실패 시 기존 정상 스냅샷 유지</td><td>백엔드 작업</td></tr>
+                <tr><td>매일 권장</td><td><code>/health</code>, 대표 질문 1~3개, 상담 연결 버튼, 관리자 로그인</td><td>200 응답·정상 답변·버튼 노출·로그인 성공</td><td><span class="editable" contenteditable="true">[운영 담당]</span></td></tr>
+                <tr><td>주 1회 권장</td><td>오류·fallback·handoff 로그, 홈페이지 동기화 상태, OpenAI 사용량</td><td>반복 오류 없음·최신 스냅샷·예산 범위</td><td><span class="editable" contenteditable="true">[운영 담당]</span></td></tr>
+                <tr><td>콘텐츠 변경 시</td><td>문서/FAQ 반영, FAISS 상태, 대표 회귀 질문</td><td>새 정보가 검색되고 기존 핵심 질문이 유지됨</td><td><span class="editable" contenteditable="true">[콘텐츠 담당]</span></td></tr>
+                <tr><td>월 1회 권장</td><td>AWS·OpenAI·LangSmith 비용, RDS/S3 백업·보존, 관리자 권한</td><td>이상 비용 없음·복구 가능·불필요 권한 제거</td><td><span class="editable" contenteditable="true">[서비스 책임자]</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>운영 비용 추정</h3>
+          <p class="subtle">출처: <a href="https://docs.google.com/spreadsheets/d/1okPr_oRm0jVO9sCYfugGN1asmjtna0zH8wx4v35WrIs/edit?gid=0#gid=0" target="_blank" rel="noopener"><u>AWS 계정별 사용 금액 현황</u></a> · 조회 기준 2026. 08. 07.</p>
+
+          <div class="grid-4" style="margin-top:14px">
+            <div class="metric"><b>약 5,023원</b><span>AWS 일평균 · 6~7월 61일</span></div>
+            <div class="metric"><b>약 153,187원</b><span>AWS 월평균 · 완료 월 2개월</span></div>
+            <div class="metric"><b>약 1,838,244원</b><span>AWS 연간 예상 · 월평균 × 12</span></div>
+            <div class="metric"><b>약 184,000원</b><span>AWS 월 예산안 · 변동 여유 20%</span></div>
+          </div>
+
+          <div class="table-wrap" style="margin-top:16px">
+            <table>
+              <thead><tr><th>기간</th><th>5반 30번 AWS 비용</th><th>일평균</th><th>계산상태</th></tr></thead>
+              <tbody>
+                <tr><td>2026년 6월</td><td>153,130원</td><td>5,104원</td><td><span class="tag auto">완료 월</span> 30일</td></tr>
+                <tr><td>2026년 7월</td><td>153,244원</td><td>4,943원</td><td><span class="tag auto">완료 월</span> 31일</td></tr>
+                <tr><td>2026년 8월 1~6일</td><td>26,230원</td><td>4,372원</td><td><span class="tag manual">부분 집계</span> 예측 기준에서 제외</td></tr>
+                <tr><td>관측 합계</td><td>332,604원</td><td>—</td><td>6월 1일~8월 6일</td></tr>
+                <tr><td>예측 기준</td><td>306,374원</td><td>5,023원</td><td>완료된 6~7월 61일만 사용</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid-2" style="margin-top:16px">
+            <div class="card soft">
+              <h4>OpenAI API 별도 예상</h4>
+              <p>잔액 충전 직후인 6월 11일 <strong>$32.85</strong>에서 8월 6일 <strong>$24.02</strong>로 감소했습니다. 중간 추가 충전이 없었다는 전제에서 56일간 <strong>$8.83</strong> 사용, 일평균 약 <strong>$0.16</strong>, 월 약 <strong>$4.80</strong>, 연 약 <strong>$57.55</strong>로 추정됩니다.</p>
+            </div>
+            <div class="card soft">
+              <h4>총비용 계산식</h4>
+              <p><strong>월:</strong> 153,187원 + $4.80 × 적용 환율<br /><strong>연:</strong> 1,838,244원 + $57.55 × 적용 환율<br />예: 1달러=1,400원 가정 시 약 <strong>159,907원/월</strong>, <strong>1,918,814원/년</strong>입니다.</p>
+            </div>
+          </div>
+
+          <div class="callout warning"><p><strong>산정 범위:</strong> AWS 예상액은 스프레드시트의 <code>249173798473 (5반 30번)</code> 계정 전체 비용입니다. 같은 계정에서 챗봇 외 자원을 사용하면 그 비용도 포함됩니다. 8월 6일 값은 2,491원, 8월 7일은 0원으로 집계 지연 가능성이 있어 안정적인 예측에는 완료된 6·7월만 사용했습니다. OpenAI는 잔액 감소를 이용한 참고 추정이며 실제 청구서와 충전 이력으로 월말 확정해야 합니다.</p></div>
+
+          <h3>변경 작업의 안전한 순서</h3>
+          <div class="timeline">
+            <div class="timeline-item"><b>1. 변경 목적과 기준 답변 고정</b><p>무엇을 바꾸고 어떤 질문에서 어떤 답을 기대하는지 먼저 기록합니다.</p></div>
+            <div class="timeline-item"><b>2. 관리자 설정으로 해결 가능한지 판단</b><p>콘텐츠·FAQ·프롬프트·모델은 코드 배포 없이 조정할 수 있습니다.</p></div>
+            <div class="timeline-item"><b>3. 개발 환경에서 검증</b><p>자동 테스트, 프론트 빌드, 정상·경계·범위 밖 질문을 확인합니다.</p></div>
+            <div class="timeline-item"><b>4. main 반영 및 자동 배포 확인</b><p>runner 성공, 서비스 재시작, health와 실제 화면을 확인합니다.</p></div>
+            <div class="timeline-item"><b>5. 운영 로그 관찰 및 복구 판단</b><p>fallback·오류 증가 여부를 확인하고 문제 시 직전 정상 커밋으로 되돌릴 준비를 합니다.</p></div>
+          </div>
+        </section>

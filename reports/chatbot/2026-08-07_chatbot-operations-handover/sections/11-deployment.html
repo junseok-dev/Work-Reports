@@ -1,0 +1,56 @@
+<section id="deployment">
+          <div class="section-head">
+            <div class="section-no">11 / 15</div>
+            <div><h2>개발·서버 담당자용: 배포와 로컬 실행</h2><p class="section-summary">소스 코드 변경을 운영 서비스에 반영하는 방법과 개인 PC에서 개발 환경을 실행하는 방법입니다. 콘텐츠·상담 담당자는 구조만 참고하면 됩니다.</p></div>
+          </div>
+
+          <div class="callout"><p><strong>운영 담당자 확인 범위:</strong> 배포가 완료되면 사용자 챗봇, 관리자 로그인, 대표 질문과 상담 연결 버튼이 정상인지 확인합니다. 아래 명령과 서버 작업은 개발·서버 담당자가 수행합니다.</p></div>
+
+          <h3>코드 변경이 운영에 반영되는 순서</h3>
+          <div class="flow">
+            <div class="flow-step"><b>01 PUSH</b><span>GitHub <code>main</code> 반영</span></div>
+            <div class="flow-step"><b>02 SYNC</b><span>EC2 작업 폴더를 origin/main과 일치</span></div>
+            <div class="flow-step"><b>03 ENV</b><span>Secrets로 <code>backend/.env</code> 생성</span></div>
+            <div class="flow-step"><b>04 INSTALL</b><span>Python·Node 의존성 설치</span></div>
+            <div class="flow-step"><b>05 BUILD</b><span>TypeScript + Vite 빌드</span></div>
+            <div class="flow-step"><b>06 RESTART</b><span><code>chatbot.service</code> 재시작</span></div>
+            <div class="flow-step"><b>07 VERIFY</b><span>health·채팅·관리자 점검</span></div>
+          </div>
+
+          <div class="callout danger"><p><strong>배포 특성:</strong> workflow가 EC2 작업 폴더에서 <code>git reset --hard origin/main</code>을 실행합니다. 서버에서 직접 수정한 파일은 다음 배포 때 사라집니다. 모든 영구 변경은 레포에 커밋하고, 운영 비밀값은 GitHub Secrets에서 관리합니다.</p></div>
+
+          <h3>로컬 최초 실행</h3>
+          <div class="grid-2">
+            <div>
+              <h4>백엔드 · 포트 8888</h4>
+              <pre>cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+python -m uvicorn app.main:app --reload --port 8888 --host 0.0.0.0</pre>
+            </div>
+            <div>
+              <h4>프론트엔드 · 포트 5173</h4>
+              <pre>cd frontend
+npm install
+copy .env.example .env
+npm run dev</pre>
+            </div>
+          </div>
+          <p class="subtle" style="margin-top:12px">Windows에서는 루트의 <code>start_servers.ps1</code> 또는 <code>start_servers.bat</code>로 두 서버를 한 번에 시작할 수 있습니다. Vite는 로컬의 <code>/api</code> 요청을 <code>localhost:8888</code>로 프록시합니다.</p>
+
+          <h3>검증 명령</h3>
+          <pre># 백엔드 테스트
+cd backend
+python -m unittest discover -s tests -p "test_*.py" -v
+
+# 프론트엔드 타입 검사 + 프로덕션 빌드
+cd frontend
+npm run build
+
+# 서비스 생존 확인
+GET /health  →  {"status":"healthy"}</pre>
+
+          <div class="callout warning"><p><strong>환경 차이:</strong> <code>backend/.env.example</code>은 로컬 SQLite 예시와 일부 기본값을 담고 있고, 운영 workflow는 Aurora RDS와 <code>gpt-5.4-mini</code>를 주입합니다. 새 담당자는 예제 파일을 운영값으로 오해하지 말고 GitHub Secrets와 RDS의 활성 모델 설정을 기준으로 확인해야 합니다.</p></div>
+        </section>

@@ -1,0 +1,76 @@
+<section id="usage-analysis">
+          <div class="section-head">
+            <div class="section-no">03 / 15</div>
+            <div><h2>누적 이용 현황과 상담 분석</h2><p class="section-summary">관리자 대화 로그 전체 내보내기 파일을 기준으로, 사용 규모와 답변 방식·상담 연결 현황을 집계했습니다.</p></div>
+          </div>
+
+          <div class="callout"><p><strong>집계 기준:</strong> 2026. 05. 14. ~ 2026. 08. 07. (한국시간), 총 86일입니다. 시스템은 단순 페이지 조회를 기록하지 않으므로 아래 ‘이용 세션’은 <strong>메시지를 한 번 이상 보낸 고유 대화 세션</strong>입니다. 동일 사용자가 새 대화를 만들면 여러 세션으로 계산될 수 있습니다.</p></div>
+
+          <div class="grid-4">
+            <div class="analysis-metric"><b>362</b><span>누적 대화 참여 세션</span><small>전체 방문자 대신 사용하는 운영 지표</small></div>
+            <div class="analysis-metric"><b>1,440</b><span>누적 질문·답변 건수</span><small>질문 1건당 처리 로그 1건 기준</small></div>
+            <div class="analysis-metric"><b>4.0건</b><span>세션당 평균 질문 수</span><small>1,440건 ÷ 362세션</small></div>
+            <div class="analysis-metric"><b>64일</b><span>실제 이용이 있었던 날</span><small>86일 중 22일은 대화 기록 없음</small></div>
+          </div>
+
+          <h3>최종 답변 방식별 이용량</h3>
+          <p class="analysis-note">FAQ와 LLM 수치는 실제 API 호출 횟수가 아니라 사용자에게 전달된 <strong>최종 답변의 주 처리 방식</strong>입니다.</p>
+          <div class="bar-list" aria-label="답변 방식별 이용량">
+            <div class="bar-row"><label>FAQ 답변</label><div class="bar-track"><div class="bar-fill" style="width:47.99%"></div></div><output>691건 · 48.0%</output></div>
+            <div class="bar-row"><label>문서·LLM 답변</label><div class="bar-track"><div class="bar-fill violet" style="width:38.61%"></div></div><output>556건 · 38.6%</output></div>
+            <div class="bar-row"><label>상담 직원 연결</label><div class="bar-track"><div class="bar-fill amber" style="width:10.35%"></div></div><output>149건 · 10.3%</output></div>
+            <div class="bar-row"><label>대체 안내</label><div class="bar-track"><div class="bar-fill slate" style="width:2.71%"></div></div><output>39건 · 2.7%</output></div>
+            <div class="bar-row"><label>안전 차단</label><div class="bar-track"><div class="bar-fill red" style="width:.35%"></div></div><output>5건 · 0.3%</output></div>
+          </div>
+
+          <div class="grid-2" style="margin-top:20px">
+            <div class="card soft"><h4>FAQ 처리 691건</h4><p>전체 대화의 48.0%가 관리자에 등록된 FAQ 경로로 처리되었습니다. 여기서 691건은 <strong>FAQ가 답변에 사용된 횟수</strong>이며, 등록된 FAQ 항목 개수와는 다른 지표입니다.</p></div>
+            <div class="card soft"><h4>문서·LLM 처리 556건</h4><p>문서 검색 기반 답변 543건과 일반 AI 답변 13건을 합산했습니다. FAQ 답변 재서술과 질문 분류 과정에서도 AI가 호출될 수 있으므로 실제 OpenAI 호출 횟수는 이 수치보다 많을 수 있습니다.</p></div>
+          </div>
+
+          <h3>일별·월별 평균</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>지표</th><th>누적</th><th>전체 기간 일평균<br /><small>86일 기준</small></th><th>이용 발생일 평균<br /><small>64일 기준</small></th><th>완료 월 평균<br /><small>6·7월 기준</small></th></tr></thead>
+              <tbody>
+                <tr><td>대화 참여 세션</td><td>362</td><td>4.2</td><td>5.7</td><td>116.0</td></tr>
+                <tr><td>질문·답변</td><td>1,440</td><td>16.7</td><td>22.5</td><td>450.5</td></tr>
+                <tr><td>FAQ 답변</td><td>691</td><td>8.0</td><td>10.8</td><td>209.5</td></tr>
+                <tr><td>문서·LLM 답변</td><td>556</td><td>6.5</td><td>8.7</td><td>194.5</td></tr>
+                <tr><td>상담 직원 연결 안내</td><td>149</td><td>1.7</td><td>2.3</td><td>36.5</td></tr>
+                <tr><td>취소·환불·일정 변경 연결</td><td>41</td><td>0.5</td><td>0.6</td><td>9.5</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>월별 이용 추이</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>기간</th><th>대화 세션</th><th>질문·답변</th><th>FAQ</th><th>문서·LLM</th><th>상담 연결</th><th>취소 연결</th><th>비고</th></tr></thead>
+              <tbody>
+                <tr><td>2026년 5월</td><td>115</td><td>503</td><td>251</td><td>153</td><td>75</td><td>22</td><td><span class="tag manual">부분 월</span> 5/14 시작</td></tr>
+                <tr><td>2026년 6월</td><td>149</td><td>554</td><td>294</td><td>197</td><td>45</td><td>9</td><td><span class="tag auto">완료 월</span></td></tr>
+                <tr><td>2026년 7월</td><td>83</td><td>347</td><td>125</td><td>192</td><td>28</td><td>10</td><td><span class="tag auto">완료 월</span></td></tr>
+                <tr><td>2026년 8월</td><td>15</td><td>36</td><td>21</td><td>14</td><td>1</td><td>0</td><td><span class="tag manual">부분 월</span> 8/7까지</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>상담 직원 연결 분석</h3>
+          <div class="grid-4">
+            <div class="metric"><b>149건</b><span>상담 연결 응답 전체</span></div>
+            <div class="metric"><b>41건</b><span>취소·환불·일정 변경</span></div>
+            <div class="metric"><b>108건</b><span>그 외 상담 연결·제안</span></div>
+            <div class="metric"><b>22건</b><span>챗봇의 선제적 상담 제안</span></div>
+          </div>
+          <p class="analysis-note" style="margin-top:10px">상담 연결 149건은 연결 버튼이 표시된 응답 수입니다. 이 중 취소·환불·일정 변경 안내 문구가 확인된 건은 41건입니다. 현재 로그에는 버튼 클릭이나 실제 상담 시작 여부가 없어 <strong>실제 상담 전환율</strong>은 계산할 수 없습니다.</p>
+
+          <h3>해석 및 운영 시사점</h3>
+          <div class="grid-3">
+            <div class="card"><h4>자동 답변 비중 86.6%</h4><p>FAQ 48.0%와 문서·LLM 38.6%를 합하면 전체의 86.6%가 정보 제공 답변으로 처리되었습니다.</p></div>
+            <div class="card"><h4>7월 답변 구성 변화</h4><p>6월 대비 7월 전체 대화는 감소했지만 문서·LLM 답변은 197건에서 192건으로 유사했습니다. 반면 FAQ는 294건에서 125건으로 감소해 상세 질문의 상대 비중이 높아졌습니다.</p></div>
+            <div class="card"><h4>오류는 초기 기간에 집중</h4><p>실패 상태는 전체 17건(1.2%)이며 모두 5월 기록입니다. 6월 이후 내보내기 데이터에는 실패 상태가 없습니다.</p></div>
+          </div>
+
+          <div class="callout warning"><p><strong>통계 해석 시 주의:</strong> 첫 기록일인 5월 14일에는 194건, 6월 2일에는 125건의 대화가 집중되어 있습니다. 로그에 실제 사용자·내부 테스트 구분값이 없어 테스트 대화가 포함되었을 가능성을 제거할 수 없습니다. 따라서 외부 방문 성과를 보고할 때는 ‘사용자 수’가 아니라 ‘고유 대화 세션 수’로 표현하는 것이 안전합니다.</p></div>
+        </section>

@@ -1,0 +1,47 @@
+<section id="knowledge">
+          <div class="section-head">
+            <div class="section-no">07 / 15</div>
+            <div><h2>챗봇이 참고하는 정보</h2><p class="section-summary">챗봇 답변은 크게 회사 문서, 자주 묻는 질문, 공식 홈페이지의 최신 일정, 답변 작성 규칙으로 만들어집니다.</p></div>
+          </div>
+
+          <div class="beginner-box">
+            <h3>콘텐츠 변경 기준</h3>
+            <p><strong>대부분 관리자 페이지에서 수정할 수 있습니다.</strong> 과정 설명이나 규정은 문서를, 반복 질문은 FAQ를, 말투와 안내 문구는 프롬프트를 수정합니다. 화면 모양이나 판단 방식 자체를 바꿀 때만 개발자가 필요합니다.</p>
+          </div>
+
+          <h3>네 가지 정보가 하는 일</h3>
+          <div class="grid-2">
+            <div class="card soft"><h4>① 승인된 회사 문서</h4><p>커리큘럼, 과정 설명, 운영 규정처럼 자세한 내용을 알려주는 기본 자료입니다. 파일을 올린 뒤 관리자가 <strong>승인</strong>해야 실제 답변에 사용됩니다.</p></div>
+            <div class="card soft"><h4>② 공식 홈페이지 최신 정보</h4><p>모집 기수, 개강일, 시간, 장소, 비용처럼 자주 바뀌는 정보를 하루 한 번 확인합니다. 일정이 문서와 다르면 최신 홈페이지 정보를 우선합니다.</p></div>
+            <div class="card soft"><h4>③ 자주 묻는 질문(FAQ)</h4><p>반복되는 질문에 빠르게 답하기 위한 질문·답변 목록입니다. 관리자가 직접 추가하거나 수정할 수 있습니다.</p></div>
+            <div class="card soft"><h4>④ 답변 작성 규칙</h4><p>친절한 말투, 답변 가능한 범위, 사람 상담으로 넘기는 기준을 정합니다. 관리자 화면에서는 이를 ‘프롬프트’라고 표시합니다.</p></div>
+          </div>
+
+          <h3>새 문서가 답변에 반영되는 순서</h3>
+          <div class="flow">
+            <div class="flow-step"><b>01 파일 올리기</b><span>관리자가 MD 또는 PDF 문서를 올립니다.</span></div>
+            <div class="flow-step"><b>02 내용 나누기</b><span>검색하기 좋은 작은 단위로 자동 정리합니다.</span></div>
+            <div class="flow-step"><b>03 검색 준비</b><span>질문과 관련된 부분을 찾을 수 있게 처리합니다.</span></div>
+            <div class="flow-step"><b>04 내용 검토</b><span>아직 사용자에게 보이지 않는 대기 상태입니다.</span></div>
+            <div class="flow-step"><b>05 승인하기</b><span>관리자가 확인한 문서만 사용하도록 승인합니다.</span></div>
+            <div class="flow-step"><b>06 검색 목록 갱신</b><span>변경된 내용을 챗봇 검색에 반영합니다.</span></div>
+            <div class="flow-step"><b>07 백업하기</b><span>검색 파일을 온라인 저장소에도 보관합니다.</span></div>
+          </div>
+
+          <div class="callout danger">
+            <p><strong>운영 주의사항:</strong> 문서를 업로드한 뒤 승인하지 않거나 검색 목록을 갱신하지 않으면 새 내용이 답변에 반영되지 않을 수 있습니다. 변경 후에는 실제 질문을 입력해 반영 여부를 확인합니다.</p>
+          </div>
+
+          <h3>주요 데이터 저장 위치</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>저장소</th><th>내용</th><th>운영 포인트</th></tr></thead>
+              <tbody>
+                <tr><td>Aurora RDS</td><td>대화 세션·메시지·로그, 문서 메타·청크, FAQ, 프롬프트, 앱 설정, 관리자·감사 로그, 사용자 정의 테이블</td><td>운영 데이터의 기준. DB 연결과 백업 정책 인계 필수</td></tr>
+                <tr><td>EC2 로컬</td><td><code>data/faiss_index/</code> 검색 캐시, 프론트 빌드 결과</td><td>인스턴스 교체 시 사라질 수 있으므로 영구본으로 간주하지 않음</td></tr>
+                <tr><td>AWS S3</td><td><code>document-chatbot/faiss/</code>, 문서별 MD·청크·임베딩 산출물</td><td>FAISS 복구와 문서 산출물 영구 보관</td></tr>
+                <tr><td>app_settings</td><td>활성 생성 모델, 홈페이지 최신 스냅샷·동기화 상태</td><td>환경변수만 보고 현재 모델을 판단하면 안 됨</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
