@@ -7,7 +7,11 @@ LMS, 챗봇 등 프로젝트 작업 결과를 팀원에게 공유하기 위한 �
 ## 배포 주소
 
 - 보고서 목록: <https://junseok-dev.github.io/Work-Reports/>
-- 첫 보고서: [LMS-AI 수강역량증명서 실데이터 흐름 및 필요 데이터](https://junseok-dev.github.io/Work-Reports/reports/lms/2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/)
+
+### 현재 배포 보고서
+
+- LMS: [LMS-AI 수강역량증명서 실데이터 흐름 및 필요 데이터](https://junseok-dev.github.io/Work-Reports/reports/lms/2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/)
+- 챗봇: [엔코아 AI 캠퍼스 상담 챗봇 — 서비스 구조 및 운영 현황](https://junseok-dev.github.io/Work-Reports/reports/chatbot/2026-08-09_chatbot-service-report/)
 
 > 최초 배포 전에는 GitHub 저장소의 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 선택해야 합니다.
 
@@ -32,7 +36,10 @@ Work-Reports/
 │  │     │  ├─ 00-shell.html         문서 head·header·footer
 │  │     │  └─ 01-*.html             번호 순서대로 조립할 본문
 │  │     └─ index.html               build.py 생성 결과
-│  └─ chatbot/                       챗봇 보고서 추가 위치
+│  └─ chatbot/
+│     └─ 2026-08-09_chatbot-service-report/
+│        ├─ sections/                챗봇 공식 보고서 원본 조각
+│        └─ index.html               build.py 생성 결과
 ├─ tools/import_report.py            기존 단일 HTML을 sections로 변환
 ├─ build.py                          보고서 조립 및 dist 생성
 ├─ index.html                        전체 보고서 목록
@@ -65,7 +72,7 @@ python build.py "reports/lms/2026-08-07_lms-ai_수강역량증명서_실데이�
 ```powershell
 python tools/import_report.py `
   "C:\path\to\report.html" `
-  "reports/lms/2026-08-07_report-name"
+  "reports/<프로젝트>/<보고서>"
 
 python build.py
 ```
