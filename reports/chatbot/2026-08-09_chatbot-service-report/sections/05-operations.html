@@ -61,6 +61,87 @@
           </article>
         </div>
 
+        <h3>호스팅·외부 연결 현황</h3>
+        <div class="table-wrap">
+          <table>
+            <caption>현재 서비스별 역할과 설정 위치</caption>
+            <thead><tr><th>영역</th><th>현재 현황</th><th>설정이 있는 곳</th><th>바뀌면 영향받는 부분</th></tr></thead>
+            <tbody>
+              <tr><td>메인 홈페이지</td><td><a href="https://encorecampus.ai/" target="_blank" rel="noopener"><code>encorecampus.ai</code></a>. 공개 페이지 하단에 호스팅 제공자 <strong>(주)아임웹</strong>으로 표시됩니다.</td><td>아임웹 관리자·디자인 모드·도메인 설정. 이 저장소에는 아임웹 위젯 코드가 없습니다.</td><td>챗봇 진입 링크, 과정 상세·신청 URL, 홈페이지 자동 수집, 답변 내 공식 링크</td></tr>
+              <tr><td>챗봇 웹·API</td><td><code>chatbot.encorecampus.ai</code>. React 빌드 결과와 FastAPI <code>/api</code>를 AWS EC2에서 같은 서비스로 제공합니다.</td><td>개인 GitHub 저장소, EC2 작업 폴더, <code>chatbot.service</code>, port 8888, EC2 앞단의 DNS·HTTPS 설정</td><td>사용자·관리자 화면, API, CORS, Google OAuth origin, 배포 runner</td></tr>
+              <tr><td>아임웹의 챗봇 연결</td><td>메인 사이트에서 외부 챗봇으로 진입하는 구조이지만 링크·버튼·코드 위젯·iframe 중 실제 방식은 저장소에서 확인되지 않습니다.</td><td>아임웹 디자인 모드의 전체 메뉴·버튼 링크·코드 위젯을 검색하고 현재 설정 화면을 캡처해야 합니다.</td><td>챗봇 URL 변경 시 누락된 위젯 하나라도 남으면 사용자가 이전 주소로 이동합니다.</td></tr>
+              <tr><td>상담 연결</td><td>채널톡은 호스팅이 아니라 챗봇의 “상담 매니저 연결하기” 버튼이 여는 외부 URL입니다.</td><td>GitHub Secret <code>CHANNEL_TALK_URL</code> → 배포 시 <code>backend/.env</code> → API의 <code>handoff_url</code></td><td>채널·워크스페이스·상담 URL이 바뀌면 Secret 교체와 재배포 후 버튼 시험 필요</td></tr>
+              <tr><td>영구 데이터</td><td>Aurora RDS는 대화·관리 데이터, S3는 원문·FAQ·FAISS를 저장합니다.</td><td><code>DATABASE_URL</code>, AWS IAM/Role, <code>AWS_S3_BUCKET</code>, prefix <code>document-chatbot</code></td><td>AWS 계정·region·DB·bucket 변경 시 데이터 복사, 권한, 연결 문자열과 재색인</td></tr>
+              <tr><td>배포</td><td>GitHub <code>main</code> push를 EC2 self-hosted runner가 받아 빌드·재시작합니다.</td><td>GitHub Actions, Repository Secrets, EC2 runner 서비스</td><td>저장소 소유자·EC2·AWS 계정 변경 시 runner online 여부와 작업경로·remote 재확인</td></tr>
+              <tr><td>외부 API</td><td>OpenAI는 답변·임베딩, Google은 관리자 로그인, LangSmith는 trace를 담당합니다.</td><td>각 서비스 관리자 화면과 GitHub Secrets</td><td>도메인·Project·담당자 변경 시 origin·권한·키·결제와 사용량 조회권한 재설정</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warning">
+          <p><strong>아직 외부에서 확인해야 하는 항목:</strong> 챗봇 subdomain의 DNS 제공자·record 대상, HTTPS 인증서 발급·갱신 방식, EC2 앞단의 Nginx/ALB/CloudFront 여부, 고정 IP 여부와 아임웹 내부 챗봇 삽입 위치는 저장소에 설정 파일이 없습니다. 이 값은 이관 전에 AWS·DNS·아임웹 관리자 화면에서 캡처하고 자산대장에 실제 값과 소유자를 기록해야 합니다.</p>
+        </div>
+
+        <h3>URL이 바뀔 때 변경해야 하는 곳</h3>
+        <div class="table-wrap">
+          <table>
+            <caption>변경 종류별 설정 영향도</caption>
+            <thead><tr><th>변경</th><th>반드시 수정</th><th>검증</th></tr></thead>
+            <tbody>
+              <tr><td>챗봇 주소 변경<br><code>chatbot.encorecampus.ai</code> → 새 주소</td><td>새 DNS·HTTPS 인증서, 아임웹의 모든 챗봇 링크/위젯, Google OAuth Authorized JavaScript origins, 백엔드 <code>allow_origins</code>. 별도 frontend hosting으로 분리하면 <code>API_BASE_URL</code>과 API CORS도 수정합니다.</td><td>새 주소의 사용자 화면·<code>/api</code>·Google 관리자 로그인·상담 버튼·모바일, 이전 주소의 redirect 또는 종료 안내</td></tr>
+              <tr><td>메인 홈페이지 주소 변경<br><code>encorecampus.ai</code> → 새 주소</td><td><code>HOMEPAGE_URL</code>뿐 아니라 현재 코드에 고정된 과정·신청·소개 URL도 변경합니다. 대상은 <code>website_course_service.py</code>, <code>response_formatter.py</code>, <code>ChatPage.tsx</code>, 프론트 FAQ와 테스트입니다.</td><td>홈페이지 일일 수집, 과정별 링크, UTM 파라미터, 신청 페이지, 답변의 공식 홈페이지 링크를 전수 검사</td></tr>
+              <tr><td>채널톡 URL 변경</td><td>GitHub Actions Secret <code>CHANNEL_TALK_URL</code>을 새 URL로 갱신하고 재배포합니다.</td><td>취소·환불·상담 요청 질문에서 버튼이 표시되고 새 채널이 별도 탭으로 열리는지 확인</td></tr>
+              <tr><td>Google OAuth Project·client 변경</td><td>Google Cloud Web client에 새 origin을 등록하고 <code>VITE_GOOGLE_CLIENT_ID</code>를 교체합니다. 프론트와 백엔드가 같은 client ID를 사용해야 합니다.</td><td>신규 관리자와 기존 관리자의 로그인, 잘못된 origin 차단, 배포 후 브라우저 console 오류 확인</td></tr>
+              <tr><td>DNS·HTTPS 관리주체 변경</td><td>도메인 등록자·DNS zone·record·TTL·인증서 갱신주체·만료 알림 수신자를 새 담당자로 넘깁니다.</td><td>HTTP→HTTPS, 인증서 체인·만료일, apex와 subdomain, DNS 전파 중 구주소·신주소 동시 접속</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          <p><strong>아임웹 변경 순서:</strong> 관리자·결제 권한 인계 → 현재 메뉴·버튼·코드 위젯에서 <code>chatbot.encorecampus.ai</code> 전체 검색 → 변경 전 화면·코드 백업 → 새 HTTPS 주소로 교체 → 디자인 모드 게시 → PC·모바일에서 클릭 및 새 창/iframe 동작 확인 순서입니다. <a href="https://imweb.me/qna?mode=faq&amp;q=329" target="_blank" rel="noopener">아임웹 코드 위젯</a>은 외부 모듈·HTML·JS를 담을 수 있으므로 URL 문자열뿐 아니라 iframe <code>src</code>와 스크립트 설정도 함께 검색합니다.</p>
+        </div>
+
+        <h3>AWS 계정이 바뀔 때</h3>
+        <p>AWS 계정은 저장소처럼 소유권 버튼 하나로 이전되지 않습니다. 새 계정에 인프라를 만들고 데이터를 복사한 뒤 트래픽을 전환하는 <strong>병행 구축 방식</strong>이 가장 안전합니다. 가능하면 AWS 계정 이전과 도메인 변경을 같은 날 동시에 하지 않고, 새 인프라를 기존 주소로 먼저 검증한 다음 주소를 변경합니다.</p>
+
+        <div class="table-wrap">
+          <table>
+            <caption>AWS 계정 이전 시 자원별 작업</caption>
+            <thead><tr><th>자원</th><th>새 계정에서 할 일</th><th>전환 시 주의사항</th></tr></thead>
+            <tbody>
+              <tr><td>IAM·결제</td><td>회사 소유 계정, MFA·관리자, 비용 알림과 n·Xavis 연동 여부를 먼저 준비하고 EC2에는 S3 최소 권한 IAM Role을 부여합니다.</td><td>root·개인 장기 Access Key로 운영하지 않습니다. 새 계정번호와 비용 조회 경로를 보고서에 갱신합니다.</td></tr>
+              <tr><td>네트워크</td><td>VPC·subnet·route·security group, 고정 IP 또는 load balancer와 HTTPS 종단을 재구성합니다.</td><td>RDS는 앱에서만, SSH는 승인된 경로에서만 접근하도록 하고 새 public endpoint를 DNS 전환 전에 시험합니다.</td></tr>
+              <tr><td>EC2</td><td>AMI 공유/복사 또는 새 서버 구축 후 Python·Node·systemd·작업폴더와 self-hosted runner를 설치합니다.</td><td>새 PEM/SSM 접속, <code>chatbot.service</code>, runner online, 디스크 경로·권한을 검증합니다. 기존 PEM은 새 계정 자원에 자동 승계되지 않습니다.</td></tr>
+              <tr><td>RDS</td><td>이관 직전 manual snapshot을 만들고 새 계정에 공유·복사·복원하거나 승인된 DB migration을 수행합니다.</td><td><a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html" target="_blank" rel="noopener">암호화 snapshot 공유</a>에는 KMS 공유·복사가 필요하며 AWS 관리형 키로 암호화된 snapshot은 그대로 공유할 수 없는 제한이 있습니다. 새 endpoint로 <code>DATABASE_URL</code>을 교체합니다.</td></tr>
+              <tr><td>S3</td><td>새 bucket에 <code>document-chatbot</code> 전체 객체를 <a href="https://docs.aws.amazon.com/en_us/prescriptive-guidance/latest/patterns/copy-data-from-an-s3-bucket-to-another-account-and-region-by-using-the-aws-cli.html" target="_blank" rel="noopener">cross-account copy/sync</a>하고 destination bucket 소유권·암호화·versioning을 설정합니다.</td><td>객체 수·용량·checksum 또는 표본을 대조하고 새 계정이 객체 소유권을 갖는지 확인합니다. <code>AWS_S3_BUCKET</code>을 교체합니다.</td></tr>
+              <tr><td>비밀정보</td><td><code>ENCRYPTION_KEY</code>는 정확히 유지하고 새 RDS·S3·AWS 자격정보를 GitHub Secrets에 등록합니다.</td><td>최소 변경 대상은 <code>DATABASE_URL</code>, <code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code>, <code>AWS_S3_BUCKET</code>입니다. IAM Role 적용 후에는 장기 AWS 키 제거를 검토합니다.</td></tr>
+              <tr><td>검색 인덱스</td><td>S3의 기존 FAISS를 복사하되 새 환경에서 승인 문서 전체 재인덱싱을 1회 수행합니다.</td><td>RDS 문서 상태, S3 원문과 EC2 인덱스가 같은 시점인지 확인하고 대표·회귀 질문을 실행합니다.</td></tr>
+              <tr><td>DNS·배포</td><td>새 EC2 runner 배포가 성공한 뒤 DNS를 새 endpoint로 전환하고 TTL 동안 양쪽을 관찰합니다.</td><td>기존 AWS 계정과 서버는 즉시 삭제하지 말고 합의한 안정화 기간 뒤 백업·로그를 확인하고 종료합니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>설정 전체가 바뀌는 경우의 권장 순서</h3>
+        <div class="flow" aria-label="호스팅 전체 전환 순서">
+          <div class="flow-step"><b>01</b><span>현행 화면·계정·URL 자산대장</span></div>
+          <div class="flow-step"><b>02</b><span>새 AWS·도메인 병행 구축</span></div>
+          <div class="flow-step"><b>03</b><span>RDS·S3·키 복사와 검증</span></div>
+          <div class="flow-step"><b>04</b><span>GitHub Secrets·runner 전환</span></div>
+          <div class="flow-step"><b>05</b><span>Google·아임웹·채널톡 변경</span></div>
+          <div class="flow-step"><b>06</b><span>DNS 전환·전체 인수 테스트</span></div>
+          <div class="flow-step"><b>07</b><span>관찰 후 구계정·키 종료</span></div>
+        </div>
+
+        <ul class="checklist">
+          <li>변경 전 현재 AWS account ID, region, resource ID, URL, 관리자와 결제 주체를 기록합니다.</li>
+          <li>새 환경은 임시 주소로 사용자·관리자·DB·S3·OpenAI·채널톡까지 먼저 검증합니다.</li>
+          <li><code>ENCRYPTION_KEY</code>와 데이터 snapshot을 확보하기 전에는 인프라를 이동하거나 키를 교체하지 않습니다.</li>
+          <li>DNS TTL을 미리 낮추고 전환 시간·담당자·중단 기준·원복 endpoint를 정합니다.</li>
+          <li>전환 후 아임웹 진입부터 실제 상담 연결까지 사용자 전체 동선을 점검합니다.</li>
+          <li>최소 안정화 기간 동안 구환경을 읽기 전용 또는 즉시 원복 가능한 상태로 유지합니다.</li>
+          <li>최종 종료 뒤 비용·DNS·인증서·GitHub·AWS·외부 서비스의 기존 권한을 정리합니다.</li>
+        </ul>
+
         <h3>데이터 로드·저장 장애 진단</h3>
         <div class="flow" aria-label="장애 진단 흐름">
           <div class="flow-step"><b>01</b><span>발생 시각·화면·작업 기록</span></div>
