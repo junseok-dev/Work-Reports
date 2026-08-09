@@ -6,12 +6,13 @@ LMS, 챗봇 등 프로젝트 작업 결과를 팀원에게 공유하기 위한 �
 
 ## 배포 주소
 
-- 보고서 목록: <https://junseok-dev.github.io/Work-Reports/>
+- 기본 공유 주소: <https://work-report-277d7.web.app/>
+- GitHub Pages 미러: <https://junseok-dev.github.io/Work-Reports/>
 
 ### 현재 배포 보고서
 
-- LMS: [LMS-AI 수강역량증명서 실데이터 흐름 및 필요 데이터](https://junseok-dev.github.io/Work-Reports/reports/lms/2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/)
-- 챗봇: [엔코아 AI 캠퍼스 상담 챗봇 — 서비스 구조 및 운영 현황](https://junseok-dev.github.io/Work-Reports/reports/chatbot/2026-08-09_chatbot-service-report/)
+- LMS: [LMS-AI 수강역량증명서 실데이터 흐름 및 필요 데이터](https://work-report-277d7.web.app/reports/lms/2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/)
+- 챗봇: [엔코아 AI 캠퍼스 상담 챗봇 — 서비스 구조 및 운영 현황](https://work-report-277d7.web.app/reports/chatbot/2026-08-09_chatbot-service-report/)
 
 > 최초 배포 전에는 GitHub 저장소의 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 선택해야 합니다.
 
@@ -27,7 +28,7 @@ LMS, 챗봇 등 프로젝트 작업 결과를 팀원에게 공유하기 위한 �
 
 ```text
 Work-Reports/
-├─ .github/workflows/pages.yml       main push 시 자동 배포
+├─ .github/workflows/pages.yml       main push 시 GitHub Pages 미러 자동 배포
 ├─ assets/                           보고서 목록용 공통 자산
 ├─ reports/
 │  ├─ lms/
@@ -42,6 +43,8 @@ Work-Reports/
 │        └─ index.html               build.py 생성 결과
 ├─ tools/import_report.py            기존 단일 HTML을 sections로 변환
 ├─ build.py                          보고서 조립 및 dist 생성
+├─ firebase.json                     dist 전용 Firebase Hosting 설정
+├─ .firebaserc                       Firebase 프로젝트 연결
 ├─ index.html                        전체 보고서 목록
 ├─ robots.txt
 └─ dist/                             배포 결과물, Git 미추적
@@ -79,7 +82,16 @@ python build.py
 
 변환기는 `<main class="content">` 안의 최상위 `<section>`을 제목 번호 순서로 나누고, 나머지 문서 구조를 `00-shell.html`에 보존합니다. 변환 후에는 루트 `index.html`에 보고서 카드를 추가합니다.
 
-## 자동 배포
+## Firebase Hosting 배포
+
+Firebase 프로젝트는 `work-report-277d7`이며, `dist/`만 공개합니다. Firebase CLI 로그인 후 다음 명령으로 배포합니다.
+
+```powershell
+python build.py
+npx --yes firebase-tools deploy --only hosting --project work-report-277d7
+```
+
+## GitHub Pages 미러 자동 배포
 
 `main`에 반영되면 `.github/workflows/pages.yml`이 다음 순서로 실행됩니다.
 
@@ -88,4 +100,4 @@ python build.py
 3. `dist/`만 GitHub Pages 아티팩트로 업로드합니다.
 4. 최신 성공 빌드를 공개 주소에 배포합니다.
 
-별도의 Firebase 프로젝트나 서비스 계정 키는 사용하지 않습니다.
+Firebase Hosting 배포 인증은 로컬 Firebase CLI 계정에만 보관하며, 인증 토큰이나 서비스 계정 키는 저장소에 커밋하지 않습니다. GitHub Pages 미러 배포는 Firebase와 독립적으로 동작합니다.
