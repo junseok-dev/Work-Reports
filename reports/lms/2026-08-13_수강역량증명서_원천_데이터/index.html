@@ -117,7 +117,7 @@
 
 <section id="project-source">
   <h2>2. 프로젝트·동료 평가·GitHub 원천 데이터</h2>
-  <p class="lead">프로젝트 ID와 사용자 식별자를 기준으로 프로젝트 수행 내용, 동료 관찰, 저장소와 커밋 기록을 연결한다.</p>
+  <p class="lead">프로젝트 맥락과 개인 수행 근거를 분리한다. 개인 분석에 사용하는 과업·본인 수행 내용·동료평가·GitHub 활동은 반드시 <code>project_id + student_uuid</code> 또는 이에 준하는 개인 귀속 키로 연결한다.</p>
   <div class="table-wrap"><table>
     <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
     <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
@@ -132,30 +132,30 @@
       <tr><td>70</td><td class="domain">프로젝트</td><td>프로젝트 상태</td><td>완료와 진행 중 프로젝트 구분</td><td><code>project_id</code></td><td>enum</td><td><code>project_status</code></td></tr>
       <tr><td>71</td><td class="domain">프로젝트</td><td>인증 상태</td><td>강사 인증 완료 프로젝트를 공식 증거로 구분</td><td><code>project_id</code></td><td>enum</td><td><code>certification_status</code></td></tr>
       <tr><td>72</td><td class="domain">프로젝트</td><td>인증 일시</td><td>공식 프로젝트 증거가 된 시점</td><td><code>project_id</code></td><td>datetime/null</td><td><code>certified_at</code></td></tr>
-      <tr><td>73</td><td class="domain">프로젝트</td><td>사용 기술</td><td>기술 경험과 온톨로지 역량 연결</td><td><code>project_id</code></td><td>text[]</td><td><code>tech_stacks</code></td></tr>
-      <tr><td>74</td><td class="domain">프로젝트 멤버</td><td>수강생 UUID</td><td>프로젝트 참여 멤버를 개인에게 연결</td><td><code>project_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>73</td><td class="domain">프로젝트 기술</td><td>기술 카테고리·기술스택</td><td>프로젝트 기술 경험과 온톨로지 기술 노드 산출</td><td><code>project_id + tech_stack</code></td><td>text</td><td><code>project_tech_stack_category, project_tech_stack</code></td></tr>
+      <tr><td>74</td><td class="domain">프로젝트 멤버</td><td>프로젝트 ID·수강생 UUID</td><td>실제 참여 프로젝트를 대상 수강생에게 연결</td><td><code>project_id + student_uuid</code></td><td>UUID/text</td><td><code>member_project_id, student_uuid</code></td></tr>
       <tr><td>75</td><td class="domain">프로젝트 멤버</td><td>맡은 역할</td><td>실제 프로젝트에서 수행한 역할 표시</td><td><code>project_id + student_uuid</code></td><td>text</td><td><code>project_role</code></td></tr>
-      <tr><td>76</td><td class="domain">프로젝트 멤버</td><td>담당 업무</td><td>실제 수행 범위와 온톨로지 입력</td><td><code>project_id + student_uuid</code></td><td>text</td><td><code>responsibility</code></td></tr>
+      <tr><td>76</td><td class="domain">프로젝트 작업</td><td>작업 ID·담당자·제목·상태</td><td>개별 작업을 담당 수강생에게 귀속하고 실제 완료 여부 확인</td><td><code>project_id + project_task_id + student_uuid</code></td><td>text/UUID/enum</td><td><code>project_task_id, task_assignee_student_uuid, project_task_title, project_task_status</code></td></tr>
       <tr><td>77</td><td class="domain">개인 기여</td><td>수행 업무 원문</td><td>본인이 작성한 업무를 AI 분석 증거로 보존</td><td><code>project_id + student_uuid</code></td><td>text</td><td><code>self_task_text</code></td></tr>
-      <tr><td>78</td><td class="domain">개인 기여</td><td>기여 정도 원문</td><td>본인이 작성한 기여 내용을 분석 증거로 보존</td><td><code>project_id + student_uuid</code></td><td>text</td><td><code>self_contribution_text</code></td></tr>
-      <tr><td>79</td><td class="domain">프로젝트 성과</td><td>성과 ID</td><td>복수 성과를 각각 구분</td><td><code>project_outcome_id</code></td><td>UUID</td><td><code>project_outcome_id</code></td></tr>
+      <tr><td>78</td><td class="domain">개인 기여</td><td>기여 원문·제출 일시</td><td>본인이 최종 제출한 기여 내용을 임시저장과 구분해 보존</td><td><code>project_id + student_uuid</code></td><td>text/datetime</td><td><code>personal_contribution_text, personal_contribution_submitted_at</code></td></tr>
+      <tr><td>79</td><td class="domain">프로젝트 성과</td><td>프로젝트 ID·성과 지표 ID</td><td>프로젝트별 복수 성과를 각각 구분</td><td><code>project_id + project_metric_id</code></td><td>UUID/text</td><td><code>metric_project_id, project_metric_id</code></td></tr>
       <tr><td>80</td><td class="domain">프로젝트 성과</td><td>성과 유형</td><td>비포·애프터 성과 종류 구분</td><td><code>project_id + project_outcome_id</code></td><td>text/code</td><td><code>outcome_type</code></td></tr>
-      <tr><td>81</td><td class="domain">프로젝트 성과</td><td>성과 설명</td><td>수치의 의미와 측정 맥락 보존</td><td><code>project_outcome_id</code></td><td>text</td><td><code>outcome_description</code></td></tr>
+      <tr><td>81</td><td class="domain">프로젝트 성과</td><td>성과 지표명</td><td>무엇을 개선했는지와 측정 맥락 보존</td><td><code>project_metric_id</code></td><td>text</td><td><code>project_metric_name</code></td></tr>
       <tr><td>82</td><td class="domain">프로젝트 성과</td><td>이전 값</td><td>개선 전 기준값</td><td><code>project_outcome_id</code></td><td>number/text</td><td><code>before_value</code></td></tr>
-      <tr><td>83</td><td class="domain">프로젝트 성과</td><td>이후 값</td><td>개선 후 결과값</td><td><code>project_outcome_id</code></td><td>number/text</td><td><code>after_value</code></td></tr>
-      <tr><td>84</td><td class="domain">동료 평가</td><td>동료 평가 ID</td><td>평가 행 식별</td><td><code>peer_evaluation_id</code></td><td>UUID</td><td><code>peer_evaluation_id</code></td></tr>
-      <tr><td>85</td><td class="domain">동료 평가</td><td>평가자 UUID</td><td>평가자와 자기·타인 평가 구분</td><td><code>peer_evaluation_id + evaluator_student_uuid</code></td><td>UUID</td><td><code>evaluator_student_uuid</code></td></tr>
-      <tr><td>86</td><td class="domain">동료 평가</td><td>평가 대상 UUID</td><td>평가 결과를 대상 수강생에게 연결</td><td><code>peer_evaluation_id + target_student_uuid</code></td><td>UUID</td><td><code>target_student_uuid</code></td></tr>
-      <tr><td>87</td><td class="domain">동료 평가</td><td>기술 역량 점수</td><td>동료 관점 기술 역량 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number</td><td><code>technical_score</code></td></tr>
-      <tr><td>88</td><td class="domain">동료 평가</td><td>소통·협업 점수</td><td>동료 관점 소통·협업 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number</td><td><code>collaboration_score</code></td></tr>
-      <tr><td>89</td><td class="domain">동료 평가</td><td>문제 해결 점수</td><td>동료 관점 문제 해결 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number</td><td><code>problem_solving_score</code></td></tr>
-      <tr><td>90</td><td class="domain">동료 평가</td><td>책임감 점수</td><td>동료 관점 책임감 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number</td><td><code>responsibility_score</code></td></tr>
+      <tr><td>83</td><td class="domain">프로젝트 성과</td><td>이후 값·증감 표시</td><td>개선 후 결과와 원문 변화량 보존</td><td><code>project_metric_id</code></td><td>number/text</td><td><code>project_metric_after, project_metric_change</code></td></tr>
+      <tr><td>84</td><td class="domain">동료 평가</td><td>프로젝트 ID·동료 평가 ID</td><td>평가 행을 해당 프로젝트와 연결하고 중복 제거</td><td><code>project_id + peer_evaluation_id</code></td><td>UUID/text</td><td><code>peer_project_id, project_peer_evaluation_id</code></td></tr>
+      <tr><td>85</td><td class="domain">동료 평가</td><td>평가자 UUID</td><td>누가 평가했는지 구분하고 평가자 수 중복 제거</td><td><code>peer_evaluation_id + rater_student_uuid</code></td><td>UUID</td><td><code>peer_rater_student_uuid</code></td></tr>
+      <tr><td>86</td><td class="domain">동료 평가</td><td>피평가자 UUID·기준 버전</td><td>평가를 대상 수강생에게 귀속하고 서로 다른 평가축의 혼합 방지</td><td><code>peer_evaluation_id + target_student_uuid</code></td><td>UUID/text</td><td><code>peer_target_student_uuid, peer_evaluation_criteria_version</code></td></tr>
+      <tr><td>87</td><td class="domain">동료 평가</td><td>기술·기술기여 점수</td><td>동료 관점 기술 수행·기여 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number 1~5</td><td><code>peer_technical_contribution_score</code></td></tr>
+      <tr><td>88</td><td class="domain">동료 평가</td><td>소통·협업·팀워크 점수</td><td>동료 관점 협업 행동 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number 1~5</td><td><code>peer_communication_collaboration_score</code></td></tr>
+      <tr><td>89</td><td class="domain">동료 평가</td><td>문제 해결 점수</td><td>동료 관점 문제 해결 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number 1~5</td><td><code>peer_problem_solving_score</code></td></tr>
+      <tr><td>90</td><td class="domain">동료 평가</td><td>책임감 점수</td><td>동료 관점 책임감 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number 1~5</td><td><code>peer_responsibility_score</code></td></tr>
       <tr><td>91</td><td class="domain">동료 평가</td><td>맡은 업무 원문</td><td>평가자가 작성한 대상자의 업무 증거</td><td><code>peer_evaluation_id</code></td><td>text</td><td><code>assigned_work_text</code></td></tr>
       <tr><td>92</td><td class="domain">동료 평가</td><td>기여 원문</td><td>평가자가 작성한 대상자의 기여 증거</td><td><code>peer_evaluation_id</code></td><td>text</td><td><code>contribution_text</code></td></tr>
       <tr><td>93</td><td class="domain">동료 평가</td><td>코멘트 원문</td><td>프로젝트 수행에 대한 구체적 관찰 증거</td><td><code>peer_evaluation_id</code></td><td>text/null</td><td><code>peer_comment</code></td></tr>
       <tr><td>94</td><td class="domain">동료 평가</td><td>제출 일시</td><td>최종 제출 평가와 발생 시점 확인</td><td><code>peer_evaluation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
-      <tr><td>95</td><td class="domain">GitHub 연결</td><td>저장소 ID</td><td>GitHub 저장소를 프로젝트와 매핑</td><td><code>project_id + github_repository_id</code></td><td>text/UUID</td><td><code>github_repository_id</code></td></tr>
-      <tr><td>96</td><td class="domain">GitHub 연결</td><td>저장소 URL</td><td>프로젝트 저장소 연결</td><td><code>github_repository_id</code></td><td>URL</td><td><code>repository_url</code></td></tr>
+      <tr><td>95</td><td class="domain">GitHub 연결</td><td>프로젝트 ID·저장소 ID</td><td>GitHub 저장소를 프로젝트와 매핑</td><td><code>project_id + github_repository_id</code></td><td>text/integer</td><td><code>github_project_id, github_repository_id</code></td></tr>
+      <tr><td>96</td><td class="domain">GitHub 연결</td><td>저장소 전체 이름</td><td>증명서에 분석 대상 저장소 표시</td><td><code>github_repository_id</code></td><td>text</td><td><code>github_repository_full_name</code></td></tr>
       <tr><td>97</td><td class="domain">GitHub 연결</td><td>분석 브랜치</td><td>활동 분석 대상 브랜치 구분</td><td><code>github_repository_id</code></td><td>text</td><td><code>analysis_branch</code></td></tr>
       <tr><td>98</td><td class="domain">GitHub 사용자 매핑</td><td>수강생 UUID</td><td>LMS 수강생과 GitHub 계정 연결</td><td><code>student_uuid + github_user_id</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
       <tr><td>99</td><td class="domain">GitHub 사용자 매핑</td><td>GitHub 사용자 ID</td><td>커밋 작성자를 수강생에게 귀속</td><td><code>student_uuid + github_user_id</code></td><td>text</td><td><code>github_user_id</code></td></tr>
@@ -165,7 +165,7 @@
       <tr><td>103</td><td class="domain">GitHub 커밋</td><td>커밋 브랜치</td><td>분석 브랜치 포함 여부 판별</td><td><code>commit_sha</code></td><td>text</td><td><code>commit_branch</code></td></tr>
     </tbody>
   </table></div>
-  <div class="callout">커밋 건수·활동 일수·주간 평균·연속 활동일은 커밋 로그에서 계산한다. 커밋 비율은 프로젝트 전체 기여도가 아니라 커밋 활동 비율로 사용한다.</div>
+  <div class="callout">이 표는 특정 mock의 값 보유율이 아니라 실데이터가 따라야 할 원천 계약이다. 개인 분석은 작업 담당자, 본인 수행 내용 작성자, 동료평가 피평가자, GitHub 기여자의 수강생 UUID가 대상자와 일치할 때만 사용한다. 팀 전체 성과·전체 작업 수·저장소 전체 커밋 수는 비교 맥락 또는 분모이며 개인 성과로 자동 귀속하지 않는다.</div>
 </section>
 
 <section id="evaluation-source">

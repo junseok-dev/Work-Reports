@@ -1,0 +1,32 @@
+<section id="readiness">
+  <h2>3. 현재 구조로 계속 진행해도 되는가</h2>
+  <p class="lead">황수빈 mock의 채움 정도를 운영 데이터 준비도로 환산하지 않는다. 원천 데이터 계약의 개인 귀속 가능성, 로컬 실행 검증 범위, 실데이터 확인 시점을 서로 분리했다.</p>
+  <div class="interpretation" style="margin-bottom:16px"><strong>삭제한 ‘경고 없는 원천’ 지표:</strong> mock 레코드 중 상태 충돌이 없는 비율을 뜻했지만 운영 품질처럼 해석될 수 있어 사용하지 않는다. 실데이터에서는 수강생 오귀속·계약 오류 같은 치명 오류는 0건이어야 한다. 복구 가능한 상태 경고는 해당 값을 분석에서 제외하거나 제한으로 표시하고 원인별 건수를 별도 관리한다.</div>
+  <div class="metric-grid">
+    <div class="metric"><small>자동 무결성</small><strong>100%</strong><span>25 / 25 · 조립 입력 기준</span></div>
+    <div class="metric"><small>검증 가능 범위</small><strong>83.3%</strong><span>15 / 18 · 검증 불가 3</span></div>
+    <div class="metric"><small>검증 범위 통과율</small><strong>100%</strong><span>15 / 15 · 실패 0</span></div>
+    <div class="metric"><small>실데이터 준비도</small><strong>미평가</strong><span>실제 행 수신 후 측정</span></div>
+  </div>
+  <div class="result-grid" style="margin-top:14px">
+    <article class="result-card"><span class="status-pill ready">계약 적합</span><h3>원천 데이터</h3><ul><li>프로젝트·과업·평가·GitHub를 안정적인 ID로 연결</li><li>과업 담당자·기여 작성자·평가 대상자 UUID로 개인 귀속 가능</li><li>원문·상태·제출 시각을 보존해 정제 결과를 역추적 가능</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">계약 적합</span><h3>정제 데이터</h3><ul><li>수강생·기수·입력·정책 버전으로 분석 단위를 고정</li><li>개인 귀속 과업 상세와 <code>evidence_ref</code>를 AI 입력으로 제한</li><li>원문 PII·미승인 기록을 제외하고 결손 상태를 명시</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">계약 적합</span><h3>파생 데이터</h3><ul><li>개인 과업에서 담당·완료 수, 사례에서 통계를 재현 가능하게 계산</li><li>산식·정책 버전과 READY·PARTIAL·NOT_READY 상태를 함께 반환</li><li>근거가 없으면 점수·기여율을 추정하지 않음</li></ul></article>
+  </div>
+  <div class="formula">
+    <strong>세 단계 구조를 유지해도 되는 근거</strong>
+    <code>원천 식별·원문 보존 → 정제 개인 귀속·허용 근거 → 파생 재현 가능한 계산·상태</code>
+    <span>각 단계의 책임이 겹치지 않고, AI 설명에서 원천 근거까지 역추적할 수 있다. 따라서 현재 데이터 계약은 유지해도 된다. 다만 이는 구조 판정이며 실제 행의 누락·오귀속·분포 품질은 실데이터 수신 후 별도로 검사한다.</span>
+  </div>
+  <div class="result-grid" style="margin-top:14px">
+    <article class="result-card"><span class="status-pill ready">구조 적합</span><h3>원천→정제→파생 흐름</h3><ul><li>프로젝트·수강생 복합 키로 개인 근거 연결</li><li>개인 귀속 불가 값은 분석 근거에서 제외</li><li>결손은 null·PARTIAL·NOT_READY로 보수 처리</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">계속 진행</span><h3>로컬 AI 분석</h3><ul><li>직무·문제해결은 현재 mock 범위에서 검사 가능</li><li>프로젝트는 개인 귀속이 확인된 항목만 검사</li><li>검증 불가 항목을 결과 정확도에 포함하지 않음</li></ul></article>
+    <article class="result-card"><span class="status-pill partial">실데이터 확인</span><h3>운영 전 검사</h3><ul><li>과업 담당자 UUID·완료 상태 행 존재율</li><li>본인 수행 내용 최종 제출 행 존재율</li><li>피평가자 UUID 기준 동료평가 연결률</li></ul></article>
+  </div>
+  <div class="formula">
+    <strong>실데이터에서 측정할 프로젝트 품질 지표</strong>
+    <code>개인 귀속률 = student_uuid로 귀속된 분석 근거 수 / 개인 근거 후보 수</code>
+    <span>여기에 과업 상태 유효율, 본인 수행 내용 최종 제출률, 피평가자 기준 동료평가 연결률을 함께 측정한다. 팀 전체 업무 수는 개인 프로젝트 분석의 필수 지표로 두지 않는다.</span>
+  </div>
+  <div class="interpretation"><strong>최종 판정:</strong> 원천 데이터 계약은 개인 프로젝트 분석에 필요한 연결 키를 갖추고 있으므로 현재 구조로 진행할 수 있다. 현재 mock은 실행과 로직 검사용이며 운영 데이터 품질 판정 근거가 아니다. 실제 준비도와 정확도는 실데이터가 같은 계약으로 들어온 뒤 별도로 측정한다.</div>
+</section>

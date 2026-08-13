@@ -1,0 +1,26 @@
+<section id="project">
+  <h2>7. 프로젝트 분석 결과</h2>
+  <p class="lead">프로젝트 맥락 3건을 입력하되 개인 성과는 <code>project_id + student_uuid</code>로 귀속되는 근거만 사용해야 한다. 현재 실행 결과와 사실 검증 범위를 분리해 표시한다.</p>
+  <div class="result-grid">
+    <article class="result-card">
+      <span class="status-pill partial">검증 불가</span>
+      <h3>상권별 매출 분석</h3>
+      <ul><li>팀 프로젝트의 도메인·기술·성과 맥락은 확인</li><li>현재 mock의 과업 담당자 UUID·상태 행은 확인 불가</li><li>개인 담당 2건·완료 2건이라는 결과는 품질 판정에서 제외</li></ul>
+    </article>
+    <article class="result-card">
+      <span class="status-pill ready">READY</span>
+      <h3>채용 스택 지도</h3>
+      <ul><li>수집·정규화·대시보드 개인 수행</li><li>개인 과업 8개 중 7개 완료</li><li>개인 프로젝트에 명시된 근거 범위에서 검증</li></ul>
+    </article>
+    <article class="result-card">
+      <span class="status-pill partial">검증 불가</span>
+      <h3>중고 시세 예측</h3>
+      <ul><li>팀 프로젝트의 도메인·기술·성과 맥락은 확인</li><li>현재 mock의 과업 담당자 UUID·상태 행은 확인 불가</li><li>개인 담당 2건·완료 2건이라는 결과는 품질 판정에서 제외</li></ul>
+    </article>
+  </div>
+  <div class="formula">
+    <strong>개인 프로젝트 분석 기준</strong>
+    <div class="calc-line"><span class="calc-box">project_id</span><span class="calc-op">+</span><span class="calc-box">student_uuid</span><span class="calc-op">→</span><span class="calc-box">개인 과업·기여·평가</span></div>
+    <span>팀 전체 업무 수는 개인 분석의 필수값이 아니다. 과업은 담당 수강생 UUID, 동료평가는 피평가자 UUID, 본인 수행 내용은 작성자 UUID가 황수빈인 행만 사용한다. 프로젝트 성과는 배경 맥락이며 개인 성과로 자동 귀속하지 않는다.</span>
+  </div>
+</section>

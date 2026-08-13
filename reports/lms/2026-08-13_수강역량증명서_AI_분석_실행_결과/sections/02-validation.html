@@ -1,0 +1,22 @@
+<section id="validation">
+  <h2>2. AI 분석이 의도대로 나왔는가</h2>
+  <p class="lead">자동검사는 코드가 계약·계산·근거 코드·개인정보를 반복 확인하는 검사다. 의도 적합성 검토는 생성 결과가 입력 근거와 현재 화면 기획에 맞는지 항목별로 판단하는 검토다. 미리 만든 AI 답안과 문장 일치율은 사용하지 않았다.</p>
+  <div class="check-grid">
+    <div class="check"><strong>3/3</strong><span>계약 100%</span></div>
+    <div class="check"><strong>9/9</strong><span>근거 귀속 100%</span></div>
+    <div class="check"><strong>3/3</strong><span>범위 100%</span></div>
+    <div class="check"><strong>9/9</strong><span>계산 100%</span></div>
+    <div class="check"><strong>1/1</strong><span>개인정보 100%</span></div>
+  </div>
+  <div class="metric-grid" style="margin-top:16px">
+    <div class="metric"><small>자동 무결성</small><strong>100%</strong><span>25 / 25 통과</span></div>
+    <div class="metric"><small>직무 의도 적합성</small><strong>100%</strong><span>6 / 6 검증</span></div>
+    <div class="metric"><small>프로젝트 검증 범위</small><strong>57.1%</strong><span>4 / 7 검증 가능</span></div>
+    <div class="metric"><small>문제해결 의도 적합성</small><strong>100%</strong><span>5 / 5 통과</span></div>
+  </div>
+  <div class="split" style="margin-top:16px">
+    <article class="boundary engine"><h3>자동검사 25/25</h3><p>현재 조립된 입력 안에서 계약, 근거 코드, 계산 일관성, 개인/팀 경계와 개인정보 마스킹을 검사했다. 원천에 없는 개인 귀속 사실의 진위를 보증하는 지표는 아니다.</p></article>
+    <article class="boundary ai"><h3>의도 적합성 검토 15/15</h3><p>검증 가능한 15개 항목은 모두 통과했다. 전체 18개 중 팀 과업의 황수빈 귀속·완료 상태·프로젝트별 본인/동료 근거 3개는 현재 mock으로 판정하지 않았다.</p></article>
+  </div>
+  <div class="interpretation"><strong>해석 주의:</strong> 검증 가능 범위는 15 / 18 = 83.3%이며, 그 범위 안의 통과율은 15 / 15 = 100%다. 검증 불가 3건을 실패나 성공으로 계산하지 않았다. 따라서 다른 수강생이나 실데이터에 대한 정확도 100%를 의미하지 않는다.</div>
+</section>

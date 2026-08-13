@@ -66,14 +66,14 @@
       <p class="header-summary">황수빈 기준 원천 사실이 어떤 정제·계산·LLM 판단·검증을 거쳐 직무 적합도·프로젝트·문제해결 결과가 됐는지 추적한다.</p>
       <div class="meta"><span class="badge">작성일 2026-08-13</span><span class="badge">gpt-5.4-mini</span><span class="badge">로컬 실제 호출</span><span class="badge">자동 무결성 100%</span></div>
     </header>
-    <div class="toolbar"><nav><a href="../2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/">← 실데이터 종합 보고서</a><a href="../2026-08-13_수강역량증명서_원천_데이터/">원천 데이터</a><a href="../2026-08-13_수강역량증명서_정제_데이터/">정제 데이터</a><a href="../2026-08-13_수강역량증명서_파생_데이터/">파생 데이터</a></nav></div>
+    <div class="toolbar"><nav><a href="../2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/">← 데이터 흐름·연동 종합 보고서</a><a href="#overview">전체 흐름</a><a href="#validation">검증 결과</a><a href="#readiness">진행 판정</a><a href="#input">분석 근거</a></nav></div>
     <main class="content"><section id="overview">
   <h2>1. 결과가 만들어진 전체 흐름</h2>
   <p class="lead">황수빈 기준 원천 사실을 정제·계산한 뒤 gpt-5.4-mini가 해석하고, LMS-AI가 근거와 계산을 다시 검증했다. 기존 mock의 AI 답안은 입력으로 사용하지 않았다.</p>
   <div class="flow">
     <div class="flow-step"><strong>원천 사실 수집</strong><span>평가, 자격, 관심 직무, 프로젝트 3건, 인증 문제해결 3건을 모은다.</span></div>
     <div class="flow-step"><strong>검증·정제</strong><span>상태 충돌과 누락을 기록하고 팀 정보와 개인 수행 근거를 분리한다.</span></div>
-    <div class="flow-step"><strong>파생 계산</strong><span>보드 업무, 기간, 평균·중앙값, 독립 해결률과 분석 상태를 계산한다.</span></div>
+    <div class="flow-step"><strong>파생 계산</strong><span>수강생에게 귀속된 과업, 기간, 평균·중앙값, 독립 해결률과 분석 상태를 계산한다.</span></div>
     <div class="flow-step"><strong>LLM 판단</strong><span>고정 직무 없이 적합 직무·점수와 세 분석의 설명을 생성한다.</span></div>
     <div class="flow-step"><strong>검증·조립</strong><span>허용 근거·관련 평가·개인/팀 경계를 확인해 최종 응답을 만든다.</span></div>
   </div>
@@ -83,10 +83,70 @@
     <div class="metric"><small>인증 프로젝트</small><strong>3건</strong><span>개인 1 · A팀 2</span></div>
     <div class="metric"><small>인증 문제해결</small><strong>3건</strong><span>독립 1 · 지원 2</span></div>
   </div>
+  <div class="formula">
+    <strong>분석 모델 · gpt-5.4-mini</strong>
+    <span>현재 구조화 분석에 필요한 품질을 확보하면서 반복 호출의 비용과 응답 시간을 함께 관리하기 위한 실용적 기본 모델로 선택했다. OpenAI API 문서도 이 모델을 고용량 작업용의 더 빠르고 효율적인 모델로 설명한다. 이번 선택은 GPT-4o mini 등 다른 모델보다 항상 우수하다는 뜻이 아니며, 동일 입력·동일 평가 항목의 비교 실행 전에는 모델 간 우열을 확정하지 않는다. <a href="https://developers.openai.com/api/docs/models/gpt-5.4-mini">OpenAI 모델 문서</a></span>
+  </div>
+</section>
+
+<section id="validation">
+  <h2>2. AI 분석이 의도대로 나왔는가</h2>
+  <p class="lead">자동검사는 코드가 계약·계산·근거 코드·개인정보를 반복 확인하는 검사다. 의도 적합성 검토는 생성 결과가 입력 근거와 현재 화면 기획에 맞는지 항목별로 판단하는 검토다. 미리 만든 AI 답안과 문장 일치율은 사용하지 않았다.</p>
+  <div class="check-grid">
+    <div class="check"><strong>3/3</strong><span>계약 100%</span></div>
+    <div class="check"><strong>9/9</strong><span>근거 귀속 100%</span></div>
+    <div class="check"><strong>3/3</strong><span>범위 100%</span></div>
+    <div class="check"><strong>9/9</strong><span>계산 100%</span></div>
+    <div class="check"><strong>1/1</strong><span>개인정보 100%</span></div>
+  </div>
+  <div class="metric-grid" style="margin-top:16px">
+    <div class="metric"><small>자동 무결성</small><strong>100%</strong><span>25 / 25 통과</span></div>
+    <div class="metric"><small>직무 의도 적합성</small><strong>100%</strong><span>6 / 6 검증</span></div>
+    <div class="metric"><small>프로젝트 검증 범위</small><strong>57.1%</strong><span>4 / 7 검증 가능</span></div>
+    <div class="metric"><small>문제해결 의도 적합성</small><strong>100%</strong><span>5 / 5 통과</span></div>
+  </div>
+  <div class="split" style="margin-top:16px">
+    <article class="boundary engine"><h3>자동검사 25/25</h3><p>현재 조립된 입력 안에서 계약, 근거 코드, 계산 일관성, 개인/팀 경계와 개인정보 마스킹을 검사했다. 원천에 없는 개인 귀속 사실의 진위를 보증하는 지표는 아니다.</p></article>
+    <article class="boundary ai"><h3>의도 적합성 검토 15/15</h3><p>검증 가능한 15개 항목은 모두 통과했다. 전체 18개 중 팀 과업의 황수빈 귀속·완료 상태·프로젝트별 본인/동료 근거 3개는 현재 mock으로 판정하지 않았다.</p></article>
+  </div>
+  <div class="interpretation"><strong>해석 주의:</strong> 검증 가능 범위는 15 / 18 = 83.3%이며, 그 범위 안의 통과율은 15 / 15 = 100%다. 검증 불가 3건을 실패나 성공으로 계산하지 않았다. 따라서 다른 수강생이나 실데이터에 대한 정확도 100%를 의미하지 않는다.</div>
+</section>
+
+<section id="readiness">
+  <h2>3. 현재 구조로 계속 진행해도 되는가</h2>
+  <p class="lead">황수빈 mock의 채움 정도를 운영 데이터 준비도로 환산하지 않는다. 원천 데이터 계약의 개인 귀속 가능성, 로컬 실행 검증 범위, 실데이터 확인 시점을 서로 분리했다.</p>
+  <div class="interpretation" style="margin-bottom:16px"><strong>삭제한 ‘경고 없는 원천’ 지표:</strong> mock 레코드 중 상태 충돌이 없는 비율을 뜻했지만 운영 품질처럼 해석될 수 있어 사용하지 않는다. 실데이터에서는 수강생 오귀속·계약 오류 같은 치명 오류는 0건이어야 한다. 복구 가능한 상태 경고는 해당 값을 분석에서 제외하거나 제한으로 표시하고 원인별 건수를 별도 관리한다.</div>
+  <div class="metric-grid">
+    <div class="metric"><small>자동 무결성</small><strong>100%</strong><span>25 / 25 · 조립 입력 기준</span></div>
+    <div class="metric"><small>검증 가능 범위</small><strong>83.3%</strong><span>15 / 18 · 검증 불가 3</span></div>
+    <div class="metric"><small>검증 범위 통과율</small><strong>100%</strong><span>15 / 15 · 실패 0</span></div>
+    <div class="metric"><small>실데이터 준비도</small><strong>미평가</strong><span>실제 행 수신 후 측정</span></div>
+  </div>
+  <div class="result-grid" style="margin-top:14px">
+    <article class="result-card"><span class="status-pill ready">계약 적합</span><h3>원천 데이터</h3><ul><li>프로젝트·과업·평가·GitHub를 안정적인 ID로 연결</li><li>과업 담당자·기여 작성자·평가 대상자 UUID로 개인 귀속 가능</li><li>원문·상태·제출 시각을 보존해 정제 결과를 역추적 가능</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">계약 적합</span><h3>정제 데이터</h3><ul><li>수강생·기수·입력·정책 버전으로 분석 단위를 고정</li><li>개인 귀속 과업 상세와 <code>evidence_ref</code>를 AI 입력으로 제한</li><li>원문 PII·미승인 기록을 제외하고 결손 상태를 명시</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">계약 적합</span><h3>파생 데이터</h3><ul><li>개인 과업에서 담당·완료 수, 사례에서 통계를 재현 가능하게 계산</li><li>산식·정책 버전과 READY·PARTIAL·NOT_READY 상태를 함께 반환</li><li>근거가 없으면 점수·기여율을 추정하지 않음</li></ul></article>
+  </div>
+  <div class="formula">
+    <strong>세 단계 구조를 유지해도 되는 근거</strong>
+    <code>원천 식별·원문 보존 → 정제 개인 귀속·허용 근거 → 파생 재현 가능한 계산·상태</code>
+    <span>각 단계의 책임이 겹치지 않고, AI 설명에서 원천 근거까지 역추적할 수 있다. 따라서 현재 데이터 계약은 유지해도 된다. 다만 이는 구조 판정이며 실제 행의 누락·오귀속·분포 품질은 실데이터 수신 후 별도로 검사한다.</span>
+  </div>
+  <div class="result-grid" style="margin-top:14px">
+    <article class="result-card"><span class="status-pill ready">구조 적합</span><h3>원천→정제→파생 흐름</h3><ul><li>프로젝트·수강생 복합 키로 개인 근거 연결</li><li>개인 귀속 불가 값은 분석 근거에서 제외</li><li>결손은 null·PARTIAL·NOT_READY로 보수 처리</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">계속 진행</span><h3>로컬 AI 분석</h3><ul><li>직무·문제해결은 현재 mock 범위에서 검사 가능</li><li>프로젝트는 개인 귀속이 확인된 항목만 검사</li><li>검증 불가 항목을 결과 정확도에 포함하지 않음</li></ul></article>
+    <article class="result-card"><span class="status-pill partial">실데이터 확인</span><h3>운영 전 검사</h3><ul><li>과업 담당자 UUID·완료 상태 행 존재율</li><li>본인 수행 내용 최종 제출 행 존재율</li><li>피평가자 UUID 기준 동료평가 연결률</li></ul></article>
+  </div>
+  <div class="formula">
+    <strong>실데이터에서 측정할 프로젝트 품질 지표</strong>
+    <code>개인 귀속률 = student_uuid로 귀속된 분석 근거 수 / 개인 근거 후보 수</code>
+    <span>여기에 과업 상태 유효율, 본인 수행 내용 최종 제출률, 피평가자 기준 동료평가 연결률을 함께 측정한다. 팀 전체 업무 수는 개인 프로젝트 분석의 필수 지표로 두지 않는다.</span>
+  </div>
+  <div class="interpretation"><strong>최종 판정:</strong> 원천 데이터 계약은 개인 프로젝트 분석에 필요한 연결 키를 갖추고 있으므로 현재 구조로 진행할 수 있다. 현재 mock은 실행과 로직 검사용이며 운영 데이터 품질 판정 근거가 아니다. 실제 준비도와 정확도는 실데이터가 같은 계약으로 들어온 뒤 별도로 측정한다.</div>
 </section>
 
 <section id="input">
-  <h2>2. 분석에 들어간 근거</h2>
+  <h2>4. 분석에 들어간 근거</h2>
   <p class="lead">최종 AI 문장이 아니라 분석 이전의 구조화된 사실이다. 관심 직무는 보조 맥락이며 팀 결과를 개인 성과로 바꾸지 않는다.</p>
   <div class="source-grid">
     <article class="source-card">
@@ -102,12 +162,12 @@
     <article class="source-card">
       <h3>프로젝트 판단 근거</h3>
       <ul>
-        <li>상권별 매출 분석 · 개인 담당 2/2 완료</li>
-        <li>중고거래 시세 예측 · 개인 담당 2/2 완료</li>
-        <li>채용 스택 지도 · 보드 8개 중 7개 완료</li>
-        <li>동료평가 공통 4축만 사용</li>
+        <li>상권 분석·시세 예측 2건은 팀 프로젝트 맥락으로 입력</li>
+        <li>채용 스택 지도는 개인 프로젝트 과업 8건·완료 7건 확인</li>
+        <li>팀 과업은 담당 수강생 UUID가 확인된 행만 개인 근거로 사용</li>
+        <li>동료평가는 피평가자가 황수빈인 프로젝트별 4축만 사용</li>
       </ul>
-      <div class="tag-row"><span class="tag">개인 1</span><span class="tag">A팀 2</span><span class="tag">전체 보드 일부 누락</span></div>
+      <div class="tag-row"><span class="tag">개인 1</span><span class="tag">팀 2</span><span class="tag">개인 귀속 우선</span></div>
     </article>
     <article class="source-card">
       <h3>문제해결 판단 근거</h3>
@@ -122,7 +182,7 @@
 </section>
 
 <section id="decision-boundary">
-  <h2>3. LLM 판단과 코드 계산의 경계</h2>
+  <h2>5. LLM 판단과 코드 계산의 경계</h2>
   <p class="lead">정답 공식이 없는 판단과 원천에서 정확히 재현돼야 하는 계산을 분리했다.</p>
   <div class="split">
     <article class="boundary ai">
@@ -139,17 +199,17 @@
       <h3>LMS-AI 코드가 확정한 것</h3>
       <p>직무 점수를 임의 공식으로 덮어쓰지 않는다. 대신 계산 가능한 값과 근거 범위를 재검증한다.</p>
       <ul>
-        <li>프로젝트 3건·보드 담당 12·완료 11</li>
+        <li>프로젝트 3건과 수강생 UUID로 귀속 가능한 개인 과업</li>
         <li>문제해결 건수·평균·중앙값·독립률</li>
         <li>직무 중복·순위·관련 평가 근거</li>
-        <li>개인/팀 경계·근거 코드·개인정보</li>
+        <li>개인/팀 경계·근거 코드·개인정보·검증 불가 상태</li>
       </ul>
     </article>
   </div>
 </section>
 
 <section id="job-fit">
-  <h2>4. 직무 적합도 결과</h2>
+  <h2>6. 직무 적합도 결과</h2>
   <p class="lead">고정된 7개 직무가 아니라 gpt-5.4-mini가 개인 수행·평가·자격·문제해결 근거에서 후보를 자유롭게 도출했다. 후보 하나에는 직무 하나만 표시한다.</p>
   <div class="role-list">
     <article class="role">
@@ -176,34 +236,34 @@
 </section>
 
 <section id="project">
-  <h2>5. 프로젝트 분석 결과</h2>
-  <p class="lead">개인 1건과 A팀 2건을 합친 3개 인증 프로젝트에서 반복 업무·기여·동료평가·성장 흐름을 종합했다.</p>
+  <h2>7. 프로젝트 분석 결과</h2>
+  <p class="lead">프로젝트 맥락 3건을 입력하되 개인 성과는 <code>project_id + student_uuid</code>로 귀속되는 근거만 사용해야 한다. 현재 실행 결과와 사실 검증 범위를 분리해 표시한다.</p>
   <div class="result-grid">
     <article class="result-card">
-      <span class="status-pill partial">PARTIAL</span>
+      <span class="status-pill partial">검증 불가</span>
       <h3>상권별 매출 분석</h3>
-      <ul><li>결합·정제와 매출 EDA 담당</li><li>담당 2건 모두 완료</li><li>프로젝트별 교차 평가 원천 부족</li></ul>
+      <ul><li>팀 프로젝트의 도메인·기술·성과 맥락은 확인</li><li>현재 mock의 과업 담당자 UUID·상태 행은 확인 불가</li><li>개인 담당 2건·완료 2건이라는 결과는 품질 판정에서 제외</li></ul>
     </article>
     <article class="result-card">
       <span class="status-pill ready">READY</span>
       <h3>채용 스택 지도</h3>
-      <ul><li>수집·정규화·대시보드 개인 수행</li><li>보드 8개 중 7개 완료</li><li>인증과 진행 상태 충돌은 제한으로 보존</li></ul>
+      <ul><li>수집·정규화·대시보드 개인 수행</li><li>개인 과업 8개 중 7개 완료</li><li>개인 프로젝트에 명시된 근거 범위에서 검증</li></ul>
     </article>
     <article class="result-card">
-      <span class="status-pill partial">PARTIAL</span>
+      <span class="status-pill partial">검증 불가</span>
       <h3>중고 시세 예측</h3>
-      <ul><li>파생 변수와 LightGBM 튜닝 담당</li><li>담당 2건 모두 완료</li><li>모델 운영·서빙 개인 근거 없음</li></ul>
+      <ul><li>팀 프로젝트의 도메인·기술·성과 맥락은 확인</li><li>현재 mock의 과업 담당자 UUID·상태 행은 확인 불가</li><li>개인 담당 2건·완료 2건이라는 결과는 품질 판정에서 제외</li></ul>
     </article>
   </div>
   <div class="formula">
-    <strong>프로젝트 기여 계산</strong>
-    <div class="calc-line"><span class="calc-box">담당 12</span><span class="calc-op">→</span><span class="calc-box">완료 11</span><span class="calc-op">·</span><span class="calc-box">전체 합계 null</span></div>
-    <span>팀 프로젝트의 전체 보드 업무 수가 없어 기여율을 만들지 않았다. 스타일은 기술기여 4.6 · 협업 4.5 · 문제해결 4.1 · 책임감 4.8의 동료평가 공통 4축만 해석했다.</span>
+    <strong>개인 프로젝트 분석 기준</strong>
+    <div class="calc-line"><span class="calc-box">project_id</span><span class="calc-op">+</span><span class="calc-box">student_uuid</span><span class="calc-op">→</span><span class="calc-box">개인 과업·기여·평가</span></div>
+    <span>팀 전체 업무 수는 개인 분석의 필수값이 아니다. 과업은 담당 수강생 UUID, 동료평가는 피평가자 UUID, 본인 수행 내용은 작성자 UUID가 황수빈인 행만 사용한다. 프로젝트 성과는 배경 맥락이며 개인 성과로 자동 귀속하지 않는다.</span>
   </div>
 </section>
 
 <section id="troubleshooting">
-  <h2>6. 문제해결 역량 분석 결과</h2>
+  <h2>8. 문제해결 역량 분석 결과</h2>
   <p class="lead">세 인증 사례의 구조화된 상황·해결·결과를 분석하고, 통계는 원천 사례에서 다시 계산했다.</p>
   <div class="metric-grid">
     <div class="metric"><small>인증 사례</small><strong>3건</strong><span>데이터 · 머신러닝 · 협업</span></div>
@@ -217,51 +277,6 @@
     <article class="result-card"><span class="status-pill ready">원천 계산</span><h3>독립 · 지원 경계</h3><ul><li>독립 해결은 데이터 사례 1건</li><li>지원 포함은 머신러닝·협업 2건</li></ul></article>
   </div>
   <div class="interpretation"><strong>검토 결과:</strong> 협업 사례를 독립 해결로 잘못 서술한 실제 LLM 오류를 검출했다. 최종 구현은 독립 1건·지원 2건을 원천에서 계산해 요약하며, 폐기된 문제해결 성장 분석은 결과와 품질 지표에서 제외한다. 협업 사례는 동적 카테고리에는 포함되지만 고정 3축에서는 미매핑이다.</div>
-</section>
-
-<section id="validation">
-  <h2>7. AI 분석이 의도대로 나왔는가</h2>
-  <p class="lead">하나의 모호한 정확도 대신 자동 무결성과 현재 샘플의 의도 적합성을 분리했다. 미리 만든 AI 답안과 문장 일치율은 사용하지 않았다.</p>
-  <div class="check-grid">
-    <div class="check"><strong>3/3</strong><span>계약 100%</span></div>
-    <div class="check"><strong>9/9</strong><span>근거 귀속 100%</span></div>
-    <div class="check"><strong>3/3</strong><span>범위 100%</span></div>
-    <div class="check"><strong>9/9</strong><span>계산 100%</span></div>
-    <div class="check"><strong>1/1</strong><span>개인정보 100%</span></div>
-  </div>
-  <div class="metric-grid" style="margin-top:16px">
-    <div class="metric"><small>자동 무결성</small><strong>100%</strong><span>25 / 25 통과</span></div>
-    <div class="metric"><small>직무 의도 적합성</small><strong>100%</strong><span>6 / 6 통과</span></div>
-    <div class="metric"><small>프로젝트 의도 적합성</small><strong>100%</strong><span>7 / 7 통과</span></div>
-    <div class="metric"><small>문제해결 의도 적합성</small><strong>100%</strong><span>5 / 5 통과</span></div>
-  </div>
-  <div class="split" style="margin-top:16px">
-    <article class="boundary engine"><h3>자동검사 25/25</h3><p>프로젝트 1:1, 역할·보드 집계, 문제해결 통계·축, 관련 이론, 자기기여, 동료평가 4축, 개인/팀 경계와 이메일 마스킹을 검사했다.</p></article>
-    <article class="boundary ai"><h3>사람 검토 18/18</h3><p>후보당 단일 자유 직무, 관심 직무 비우대, 평가·이론 일관성, 세 프로젝트 반영, 동료평가 해석, 문제 범주와 독립·지원 경계를 확인했다.</p></article>
-  </div>
-  <div class="interpretation"><strong>해석 주의:</strong> 두 100%는 현재 황수빈 입력에서 정의한 위반이 없다는 뜻이다. 직무 후보의 절대 정답률이나 다른 수강생에 대한 정확도 100%가 아니다.</div>
-</section>
-
-<section id="readiness">
-  <h2>8. 현재 데이터로 그대로 진행해도 되는가</h2>
-  <p class="lead">파이프라인이 안전하게 처리할 수 있는지와 운영 데이터가 완성됐는지를 분리해 판정했다.</p>
-  <div class="metric-grid">
-    <div class="metric"><small>원천 수용률</small><strong>100%</strong><span>14 / 14 레코드 포함</span></div>
-    <div class="metric"><small>경고 없는 원천</small><strong>92.9%</strong><span>13 / 14 · 상태 충돌 1건</span></div>
-    <div class="metric"><small>직무 데이터 준비도</small><strong>100%</strong><span>5 / 5 근거군 확보</span></div>
-    <div class="metric"><small>프로젝트 준비도</small><strong>85.7%</strong><span>24 / 28 필수 셀 확보</span></div>
-  </div>
-  <div class="result-grid" style="margin-top:14px">
-    <article class="result-card"><span class="status-pill ready">진행 가능</span><h3>원천→정제→파생 구조</h3><ul><li>레코드 수용률 100%</li><li>자동 무결성 100%</li><li>누락은 null·PARTIAL·NOT_READY 처리</li></ul></article>
-    <article class="result-card"><span class="status-pill partial">조건부 진행</span><h3>프로젝트 분석</h3><ul><li>팀 전체 보드 수 2건 누락</li><li>팀 본인 작성 기여 2건 누락</li><li>임의 기여율 없이 PARTIAL 유지</li></ul></article>
-    <article class="result-card"><span class="status-pill not-ready">운영 확정 불가</span><h3>보완할 데이터</h3><ul><li>개인 프로젝트 상태 충돌 정정</li><li>팀 프로젝트 전체 보드 수 확보</li><li>팀 프로젝트 본인 작성 기여 확보</li></ul></article>
-  </div>
-  <div class="formula">
-    <strong>프로젝트 준비도 85.7% 계산</strong>
-    <code>(프로젝트 핵심 필드 20 / 24 + 동료평가 축 4 / 4) = 24 / 28</code>
-    <span>누락은 팀 프로젝트 2건의 본인 작성 기여와 전체 보드 업무 수다. 현재 문제해결 분석은 범주, 상황·해결·결과, 소요일, 독립·지원, 결과 근거 5/5를 확보해 준비도 100%다.</span>
-  </div>
-  <div class="interpretation"><strong>최종 판정:</strong> 현재 계약과 로컬 파이프라인은 그대로 진행해도 된다. 다만 현재 데이터를 완성된 운영 데이터로 확정하거나 FE 배포 화면에 바로 연결하는 단계는 아니다.</div>
 </section></main>
     <footer class="report-footer">황수빈 1명의 구조화된 입력과 실제 LLM 호출 결과를 기준으로 작성했으며, 전체 수강생 정확도를 의미하지 않는다.</footer>
   </article>
