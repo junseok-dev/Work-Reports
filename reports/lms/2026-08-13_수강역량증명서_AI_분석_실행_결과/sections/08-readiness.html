@@ -1,0 +1,21 @@
+<section id="readiness">
+  <h2>8. 현재 데이터로 그대로 진행해도 되는가</h2>
+  <p class="lead">파이프라인이 안전하게 처리할 수 있는지와 운영 데이터가 완성됐는지를 분리해 판정했다.</p>
+  <div class="metric-grid">
+    <div class="metric"><small>원천 수용률</small><strong>100%</strong><span>14 / 14 레코드 포함</span></div>
+    <div class="metric"><small>경고 없는 원천</small><strong>92.9%</strong><span>13 / 14 · 상태 충돌 1건</span></div>
+    <div class="metric"><small>직무 데이터 준비도</small><strong>100%</strong><span>5 / 5 근거군 확보</span></div>
+    <div class="metric"><small>프로젝트 준비도</small><strong>85.7%</strong><span>24 / 28 필수 셀 확보</span></div>
+  </div>
+  <div class="result-grid" style="margin-top:14px">
+    <article class="result-card"><span class="status-pill ready">진행 가능</span><h3>원천→정제→파생 구조</h3><ul><li>레코드 수용률 100%</li><li>자동 무결성 100%</li><li>누락은 null·PARTIAL·NOT_READY 처리</li></ul></article>
+    <article class="result-card"><span class="status-pill partial">조건부 진행</span><h3>프로젝트 분석</h3><ul><li>팀 전체 보드 수 2건 누락</li><li>팀 본인 작성 기여 2건 누락</li><li>임의 기여율 없이 PARTIAL 유지</li></ul></article>
+    <article class="result-card"><span class="status-pill not-ready">운영 확정 불가</span><h3>보완할 데이터</h3><ul><li>개인 프로젝트 상태 충돌 정정</li><li>팀 프로젝트 전체 보드 수 확보</li><li>팀 프로젝트 본인 작성 기여 확보</li></ul></article>
+  </div>
+  <div class="formula">
+    <strong>프로젝트 준비도 85.7% 계산</strong>
+    <code>(프로젝트 핵심 필드 20 / 24 + 동료평가 축 4 / 4) = 24 / 28</code>
+    <span>누락은 팀 프로젝트 2건의 본인 작성 기여와 전체 보드 업무 수다. 현재 문제해결 분석은 범주, 상황·해결·결과, 소요일, 독립·지원, 결과 근거 5/5를 확보해 준비도 100%다.</span>
+  </div>
+  <div class="interpretation"><strong>최종 판정:</strong> 현재 계약과 로컬 파이프라인은 그대로 진행해도 된다. 다만 현재 데이터를 완성된 운영 데이터로 확정하거나 FE 배포 화면에 바로 연결하는 단계는 아니다.</div>
+</section>

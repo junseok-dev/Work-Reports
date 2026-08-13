@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>수강역량증명서 AI 분석 실행 결과</title>
+  <link rel="stylesheet" href="../../../../assets/data-report.css" />
+  <style>
+    :root { --blue: #3977b9; --blue-soft: #edf5ff; --green: #23805a; --green-soft: #ebf8f1; --amber: #a56608; --amber-soft: #fff6df; --purple: #6850a3; --purple-soft: #f3efff; }
+    .content { max-width: 1220px; margin: 0 auto; }
+    .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; counter-reset: flow; }
+    .flow-step { position: relative; min-height: 148px; padding: 18px; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
+    .flow-step::before { counter-increment: flow; content: counter(flow); display: grid; width: 27px; height: 27px; margin-bottom: 13px; place-items: center; border-radius: 50%; background: var(--navy); color: #fff; font-size: 12px; font-weight: 900; }
+    .flow-step:not(:last-child)::after { content: "→"; position: absolute; top: 61px; right: -17px; z-index: 2; color: #8ba0b2; font-weight: 900; }
+    .flow-step strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .flow-step span { color: var(--muted); font-size: 12px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; }
+    .metric { padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--soft); }
+    .metric small { display: block; margin-bottom: 6px; color: var(--muted); font-weight: 700; }
+    .metric strong { display: block; font-size: 24px; line-height: 1.2; }
+    .metric span { display: block; margin-top: 7px; color: var(--muted); font-size: 11px; }
+    .source-grid, .decision-grid, .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .source-card, .decision-card, .result-card { padding: 20px; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
+    .source-card h3, .decision-card h3, .result-card h3 { margin: 0 0 12px; }
+    .source-card ul, .decision-card ul, .result-card ul { margin: 0; padding-left: 18px; color: #465461; font-size: 13px; }
+    .source-card li + li, .decision-card li + li, .result-card li + li { margin-top: 7px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }
+    .tag { padding: 4px 8px; border: 1px solid #ccd7e0; border-radius: 999px; background: #f8fafb; color: #40505e; font-size: 11px; font-weight: 700; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .boundary { padding: 22px; border: 1px solid var(--line); border-radius: 16px; }
+    .boundary.ai { border-top: 4px solid var(--purple); background: var(--purple-soft); }
+    .boundary.engine { border-top: 4px solid var(--blue); background: var(--blue-soft); }
+    .boundary h3 { margin: 0 0 12px; }
+    .boundary p { color: #4c5965; font-size: 13px; }
+    .boundary ul { margin: 12px 0 0; padding-left: 18px; color: #40505e; font-size: 12px; }
+    .role-list { display: grid; gap: 12px; }
+    .role { display: grid; grid-template-columns: 62px 1.1fr 1.8fr; gap: 16px; align-items: start; padding: 19px; border: 1px solid var(--line); border-radius: 15px; }
+    .role-score { display: grid; width: 58px; height: 58px; place-items: center; border-radius: 50%; background: var(--navy); color: #fff; font-size: 18px; font-weight: 900; }
+    .role h3 { margin: 1px 0 4px; font-size: 18px; }
+    .role .role-type { color: var(--muted); font-size: 12px; }
+    .role p { margin: 0; color: #45535f; font-size: 13px; }
+    .formula { margin-top: 16px; padding: 18px 20px; border-left: 4px solid var(--blue); border-radius: 8px 14px 14px 8px; background: var(--blue-soft); }
+    .formula code { display: block; margin: 8px 0; color: #244c74; font-size: 13px; font-weight: 800; }
+    .status-pill { display: inline-flex; padding: 4px 8px; border-radius: 999px; font-size: 11px; font-weight: 900; }
+    .status-pill.partial { background: var(--amber-soft); color: var(--amber); }
+    .status-pill.ready { background: var(--green-soft); color: var(--green); }
+    .status-pill.not-ready { background: #f1f3f5; color: #5c6670; }
+    .calc-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0; }
+    .calc-box { padding: 8px 10px; border: 1px solid #cbd6df; border-radius: 9px; background: #fff; font-size: 12px; font-weight: 800; }
+    .calc-op { color: #788895; font-weight: 900; }
+    .check-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .check { padding: 15px; border: 1px solid #bcdcc9; border-radius: 13px; background: var(--green-soft); text-align: center; }
+    .check strong { display: block; color: var(--green); font-size: 20px; }
+    .check span { display: block; margin-top: 3px; color: #456656; font-size: 11px; font-weight: 700; }
+    .interpretation { margin-top: 18px; padding: 18px; border: 1px solid #ead4a2; border-radius: 14px; background: var(--amber-soft); color: #654b1f; font-size: 13px; }
+    @media (max-width: 1000px) { .flow { grid-template-columns: 1fr; } .flow-step:not(:last-child)::after { content: "↓"; top: auto; right: 50%; bottom: -20px; } .metric-grid { grid-template-columns: repeat(2, 1fr); } .source-grid, .decision-grid, .result-grid, .check-grid { grid-template-columns: 1fr 1fr; } .role { grid-template-columns: 62px 1fr; } .role p { grid-column: 1 / -1; } }
+    @media (max-width: 650px) { .metric-grid, .source-grid, .decision-grid, .result-grid, .split, .check-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <article class="page">
+    <header class="report-header">
+      <p class="eyebrow">LMS-AI · Analysis Trace</p>
+      <h1>수강역량증명서 AI 분석 실행 결과</h1>
+      <p class="header-summary">황수빈 기준 원천 사실이 어떤 정제·계산·LLM 판단·검증을 거쳐 직무 적합도·프로젝트·문제해결 결과가 됐는지 추적한다.</p>
+      <div class="meta"><span class="badge">작성일 2026-08-13</span><span class="badge">gpt-5.4-mini</span><span class="badge">로컬 실제 호출</span><span class="badge">자동 무결성 100%</span></div>
+    </header>
+    <div class="toolbar"><nav><a href="../2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/">← 실데이터 종합 보고서</a><a href="../2026-08-13_수강역량증명서_원천_데이터/">원천 데이터</a><a href="../2026-08-13_수강역량증명서_정제_데이터/">정제 데이터</a><a href="../2026-08-13_수강역량증명서_파생_데이터/">파생 데이터</a></nav></div>
+    <main class="content"><!--SECTIONS--></main>
+    <footer class="report-footer">황수빈 1명의 구조화된 입력과 실제 LLM 호출 결과를 기준으로 작성했으며, 전체 수강생 정확도를 의미하지 않는다.</footer>
+  </article>
+</body>
+</html>
