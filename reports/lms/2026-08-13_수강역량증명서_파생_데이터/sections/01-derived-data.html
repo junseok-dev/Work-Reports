@@ -1,0 +1,20 @@
+<section id="derived-data">
+        <h2>1. LMS-AI가 요청 시 계산하는 파생데이터</h2>
+        <p class="lead">아래 내용은 현재 LMS-AI 정책 <code>2026.08.05-six-axis-four-rater-v1</code> 구현을 기준으로 한다. 파생값은 S3에 영구 저장하는 결과가 아니라 fixture 입력으로 요청 시 계산해 반환하는 값이며, 실데이터 전환 시에도 산식과 상태 계약을 먼저 일치시켜야 한다.</p>
+        <div class="table-wrap">
+          <table class="index-table calculation-table">
+            <colgroup><col style="width:4%"><col style="width:14%"><col style="width:20%"><col style="width:23%"><col style="width:19%"><col style="width:20%"></colgroup>
+            <thead><tr><th>No.</th><th>파생데이터</th><th>계산 입력</th><th>현재 계산식·정책</th><th>결과 필드·상태</th><th>사용처·준비되지 않은 경우</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>출석률</strong></td><td>인정 출석 일수, 전체 수업 일수</td><td><code>recognized_days / total_days × 100</code>을 5점 단위로 반올림해 학습지속성 계산에 사용한다.</td><td><code>attendanceRate</code></td><td>6축·핵심 KPI<br>분모 또는 필수 출결 입력이 없으면 관련 축을 계산하지 않는다.</td></tr>
+              <tr><td>2</td><td><strong>성취도</strong></td><td>완료된 성취도평가·CS 퀴즈의 최신 유효 점수</td><td>각 점수를 100점 기준으로 환산한 뒤 대상 결과의 평균을 계산한다.</td><td>성취도 축<br><span class="state">READY</span><span class="state">NOT_READY</span><span class="state">ERROR</span></td><td>6축·핵심 KPI<br>완료 결과가 없으면 <code>NOT_READY</code>, 예상 행이 누락되면 <code>ERROR</code></td></tr>
+              <tr><td>3</td><td><strong>4개 평가 역량축</strong></td><td>동료·멘토·강사·운영의 기술기여·소통협업·문제해결·책임감 점수</td><td>각 역할 그룹 평균을 동일한 25% 비중으로 결합한다. 누락 역할을 0점 처리하거나 남은 역할로 재가중하지 않는다.</td><td>기술기여·소통협업·문제해결·책임감 축</td><td>네 역할 중 하나라도 없으면 해당 축 전체가 <code>NOT_READY</code>다.</td></tr>
+              <tr><td>4</td><td><strong>학습지속성</strong></td><td>출석률, 블로그 제출률, 과제·스터디·멘토링 참여</td><td>5점 단위 출석률 70% + 블로그 완료율 30%를 기본점수로 하고 과제·스터디·멘토링 보너스를 더해 100점 상한을 적용한다.</td><td>학습지속성 축</td><td>6축·핵심 KPI<br>필수 입력 부족 시 <code>NOT_READY</code> 또는 <code>ERROR</code></td></tr>
+              <tr><td>5</td><td><strong>6축 종합점수·등급</strong></td><td>평가 4축, 학습지속성, 성취도</td><td>여섯 축이 모두 <code>READY</code>일 때만 단순 평균으로 종합점수를 만든 뒤 정책 임계값으로 등급을 결정한다.</td><td><code>overallScore</code>, <code>grade</code></td><td>하나라도 준비되지 않으면 종합점수와 등급은 <code>null</code>이며 <code>PARTIAL</code> 점수를 만들지 않는다.</td></tr>
+              <tr><td>6</td><td><strong>핵심 KPI</strong></td><td>평가 평균, 출석, 인증 프로젝트·문제해결·기술인증 건수</td><td>증명서 요약에 필요한 6개 KPI를 별도 집계한다. 인증 상태가 확인된 항목만 건수에 포함한다.</td><td><code>kpis</code></td><td>종합요약·AI 분석 경계<br>축 점수와 건수 지표를 같은 값으로 취급하지 않는다.</td></tr>
+              <tr><td>7</td><td><strong>프로젝트·문제해결 분석</strong></td><td>인증 프로젝트와 문제해결 사례의 구조화된 근거</td><td><code>/analysis</code> 응답에서 근거를 요약·분석한다. 프로젝트 수나 사례 수만으로 역량점수를 만들지 않는다.</td><td>분석별 <span class="state">READY</span><span class="state">PARTIAL</span><span class="state">NOT_READY</span></td><td>AI 분석 탭<br>현재는 fixture 기반이며 운영 원천 계약 연결이 필요하다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">현재 응답 메타는 <code>policyVersion</code>과 <code>calculatedAt</code>이다. 실데이터 연동 시 계산 입력과 정책 버전을 함께 관리해 동일 입력의 재검증이 가능해야 한다.</p>
+      </section>

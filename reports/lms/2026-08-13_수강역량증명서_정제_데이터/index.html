@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>수강역량증명서 정제 데이터</title>
+  <link rel="stylesheet" href="../../../../assets/data-report.css" />
+</head>
+<body>
+  <article class="page">
+    <header class="report-header">
+      <p class="eyebrow">LMS · Certificate Data</p>
+      <h1>수강역량증명서 정제 데이터</h1>
+      <p class="header-summary">원천 데이터를 증명서 화면과 LMS-AI 입력에 사용할 수 있도록 학생·기수 단위로 정규화한 필드를 정리한다.</p>
+      <div class="meta"><span class="badge">작성일 2026-08-13</span><span class="badge">증명서·AI 입력</span><span class="badge">이력서 포함</span></div>
+    </header>
+    <div class="toolbar"><nav><a href="../2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/">← 실데이터 흐름</a><a href="../2026-08-13_수강역량증명서_원천_데이터/">원천 데이터</a><a href="../2026-08-13_수강역량증명서_파생_데이터/">파생 데이터</a></nav></div>
+    <main class="content"><section id="certificate-data">
+        <h2>1. 증명서 화면 정제 데이터</h2>
+        <p class="lead">기존 데이터 수집 인덱스와 같은 8열 형식으로 정리했다. 원천 DB 테이블을 그대로 복사하지 않고 증명서가 표시·계산할 수 있는 학생별 데이터로 정규화한다.</p>
+        <div class="table-wrap">
+          <table class="index-table">
+            <colgroup><col style="width:4%"><col style="width:12%"><col style="width:17%"><col style="width:9%"><col style="width:15%"><col style="width:15%"><col style="width:16%"><col style="width:12%"></colgroup>
+            <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>출처</th><th>매핑 키</th><th>타입·예시</th><th>S3 정제 필드명</th><th>사용처·처리 기준</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td class="domain-cell" rowspan="4">수강생·프로필</td><td>수강생 UUID</td><td class="source-cell" rowspan="4">운영 DB</td><td>학생 PK</td><td>UUID</td><td><code>student_uuid</code></td><td>전체 탭</td></tr>
+              <tr><td>2</td><td>수강생 이름</td><td><code>student_uuid</code></td><td>text</td><td><code>student_name</code></td><td>전체 탭 상단 수강생 정보</td></tr>
+              <tr><td>3</td><td>관심 기술</td><td><code>student_uuid</code></td><td>text[]</td><td><code>interest_skills</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>4</td><td>관심 직무</td><td><code>student_uuid</code></td><td>text[]</td><td><code>target_jobs</code></td><td>AI 분석 탭</td></tr>
+
+              <tr><td>5</td><td class="domain-cell" rowspan="5">과정·수료</td><td>과정 ID</td><td class="source-cell" rowspan="5">운영 DB</td><td>과정 PK</td><td>UUID/text</td><td><code>course_id</code></td><td>전체 탭</td></tr>
+              <tr><td>6</td><td>기수 ID</td><td>기수 PK</td><td>UUID/text</td><td><code>cohort_id</code></td><td>기수별 저장 경로 구분</td></tr>
+              <tr><td>7</td><td>과정·기수명</td><td><code>course_id + cohort_id</code></td><td>text</td><td><code>course_name, cohort_name</code></td><td>전체 탭 상단 과정·기수 정보</td></tr>
+              <tr><td>8</td><td>과정 시작·종료일</td><td><code>cohort_id</code></td><td>date range</td><td><code>course_start_at, course_end_at</code></td><td>전체 탭</td></tr>
+              <tr><td>9</td><td>수료 상태·수료일</td><td><code>student_uuid + cohort_id</code></td><td>enum, date</td><td><code>completion_status, completed_at</code></td><td>증명서 발급 가능 여부 확인</td></tr>
+
+              <tr><td>10</td><td class="domain-cell" rowspan="4">출결</td><td>전체 수업 일수</td><td class="source-cell" rowspan="4">HRD-Net·운영 DB</td><td><code>student_uuid + cohort_id</code></td><td>number (days)</td><td><code>total_days</code></td><td>종합요약·LMS-AI 학습지속성</td></tr>
+              <tr><td>11</td><td>인정 출석 일수</td><td><code>student_uuid + cohort_id</code></td><td>number (days)</td><td><code>recognized_days</code></td><td>종합요약·LMS-AI 학습지속성</td></tr>
+              <tr><td>12</td><td>출결 일자·상태</td><td><code>student_uuid + attendance_date</code></td><td>date, enum</td><td><code>attendance_date, attendance_status</code></td><td>종합요약 탭</td></tr>
+              <tr><td>13</td><td>출결 사유·인정 근거</td><td><code>student_uuid + attendance_date</code></td><td>text, enum</td><td><code>reason, recognition_type</code></td><td>출결 인정 여부 검증</td></tr>
+
+              <tr><td>14</td><td class="domain-cell" rowspan="4">학습 참여·제출</td><td>블로그 작성·제출</td><td class="source-cell" rowspan="4">운영 DB</td><td><code>student_uuid + cohort_id</code></td><td>number, status</td><td><code>blog_submitted_count</code></td><td>종합요약 탭</td></tr>
+              <tr><td>15</td><td>과제 대상·제출·완료</td><td><code>student_uuid + assignment_id</code></td><td>number, enum</td><td><code>assignment_total, submitted, completed</code></td><td>종합요약 탭</td></tr>
+              <tr><td>16</td><td>스터디 참여</td><td><code>student_uuid + study_id</code></td><td>number, enum</td><td><code>study_participation</code></td><td>종합요약 탭</td></tr>
+              <tr><td>17</td><td>멘토링 참여</td><td><code>student_uuid + mentoring_id</code></td><td>number, enum</td><td><code>mentoring_participation</code></td><td>종합요약 탭</td></tr>
+
+              <tr><td>18</td><td class="domain-cell" rowspan="6">평가</td><td>평가 ID·평가명</td><td class="source-cell" rowspan="6">운영 DB</td><td><code>student_uuid + assessment_id</code></td><td>UUID, text</td><td><code>assessment_id, assessment_name</code></td><td>종합요약·기술검증 탭</td></tr>
+              <tr><td>19</td><td>평가 유형</td><td><code>assessment_id</code></td><td>enum (ACHIEVEMENT/CS)</td><td><code>assessment_type</code></td><td>기술검증 탭</td></tr>
+              <tr><td>20</td><td>평가 카테고리</td><td><code>assessment_id</code></td><td>text/code</td><td><code>assessment_category</code></td><td>기술검증·AI 분석 탭</td></tr>
+              <tr><td>21</td><td>획득 점수·만점</td><td><code>student_uuid + assessment_id</code></td><td>number</td><td><code>score, max_score</code></td><td>종합요약·기술검증 탭</td></tr>
+              <tr><td>22</td><td>채점 상태</td><td><code>student_uuid + assessment_id</code></td><td>enum</td><td><code>grading_status</code></td><td>채점 완료 평가만 반영</td></tr>
+              <tr><td>23</td><td>응시·제출 일시</td><td><code>student_uuid + assessment_id</code></td><td>datetime</td><td><code>taken_at</code></td><td>기술검증 탭</td></tr>
+
+              <tr><td>24</td><td class="domain-cell" rowspan="3">기술 인증</td><td>인증 ID·유형</td><td class="source-cell" rowspan="3">운영 DB·첨부 파일</td><td><code>student_uuid + technical_certification_id</code></td><td>UUID, enum</td><td><code>technical_certification_id, certification_type</code></td><td>기술검증 탭</td></tr>
+              <tr><td>25</td><td>자격증 이름·기타 자격증 이름</td><td><code>technical_certification_id</code></td><td>text, text/null</td><td><code>certificate_name, other_certificate_name</code></td><td>기술검증 탭</td></tr>
+              <tr><td>26</td><td>승인 상태·첨부 파일 참조</td><td><code>technical_certification_id</code></td><td>enum, reference</td><td><code>approval_status, attachment_ref</code></td><td>승인 완료 인증만 반영</td></tr>
+
+              <tr><td>27</td><td class="domain-cell" rowspan="11">프로젝트</td><td>프로젝트 ID·프로젝트명</td><td class="source-cell" rowspan="7">프로젝트 워크스페이스 DB</td><td><code>student_uuid + project_id</code></td><td>UUID, text</td><td><code>project_id, project_name</code></td><td>프로젝트·AI 분석 탭. <code>project_id</code>는 해당 프로젝트 워크스페이스 이동에 사용하며 종합요약의 단순 건수 카드에는 사용하지 않음</td></tr>
+              <tr><td>28</td><td>기간·도메인·진행·인증 상태</td><td><code>project_id</code></td><td>date range, text, enum</td><td><code>start_at, end_at, domain, project_status, certification_status, certified_at</code></td><td>프로젝트·AI 분석 탭. 공식 공개 근거는 완료·인증 프로젝트만 사용</td></tr>
+              <tr><td>29</td><td>멤버 권한·수행 역할·팀 규모</td><td><code>student_uuid + project_id</code></td><td>enum, text, number</td><td><code>membership_role, responsibility, team_size</code></td><td>프로젝트·AI 분석 탭. 권한과 실제 수행 역할을 분리</td></tr>
+              <tr><td>30</td><td>활용 기술</td><td><code>project_id</code></td><td>text[]</td><td><code>tech_stacks</code></td><td>프로젝트·AI 분석 탭. GitHub 언어로 대체하지 않음</td></tr>
+              <tr><td>31</td><td>성과지표·검증 결과</td><td><code>project_id</code></td><td>object[]</td><td><code>outcome_metrics, verified_outcomes</code></td><td>프로젝트·AI 분석 탭. README·커밋 메시지에서 생성하지 않음</td></tr>
+              <tr><td>32</td><td>산출물</td><td><code>project_id</code></td><td>reference[]</td><td><code>artifacts</code></td><td>프로젝트·AI 분석 탭</td></tr>
+              <tr><td>33</td><td>전체·완료·인증 프로젝트 수</td><td><code>student_uuid + cohort_id</code></td><td>number</td><td><code>total_project_count, completed_project_count, certified_project_count</code></td><td>프로젝트 탭 상단 요약. 종합요약의 프로젝트 건수 카드에는 사용하지 않음</td></tr>
+              <tr><td>34</td><td>연결 저장소·분석 브랜치·개인 공개 설정</td><td class="source-cell" rowspan="4">프로젝트별 GitHub 연결·동기화</td><td><code>student_uuid + project_id + github_repository_id</code></td><td>reference[], text, boolean</td><td><code>repositories, analysis_branch, is_public_for_me</code></td><td>프로젝트별 연결값을 사용하며 FE가 산출물 URL로 저장소를 역탐색하지 않음</td></tr>
+              <tr><td>35</td><td>본인·전체 커밋 수</td><td><code>student_uuid + project_id + github_repository_id</code></td><td>number</td><td><code>my_commits, total_commits</code></td><td>프로젝트 탭. 프로젝트 기간·분석 브랜치·연결된 GitHub 사용자 기준</td></tr>
+              <tr><td>36</td><td>커밋 기여율</td><td><code>student_uuid + project_id + github_repository_id</code></td><td>number (%)</td><td><code>commit_contribution_rate</code></td><td>프로젝트 탭. 전체 프로젝트 기여도가 아닌 커밋 기준 비율로 명시</td></tr>
+              <tr><td>37</td><td>커밋 활동·동기화 시각</td><td><code>student_uuid + project_id + github_repository_id</code></td><td>object[], number, datetime</td><td><code>daily_activity, active_days, longest_streak, weekly_average, last_synced_at</code></td><td>프로젝트 탭. 공개 시 학생이 공개 허용한 저장소만 포함</td></tr>
+
+              <tr><td>38</td><td class="domain-cell" rowspan="8">문제해결</td><td>사례 ID·제목</td><td class="source-cell" rowspan="8">운영 DB</td><td><code>student_uuid + troubleshooting_id</code></td><td>UUID, text</td><td><code>case_id, title</code></td><td>문제해결 탭</td></tr>
+              <tr><td>39</td><td>문제 카테고리</td><td><code>troubleshooting_id</code></td><td>enum/text</td><td><code>category</code></td><td>문제해결·AI 분석 탭</td></tr>
+              <tr><td>40</td><td>문제 상황</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>situation</code></td><td>문제해결 탭</td></tr>
+              <tr><td>41</td><td>해결 과정</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>solution</code></td><td>문제해결 탭</td></tr>
+              <tr><td>42</td><td>결과</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>result</code></td><td>문제해결 탭</td></tr>
+              <tr><td>43</td><td>안전 요약</td><td><code>troubleshooting_id</code></td><td>text (masked)</td><td><code>safe_summary</code></td><td>문제해결·AI 분석 탭</td></tr>
+              <tr><td>44</td><td>독립 해결·지원 활용·소요일</td><td><code>troubleshooting_id</code></td><td>boolean, number</td><td><code>independent, resolution_days</code></td><td>문제해결·AI 분석 탭</td></tr>
+              <tr><td>45</td><td>인증 상태·인증일</td><td><code>troubleshooting_id</code></td><td>enum, datetime</td><td><code>certification_status, certified_at</code></td><td>인증 완료 사례만 반영. 종합요약의 단순 건수 카드에는 사용하지 않음</td></tr>
+
+              <tr><td>46</td><td class="domain-cell" rowspan="6">평가·추천</td><td>평가 역할</td><td class="source-cell" rowspan="6">운영 DB</td><td><code>student_uuid + evaluation_id</code></td><td>enum (PEER/MENTOR/INSTRUCTOR/MANAGER)</td><td><code>evaluator_role</code></td><td>종합요약 / 평가·추천 탭</td></tr>
+              <tr><td>47</td><td>공통 4축 점수</td><td><code>student_uuid + evaluation_id</code></td><td>number (1~5)</td><td><code>tech, collaboration, problem_solving, responsibility</code></td><td>종합요약 / 평가·추천 탭</td></tr>
+              <tr><td>48</td><td>평가일·정책 버전</td><td><code>evaluation_id</code></td><td>datetime, text</td><td><code>evaluated_at, policy_version</code></td><td>평가 시점·적용 기준 검증</td></tr>
+              <tr><td>49</td><td>추천 작성자 역할·맥락</td><td><code>student_uuid + recommendation_id</code></td><td>enum, text</td><td><code>author_role, context</code></td><td>종합요약 / 평가·추천 탭</td></tr>
+              <tr><td>50</td><td>추천 내용·작성일</td><td><code>recommendation_id</code></td><td>text, datetime</td><td><code>recommendation_text, created_at</code></td><td>종합요약 / 평가·추천 탭</td></tr>
+              <tr><td>51</td><td>팀원 한줄 코멘트·표시 가능 여부</td><td><code>student_uuid + peer_comment_id</code></td><td>text, boolean</td><td><code>peer_comment, is_displayable</code></td><td>평가·추천 탭</td></tr>
+
+              <tr><td>52</td><td class="domain-cell" rowspan="14">이력서</td><td>문서 식별·제목·상태</td><td class="source-cell" rowspan="14">이력서 관리 DB</td><td><code>student_uuid + resume_id</code></td><td>UUID, text, enum</td><td><code>resume_id, resume_title, resume_status</code></td><td>이력서 탭 문서 식별</td></tr>
+              <tr><td>53</td><td>섹션 표시 순서</td><td><code>resume_id</code></td><td>text[]</td><td><code>section_order</code></td><td>이력서 탭 구성 순서</td></tr>
+              <tr><td>54</td><td>기본정보</td><td><code>resume_id</code></td><td>object</td><td><code>basic_name, basic_phone, basic_email, basic_birth, github_url, blog_url</code></td><td>이력서 탭 기본정보</td></tr>
+              <tr><td>55</td><td>핵심역량·강점</td><td><code>resume_id</code></td><td>text</td><td><code>strength</code></td><td>이력서 탭 강점 원문</td></tr>
+              <tr><td>56</td><td>학력</td><td><code>resume_id + education_item_id</code></td><td>object[]</td><td><code>education_order, educations</code></td><td>이력서 탭 학력</td></tr>
+              <tr><td>57</td><td>경력</td><td><code>resume_id + career_item_id</code></td><td>object[]</td><td><code>career_order, careers</code></td><td>이력서 탭 경력</td></tr>
+              <tr><td>58</td><td>자격증</td><td><code>resume_id + certificate_item_id</code></td><td>object[]</td><td><code>certificate_order, certificates</code></td><td>이력서 탭 자격증</td></tr>
+              <tr><td>59</td><td>수상</td><td><code>resume_id + award_item_id</code></td><td>object[]</td><td><code>award_order, awards</code></td><td>이력서 탭 수상</td></tr>
+              <tr><td>60</td><td>교육 경험</td><td><code>resume_id + training_item_id</code></td><td>object[]</td><td><code>training_order, trainings</code></td><td>이력서 탭 교육 경험</td></tr>
+              <tr><td>61</td><td>기타 활동</td><td><code>resume_id + activity_item_id</code></td><td>object[]</td><td><code>activity_order, activities</code></td><td>이력서 탭 기타 활동</td></tr>
+              <tr><td>62</td><td>기술스택</td><td><code>resume_id + skill_index</code></td><td>text[]</td><td><code>skill_order, skill_name</code></td><td>이력서 탭 기술스택</td></tr>
+              <tr><td>63</td><td>이력서 프로젝트</td><td><code>resume_id + project_item_id</code></td><td>object[]</td><td><code>resume_project_order, resume_projects</code></td><td>이력서 탭 프로젝트</td></tr>
+              <tr><td>64</td><td>자기소개서 문항</td><td><code>resume_id + cover_letter_item_id</code></td><td>text[]</td><td><code>cover_letter_order, cover_letter_question</code></td><td>이력서 탭 자기소개서 문항</td></tr>
+              <tr><td>65</td><td>자기소개서 답변</td><td><code>resume_id + cover_letter_item_id</code></td><td>text[]</td><td><code>cover_letter_content</code></td><td>이력서 탭 자기소개서 원문</td></tr>
+
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><strong>데이터 없음 원칙:</strong> 상태명은 각 API 계약에 정의하고 값과 함께 전달한다. 점수 축은 <span class="state">READY</span><span class="state">NOT_READY</span><span class="state">ERROR</span>를 사용하며, 누락값을 임의의 0점으로 대체하지 않는다.</div>
+      </section>
+
+<section id="ai-data">
+        <h2>2. AI 분석 입력 정제 데이터</h2>
+        <p class="lead">AI에는 전체 증명서 원문이 아니라 사용이 허용된 개인 수행 근거와 <code>evidence_ref</code>를 전달한다. 아래 항목을 S3의 학생별 AI 입력 데이터셋으로 정규화한다.</p>
+        <div class="table-wrap">
+          <table class="index-table">
+            <colgroup><col style="width:4%"><col style="width:12%"><col style="width:17%"><col style="width:9%"><col style="width:15%"><col style="width:15%"><col style="width:16%"><col style="width:12%"></colgroup>
+            <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>출처</th><th>매핑 키</th><th>타입·예시</th><th>S3 정제 필드명</th><th>사용처·처리 기준</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td class="domain-cell" rowspan="5">공통 AI 메타</td><td>수강생 UUID</td><td class="source-cell" rowspan="5">S3 정제 데이터</td><td>학생 PK</td><td>UUID</td><td><code>student_uuid</code></td><td>AI 분석 처리</td></tr>
+              <tr><td>2</td><td>기수 ID·입력 버전</td><td><code>student_uuid + cohort_id</code></td><td>text, integer</td><td><code>cohort_id, input_version</code></td><td>동일 입력 결과 재검증</td></tr>
+              <tr><td>3</td><td>분석 정책 버전</td><td><code>input_version</code></td><td>text (ai-policy-v1)</td><td><code>policy_version</code></td><td>적용 AI 정책 확인</td></tr>
+              <tr><td>4</td><td>근거 참조·유형</td><td><code>source_type + source_id</code></td><td>reference, enum</td><td><code>evidence_ref, evidence_type</code></td><td>AI 결과와 원천 근거 연결</td></tr>
+              <tr><td>5</td><td>AI 사용 허용·준비 상태</td><td><code>student_uuid + input_version</code></td><td>boolean, enum</td><td><code>ai_allowed, readiness_status</code></td><td>AI 분석 실행 가능 여부 확인</td></tr>
+
+              <tr><td>6</td><td class="domain-cell" rowspan="8">직무 적합도</td><td>관심 직무</td><td class="source-cell" rowspan="8">S3 정제 데이터</td><td><code>student_uuid</code></td><td>text[]</td><td><code>target_jobs</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>7</td><td>관심 기술</td><td><code>student_uuid</code></td><td>text[]</td><td><code>interest_skills</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>8</td><td>프로젝트 도메인</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>project_domains</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>9</td><td>프로젝트 역할·담당 업무</td><td><code>student_uuid + project_id</code></td><td>object[]</td><td><code>project_roles, assigned_tasks</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>10</td><td>평가 카테고리·유형</td><td><code>student_uuid + assessment_id</code></td><td>code, enum</td><td><code>assessment_category, assessment_type</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>11</td><td>평가 환산 점수</td><td><code>student_uuid + assessment_id</code></td><td>number (0~100)</td><td><code>normalized_score</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>12</td><td>승인 기술 인증</td><td><code>student_uuid + certification_id</code></td><td>object[]</td><td><code>approved_certifications</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>13</td><td>인증 문제해결 카테고리</td><td><code>student_uuid + case_id</code></td><td>text[]</td><td><code>verified_case_categories</code></td><td>AI 분석 탭</td></tr>
+
+              <tr><td>14</td><td class="domain-cell" rowspan="7">프로젝트 분석</td><td>프로젝트 ID·인증 상태</td><td class="source-cell" rowspan="7">S3 정제 데이터</td><td><code>student_uuid + project_id</code></td><td>UUID, enum</td><td><code>project_id, verification_status</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>15</td><td>보드 전체 업무 수</td><td><code>project_id</code></td><td>integer</td><td><code>board_task_total</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>16</td><td>본인 담당·완료 업무 수</td><td><code>student_uuid + project_id</code></td><td>integer</td><td><code>assigned_task_count, completed_task_count</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>17</td><td>본인 기여 내용</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>contributions</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>18</td><td>개인 역할·기술</td><td><code>student_uuid + project_id</code></td><td>text[]</td><td><code>roles, technologies</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>19</td><td>개인 산출물 참조</td><td><code>student_uuid + project_id</code></td><td>reference[]</td><td><code>artifact_refs</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>20</td><td>프로젝트 동료평가 4축</td><td><code>student_uuid + project_id</code></td><td>number[4] (1~5)</td><td><code>peer_axis_scores</code></td><td>AI 분석 탭</td></tr>
+
+              <tr><td>21</td><td class="domain-cell" rowspan="8">문제해결 분석</td><td>인증 사례 ID·상태</td><td class="source-cell" rowspan="8">S3 정제 데이터</td><td><code>student_uuid + case_id</code></td><td>UUID, enum</td><td><code>case_id, verification_status</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>22</td><td>사례 카테고리</td><td><code>case_id</code></td><td>text/code</td><td><code>case_category</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>23</td><td>상황 요약</td><td><code>case_id</code></td><td>masked text</td><td><code>situation_summary</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>24</td><td>해결 과정 요약</td><td><code>case_id</code></td><td>masked text</td><td><code>solution_summary</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>25</td><td>검증 결과 요약</td><td><code>case_id</code></td><td>masked text</td><td><code>result_summary</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>26</td><td>사례별 해결 소요일</td><td><code>case_id</code></td><td>number (days)</td><td><code>resolution_days</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>27</td><td>독립 해결·지원 활용</td><td><code>case_id</code></td><td>boolean, enum[]</td><td><code>resolved_independently, support_types</code></td><td>AI 분석 탭</td></tr>
+              <tr><td>28</td><td>발생 일시·기술 태그</td><td><code>case_id</code></td><td>datetime, text[]</td><td><code>occurred_at, technology_tags</code></td><td>AI 분석 탭</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">원문 PII, 운영 메모, 개별 평가자 식별정보, 미승인 기록은 AI 입력 데이터셋에 포함하지 않는다. 평균·중앙 해결 소요일 등 집계값은 다음 절의 파생데이터로 계산한다.</p>
+      </section></main>
+    <footer class="report-footer">수강역량증명서와 LMS-AI가 사용하는 정제 데이터 계약이다.</footer>
+  </article>
+</body>
+</html>

@@ -1,9 +1,0 @@
-<section id="decisions">
-        <h2>2. 이번 설계의 기준</h2>
-        <div class="decisions">
-          <div class="decision"><strong>S3 저장소는 1개</strong><span>증명서 탭·AI 분석·파생데이터 3개 영역으로 나누고, 증명서 탭 영역은 기수 ID·수강생 UUID·버전 아래 6개 폴더로 구성한다.</span></div>
-          <div class="decision"><strong>항목별 상태 유지</strong><span>데이터가 없더라도 탭과 섹션을 유지하고 상태 메시지를 표시한다.</span></div>
-          <div class="decision"><strong>상담노트 제외</strong><span>운영 DB·S3·FastAPI·증명서 화면의 현재 범위에 두지 않는다.</span></div>
-          <div class="decision"><strong>운영 연동 구조는 택1</strong><span>두 도식은 비교 후보이며, 운영 전 Spring BE 경유형 또는 FastAPI 직접형 중 하나를 확정한다. 두 경로를 동시에 운영한다는 의미가 아니다.</span></div>
-        </div>
-      </section>

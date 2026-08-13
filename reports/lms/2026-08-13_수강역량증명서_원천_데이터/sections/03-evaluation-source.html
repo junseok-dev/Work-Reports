@@ -1,0 +1,68 @@
+<section id="evaluation-source">
+  <h2>3. 문제해결·평가·추천 원천 데이터</h2>
+  <p class="lead">인증된 문제해결 기록과 동료·멘토·강사·운영의 관찰 근거를 수강생과 기수에 연결한다.</p>
+  <div class="table-wrap"><table>
+    <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
+    <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
+    <tbody>
+      <tr><td>104</td><td class="domain">트러블슈팅</td><td>트러블슈팅 ID</td><td>문제 해결 기록 식별</td><td><code>troubleshooting_id</code></td><td>UUID</td><td><code>troubleshooting_id</code></td></tr>
+      <tr><td>105</td><td class="domain">트러블슈팅</td><td>수강생 UUID</td><td>기록을 작성 수강생에게 연결</td><td><code>troubleshooting_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>106</td><td class="domain">트러블슈팅</td><td>기수 ID</td><td>기록의 소속 기수 구분</td><td><code>troubleshooting_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>107</td><td class="domain">트러블슈팅</td><td>프로젝트 ID</td><td>프로젝트에서 발생한 문제를 프로젝트와 연결</td><td><code>troubleshooting_id + project_id</code></td><td>UUID/null</td><td><code>project_id</code></td></tr>
+      <tr><td>108</td><td class="domain">트러블슈팅</td><td>제목</td><td>문제 해결 사례의 대표 제목</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>troubleshooting_title</code></td></tr>
+      <tr><td>109</td><td class="domain">트러블슈팅</td><td>카테고리</td><td>문제 유형 분류와 온톨로지 입력</td><td><code>troubleshooting_id</code></td><td>text/code</td><td><code>troubleshooting_category</code></td></tr>
+      <tr><td>110</td><td class="domain">트러블슈팅</td><td>사용 기술 태그</td><td>문제 해결 기술을 역량과 연결</td><td><code>troubleshooting_id</code></td><td>text[]</td><td><code>tech_tags</code></td></tr>
+      <tr><td>111</td><td class="domain">트러블슈팅</td><td>문제 상황</td><td>문제 인식의 원문 증거</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>situation</code></td></tr>
+      <tr><td>112</td><td class="domain">트러블슈팅</td><td>해결 과정</td><td>시도·판단·해결 절차의 분석 증거</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>resolution_process</code></td></tr>
+      <tr><td>113</td><td class="domain">트러블슈팅</td><td>해결 결과</td><td>해결 후 변화와 학습 결과 확인</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>result</code></td></tr>
+      <tr><td>114</td><td class="domain">트러블슈팅</td><td>독립 해결 여부</td><td>자기주도 문제 해결 여부 산출</td><td><code>troubleshooting_id</code></td><td>boolean</td><td><code>independent</code></td></tr>
+      <tr><td>115</td><td class="domain">트러블슈팅</td><td>지원 유형</td><td>멘토·강사·팀원 도움의 맥락 구분</td><td><code>troubleshooting_id</code></td><td>text[]/null</td><td><code>support_types</code></td></tr>
+      <tr><td>116</td><td class="domain">트러블슈팅</td><td>해결 소요 일수</td><td>문제 해결 속도와 난이도 보조 원천</td><td><code>troubleshooting_id</code></td><td>number/null</td><td><code>resolution_days</code></td></tr>
+      <tr><td>117</td><td class="domain">트러블슈팅</td><td>인증 상태</td><td>강사 인증 완료 사례를 공식 증거로 구분</td><td><code>troubleshooting_id</code></td><td>enum</td><td><code>certification_status</code></td></tr>
+      <tr><td>118</td><td class="domain">트러블슈팅</td><td>작성 일시</td><td>발생 순서와 성장 흐름 분석</td><td><code>troubleshooting_id</code></td><td>datetime</td><td><code>created_at</code></td></tr>
+
+      <tr><td>119</td><td class="domain">멘토 평가</td><td>평가 ID</td><td>멘토 평가 행 식별</td><td><code>mentor_evaluation_id</code></td><td>UUID</td><td><code>mentor_evaluation_id</code></td></tr>
+      <tr><td>120</td><td class="domain">멘토 평가</td><td>기수 ID·팀 ID</td><td>평가 대상 기수와 담당 팀 연결</td><td><code>mentor_evaluation_id</code></td><td>UUID/text</td><td><code>cohort_id, team_id</code></td></tr>
+      <tr><td>121</td><td class="domain">멘토 평가</td><td>평가자 ID·이름</td><td>평가 작성 멘토와 표시 이름 식별</td><td><code>mentor_evaluation_id + evaluator_user_id</code></td><td>UUID, text</td><td><code>evaluator_user_id, evaluator_name</code></td></tr>
+      <tr><td>122</td><td class="domain">멘토 평가</td><td>수강생 UUID</td><td>평가를 대상 수강생에게 연결</td><td><code>mentor_evaluation_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>123</td><td class="domain">멘토 평가</td><td>평가 기준 버전</td><td>서로 다른 시점의 평가 기준 구분</td><td><code>mentor_evaluation_id</code></td><td>text</td><td><code>criteria_version</code></td></tr>
+      <tr><td>124</td><td class="domain">멘토 평가</td><td>공통 4축 점수</td><td>기술·소통협업·문제해결·책임감 원천 점수</td><td><code>mentor_evaluation_id</code></td><td>number 1~5</td><td><code>technical_score, collaboration_score, problem_solving_score, responsibility_score</code></td></tr>
+      <tr><td>125</td><td class="domain">멘토 평가</td><td>평가 코멘트</td><td>점수의 구체적인 관찰 근거</td><td><code>mentor_evaluation_id</code></td><td>text</td><td><code>evaluation_comment</code></td></tr>
+      <tr><td>126</td><td class="domain">멘토 평가</td><td>제출 일시</td><td>최종 제출 평가와 평가 시점 확인</td><td><code>mentor_evaluation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+
+      <tr><td>127</td><td class="domain">강사 평가</td><td>평가 ID</td><td>강사 평가 행 식별</td><td><code>instructor_evaluation_id</code></td><td>UUID</td><td><code>instructor_evaluation_id</code></td></tr>
+      <tr><td>128</td><td class="domain">강사 평가</td><td>기수 ID</td><td>강사가 담당한 기수와 평가 연결</td><td><code>instructor_evaluation_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>129</td><td class="domain">강사 평가</td><td>평가자 ID·이름</td><td>평가 작성 강사와 표시 이름 식별</td><td><code>instructor_evaluation_id + evaluator_user_id</code></td><td>UUID, text</td><td><code>evaluator_user_id, evaluator_name</code></td></tr>
+      <tr><td>130</td><td class="domain">강사 평가</td><td>수강생 UUID</td><td>평가를 대상 수강생에게 연결</td><td><code>instructor_evaluation_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>131</td><td class="domain">강사 평가</td><td>평가 기준 버전</td><td>서로 다른 시점의 평가 기준 구분</td><td><code>instructor_evaluation_id</code></td><td>text</td><td><code>criteria_version</code></td></tr>
+      <tr><td>132</td><td class="domain">강사 평가</td><td>공통 4축 점수</td><td>기술·소통협업·문제해결·책임감 원천 점수</td><td><code>instructor_evaluation_id</code></td><td>number 1~5</td><td><code>technical_score, collaboration_score, problem_solving_score, responsibility_score</code></td></tr>
+      <tr><td>133</td><td class="domain">강사 평가</td><td>평가 코멘트</td><td>점수의 구체적인 관찰 근거</td><td><code>instructor_evaluation_id</code></td><td>text</td><td><code>evaluation_comment</code></td></tr>
+      <tr><td>134</td><td class="domain">강사 평가</td><td>제출 일시</td><td>최종 제출 평가와 평가 시점 확인</td><td><code>instructor_evaluation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+
+      <tr><td>135</td><td class="domain">운영 평가</td><td>평가 ID</td><td>운영 평가 행 식별</td><td><code>manager_evaluation_id</code></td><td>UUID</td><td><code>manager_evaluation_id</code></td></tr>
+      <tr><td>136</td><td class="domain">운영 평가</td><td>기수 ID</td><td>운영 담당 기수와 평가 연결</td><td><code>manager_evaluation_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>137</td><td class="domain">운영 평가</td><td>평가자 ID·이름</td><td>평가 작성 운영 담당자와 표시 이름 식별</td><td><code>manager_evaluation_id + evaluator_user_id</code></td><td>UUID, text</td><td><code>evaluator_user_id, evaluator_name</code></td></tr>
+      <tr><td>138</td><td class="domain">운영 평가</td><td>수강생 UUID</td><td>평가를 대상 수강생에게 연결</td><td><code>manager_evaluation_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>139</td><td class="domain">운영 평가</td><td>평가 기준 버전</td><td>서로 다른 시점의 평가 기준 구분</td><td><code>manager_evaluation_id</code></td><td>text</td><td><code>criteria_version</code></td></tr>
+      <tr><td>140</td><td class="domain">운영 평가</td><td>공통 4축 점수</td><td>기술·소통협업·문제해결·책임감 원천 점수</td><td><code>manager_evaluation_id</code></td><td>number 1~5</td><td><code>technical_score, collaboration_score, problem_solving_score, responsibility_score</code></td></tr>
+      <tr><td>141</td><td class="domain">운영 평가</td><td>평가 코멘트</td><td>점수의 구체적인 관찰 근거</td><td><code>manager_evaluation_id</code></td><td>text</td><td><code>evaluation_comment</code></td></tr>
+      <tr><td>142</td><td class="domain">운영 평가</td><td>제출 일시</td><td>최종 제출 평가와 평가 시점 확인</td><td><code>manager_evaluation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+
+      <tr><td>143</td><td class="domain">강사 추천서</td><td>추천서 ID</td><td>강사 추천서 식별</td><td><code>instructor_recommendation_id</code></td><td>UUID</td><td><code>instructor_recommendation_id</code></td></tr>
+      <tr><td>144</td><td class="domain">강사 추천서</td><td>기수 ID</td><td>관찰한 수강 기수와 추천서 연결</td><td><code>instructor_recommendation_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>145</td><td class="domain">강사 추천서</td><td>강사 ID·이름</td><td>추천 작성자 식별과 화면 표시</td><td><code>instructor_recommendation_id + instructor_user_id</code></td><td>UUID, text</td><td><code>instructor_user_id, instructor_name</code></td></tr>
+      <tr><td>146</td><td class="domain">강사 추천서</td><td>수강생 UUID</td><td>추천서를 대상 수강생에게 연결</td><td><code>instructor_recommendation_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>147</td><td class="domain">강사 추천서</td><td>추천 내용 원문</td><td>강사가 작성한 실제 추천 내용 제공</td><td><code>instructor_recommendation_id</code></td><td>text</td><td><code>recommendation_text</code></td></tr>
+      <tr><td>148</td><td class="domain">강사 추천서</td><td>작성·제출 일시</td><td>작성 시점과 최종 제출본 확인</td><td><code>instructor_recommendation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+
+      <tr><td>149</td><td class="domain">멘토 추천서</td><td>추천서 ID</td><td>멘토 추천 제출 건 식별</td><td><code>mentor_recommendation_id</code></td><td>UUID</td><td><code>mentor_recommendation_id</code></td></tr>
+      <tr><td>150</td><td class="domain">멘토 추천서</td><td>기수 ID·팀 ID</td><td>관찰 기수와 팀당 추천 흐름 연결</td><td><code>mentor_recommendation_id</code></td><td>UUID/text</td><td><code>cohort_id, team_id</code></td></tr>
+      <tr><td>151</td><td class="domain">멘토 추천서</td><td>멘토 ID·이름</td><td>추천 작성자 식별과 화면 표시</td><td><code>mentor_recommendation_id + mentor_user_id</code></td><td>UUID, text</td><td><code>mentor_user_id, mentor_name</code></td></tr>
+      <tr><td>152</td><td class="domain">멘토 추천서</td><td>추천 유형</td><td>팀당 1명 추천과 추천하지 않음 구분</td><td><code>mentor_recommendation_id</code></td><td>enum</td><td><code>recommendation_type</code></td></tr>
+      <tr><td>153</td><td class="domain">멘토 추천서</td><td>추천 대상 수강생 UUID</td><td>추천 유형이 추천일 때 대상 연결</td><td><code>mentor_recommendation_id + student_uuid</code></td><td>UUID/null</td><td><code>student_uuid</code></td></tr>
+      <tr><td>154</td><td class="domain">멘토 추천서</td><td>추천 내용 원문</td><td>멘토가 입력한 추천 내용 보존</td><td><code>mentor_recommendation_id</code></td><td>text/null</td><td><code>recommendation_text</code></td></tr>
+      <tr><td>155</td><td class="domain">멘토 추천서</td><td>제출 상태</td><td>미작성·초안·추천·비추천 제출 구분</td><td><code>mentor_recommendation_id</code></td><td>enum</td><td><code>submission_status</code></td></tr>
+      <tr><td>156</td><td class="domain">멘토 추천서</td><td>제출 일시</td><td>최종 제출 여부와 추천 시점 확인</td><td><code>mentor_recommendation_id</code></td><td>datetime/null</td><td><code>submitted_at</code></td></tr>
+    </tbody>
+  </table></div>
+</section>

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>수강역량증명서 필요 원천 데이터</title>
+  <link rel="stylesheet" href="../../../../assets/data-report.css" />
+</head>
+<body>
+  <article class="page">
+    <header class="report-header">
+      <p class="eyebrow">LMS · Certificate Data</p>
+      <h1>수강역량증명서 필요 원천 데이터</h1>
+      <p class="header-summary">증명서 화면, AI 분석, 파생 계산에 사용하는 행 단위 원천 데이터와 연결 키를 정리한다.</p>
+      <div class="meta"><span class="badge">작성일 2026-08-13</span><span class="badge">원천 데이터</span><span class="badge">이력서 포함</span></div>
+    </header>
+    <div class="toolbar"><nav><a href="../2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/">← 실데이터 흐름</a><a href="../2026-08-13_수강역량증명서_정제_데이터/">정제 데이터</a><a href="../2026-08-13_수강역량증명서_파생_데이터/">파생 데이터</a></nav></div>
+    <main class="content"><section id="learning-source">
+  <h2>1. 수강·학습 원천 데이터</h2>
+  <p class="lead">수강생의 소속, 수료, 출결, 기록실, 멘토링, 평가와 기술 인증을 행 단위로 수집한다.</p>
+
+  <h3>수강생·과정·기수</h3>
+  <div class="table-wrap"><table>
+    <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
+    <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td class="domain">수강생</td><td>수강생 UUID</td><td>모든 개인 기록을 한 수강생에게 연결</td><td><code>student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>2</td><td class="domain">수강생</td><td>이름</td><td>증명서 표지와 기본 정보에 표시</td><td><code>student_uuid</code></td><td>text</td><td><code>student_name</code></td></tr>
+      <tr><td>3</td><td class="domain">수강생</td><td>관심 기술</td><td>학습·프로젝트 증거와 희망 방향의 일치도 분석</td><td><code>student_uuid</code></td><td>text[]</td><td><code>interest_skills</code></td></tr>
+      <tr><td>4</td><td class="domain">수강생</td><td>관심 직무</td><td>AI 분석의 목표 직무 맥락</td><td><code>student_uuid</code></td><td>text[]</td><td><code>target_jobs</code></td></tr>
+      <tr><td>5</td><td class="domain">과정</td><td>과정 ID</td><td>과정별 교육·평가·프로젝트 데이터 연결</td><td><code>course_id</code></td><td>UUID/text</td><td><code>course_id</code></td></tr>
+      <tr><td>6</td><td class="domain">과정</td><td>과정명</td><td>증명서 표지와 과정 정보에 표시</td><td><code>course_id</code></td><td>text</td><td><code>course_name</code></td></tr>
+      <tr><td>7</td><td class="domain">기수</td><td>기수 ID</td><td>동일 과정의 기수와 수강생 소속 구분</td><td><code>cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>8</td><td class="domain">기수</td><td>기수명</td><td>증명서 표지와 과정 정보에 표시</td><td><code>cohort_id</code></td><td>text</td><td><code>cohort_name</code></td></tr>
+      <tr><td>9</td><td class="domain">기수</td><td>수강 시작일</td><td>수강 기간과 활동 분석 시작 기준</td><td><code>cohort_id</code></td><td>date</td><td><code>cohort_start_date</code></td></tr>
+      <tr><td>10</td><td class="domain">기수</td><td>수강 종료일</td><td>수강 기간과 활동 분석 종료 기준</td><td><code>cohort_id</code></td><td>date</td><td><code>cohort_end_date</code></td></tr>
+      <tr><td>11</td><td class="domain">수강</td><td>수료 상태</td><td>증명서 제공 대상과 수료 여부 표시 기준</td><td><code>student_uuid + cohort_id</code></td><td>enum</td><td><code>completion_status</code></td></tr>
+      <tr><td>12</td><td class="domain">수강</td><td>수료일</td><td>실제 수료 시점과 증명서 기준 시점 확인</td><td><code>student_uuid + cohort_id</code></td><td>date/null</td><td><code>completed_at</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>출결</h3>
+  <div class="table-wrap"><table>
+    <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
+    <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
+    <tbody>
+      <tr><td>13</td><td class="domain">출결</td><td>수강생 UUID</td><td>일자별 출결을 수강생에게 연결</td><td><code>student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>14</td><td class="domain">출결</td><td>기수 ID</td><td>출결이 발생한 수강 기수 구분</td><td><code>student_uuid + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>15</td><td class="domain">출결</td><td>출결 일자</td><td>전체 수업일수와 인정 출석 일수 산출</td><td><code>student_uuid + cohort_id + attendance_date</code></td><td>date</td><td><code>attendance_date</code></td></tr>
+      <tr><td>16</td><td class="domain">출결</td><td>출결 상태</td><td>출석·지각·조퇴·결석 등 출석률 산출 원천</td><td><code>student_uuid + cohort_id + attendance_date</code></td><td>enum</td><td><code>attendance_status</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>기록실·학습 참여</h3>
+  <div class="table-wrap"><table>
+    <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
+    <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
+    <tbody>
+      <tr><td>17</td><td class="domain">블로그</td><td>블로그 기록 ID</td><td>블로그 작성 건 식별</td><td><code>blog_record_id</code></td><td>UUID</td><td><code>blog_record_id</code></td></tr>
+      <tr><td>18</td><td class="domain">블로그</td><td>수강생 UUID</td><td>작성 기록을 수강생에게 연결</td><td><code>blog_record_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>19</td><td class="domain">블로그</td><td>기수 ID</td><td>작성 기록의 소속 기수 구분</td><td><code>blog_record_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>20</td><td class="domain">블로그</td><td>주차</td><td>주차별 기록 지속성과 제출 여부 산출</td><td><code>blog_record_id</code></td><td>integer</td><td><code>week_no</code></td></tr>
+      <tr><td>21</td><td class="domain">블로그</td><td>제목</td><td>학습 활동 증거의 제목</td><td><code>blog_record_id</code></td><td>text</td><td><code>blog_title</code></td></tr>
+      <tr><td>22</td><td class="domain">블로그</td><td>블로그 URL</td><td>실제 학습 기록 연결</td><td><code>blog_record_id</code></td><td>URL</td><td><code>blog_url</code></td></tr>
+      <tr><td>23</td><td class="domain">블로그</td><td>작성·제출 일시</td><td>주차별 작성 여부와 활동 시점 산출</td><td><code>blog_record_id</code></td><td>datetime</td><td><code>blog_submitted_at</code></td></tr>
+      <tr><td>24</td><td class="domain">과제</td><td>과제 ID</td><td>과제와 제출 건 연결</td><td><code>assignment_id</code></td><td>UUID</td><td><code>assignment_id</code></td></tr>
+      <tr><td>25</td><td class="domain">과제</td><td>기수 ID</td><td>과제가 배정된 기수 구분</td><td><code>assignment_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>26</td><td class="domain">과제</td><td>과제 제목</td><td>학습 활동과 제출 맥락</td><td><code>assignment_id</code></td><td>text</td><td><code>assignment_title</code></td></tr>
+      <tr><td>27</td><td class="domain">과제</td><td>과제 분류</td><td>주제별 학습 경험과 온톨로지 입력</td><td><code>assignment_id</code></td><td>text/code</td><td><code>assignment_category</code></td></tr>
+      <tr><td>28</td><td class="domain">과제</td><td>제출 기한</td><td>기한 내 제출 여부 산출 기준</td><td><code>assignment_id</code></td><td>datetime</td><td><code>assignment_due_at</code></td></tr>
+      <tr><td>29</td><td class="domain">과제 제출</td><td>제출 ID</td><td>수강생의 제출 건 식별</td><td><code>assignment_submission_id</code></td><td>UUID</td><td><code>assignment_submission_id</code></td></tr>
+      <tr><td>30</td><td class="domain">과제 제출</td><td>수강생 UUID</td><td>제출 건을 수강생에게 연결</td><td><code>assignment_submission_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>31</td><td class="domain">과제 제출</td><td>제출 상태</td><td>미제출·제출·보완 제출 구분</td><td><code>assignment_submission_id</code></td><td>enum</td><td><code>submission_status</code></td></tr>
+      <tr><td>32</td><td class="domain">과제 제출</td><td>제출 본문</td><td>수행 내용과 학습 증거 보존</td><td><code>assignment_submission_id</code></td><td>text</td><td><code>submission_content</code></td></tr>
+      <tr><td>33</td><td class="domain">과제 제출</td><td>제출 URL</td><td>외부 저장소·문서 제출물 연결</td><td><code>assignment_submission_id</code></td><td>URL/null</td><td><code>submission_url</code></td></tr>
+      <tr><td>34</td><td class="domain">과제 제출</td><td>제출 일시</td><td>제출 여부와 기한 내 제출 산출</td><td><code>assignment_submission_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+      <tr><td>35</td><td class="domain">스터디</td><td>스터디 기록 ID</td><td>스터디 활동 건 식별</td><td><code>study_record_id</code></td><td>UUID</td><td><code>study_record_id</code></td></tr>
+      <tr><td>36</td><td class="domain">스터디</td><td>기수 ID</td><td>스터디가 진행된 기수 구분</td><td><code>study_record_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>37</td><td class="domain">스터디</td><td>수강생 UUID</td><td>참여자 식별과 개인 참여 횟수 산출</td><td><code>study_record_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>38</td><td class="domain">스터디</td><td>스터디 제목</td><td>활동 주제와 학습 맥락</td><td><code>study_record_id</code></td><td>text</td><td><code>study_title</code></td></tr>
+      <tr><td>39</td><td class="domain">스터디</td><td>활동 일자</td><td>참여 횟수와 활동 지속성 산출</td><td><code>study_record_id</code></td><td>date</td><td><code>study_date</code></td></tr>
+      <tr><td>40</td><td class="domain">스터디</td><td>활동 내용</td><td>실제 학습 주제와 활동 증거</td><td><code>study_record_id</code></td><td>text</td><td><code>study_content</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>멘토링·평가·기술 인증</h3>
+  <div class="table-wrap"><table>
+    <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
+    <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
+    <tbody>
+      <tr><td>41</td><td class="domain">멘토링</td><td>멘토링 ID</td><td>멘토링 회차 식별</td><td><code>mentoring_id</code></td><td>UUID</td><td><code>mentoring_id</code></td></tr>
+      <tr><td>42</td><td class="domain">멘토링</td><td>기수 ID</td><td>멘토링의 수강 기수 구분</td><td><code>mentoring_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>43</td><td class="domain">멘토링</td><td>팀 ID</td><td>팀 단위 회차와 대상 수강생 연결</td><td><code>mentoring_id + team_id</code></td><td>UUID</td><td><code>team_id</code></td></tr>
+      <tr><td>44</td><td class="domain">멘토링</td><td>진행 일시</td><td>전체 회차와 기간별 참석률 산출 기준</td><td><code>mentoring_id</code></td><td>datetime</td><td><code>mentoring_held_at</code></td></tr>
+      <tr><td>45</td><td class="domain">멘토링 참석</td><td>수강생 UUID</td><td>회차별 참석자를 개인에게 연결</td><td><code>mentoring_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>46</td><td class="domain">멘토링 참석</td><td>참석 여부</td><td>참석 횟수와 참석률 산출 원천</td><td><code>mentoring_id + student_uuid</code></td><td>boolean</td><td><code>attended</code></td></tr>
+      <tr><td>47</td><td class="domain">성취도·CS 평가</td><td>평가 ID</td><td>응시 결과와 평가 기준 연결</td><td><code>assessment_id</code></td><td>UUID</td><td><code>assessment_id</code></td></tr>
+      <tr><td>48</td><td class="domain">성취도·CS 평가</td><td>기수 ID</td><td>평가가 시행된 기수 구분</td><td><code>assessment_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>49</td><td class="domain">성취도·CS 평가</td><td>평가 유형</td><td>성취도 평가와 CS 평가 구분</td><td><code>assessment_id</code></td><td>enum</td><td><code>assessment_type</code></td></tr>
+      <tr><td>50</td><td class="domain">성취도·CS 평가</td><td>평가 카테고리</td><td>기술·CS 영역 구분과 온톨로지 입력</td><td><code>assessment_id</code></td><td>text/code</td><td><code>assessment_category</code></td></tr>
+      <tr><td>51</td><td class="domain">성취도·CS 평가</td><td>수강생 UUID</td><td>응시 결과를 수강생에게 연결</td><td><code>assessment_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>52</td><td class="domain">성취도·CS 평가</td><td>취득 점수</td><td>성취 수준과 기술 축 점수 산출 원천</td><td><code>assessment_id + student_uuid</code></td><td>number</td><td><code>score</code></td></tr>
+      <tr><td>53</td><td class="domain">성취도·CS 평가</td><td>채점 상태</td><td>채점 완료 유효 점수 판별</td><td><code>assessment_id + student_uuid</code></td><td>enum</td><td><code>grading_status</code></td></tr>
+      <tr><td>54</td><td class="domain">성취도·CS 평가</td><td>응시·제출 일시</td><td>발생 시점과 최신 결과 구분</td><td><code>assessment_id + student_uuid</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+      <tr><td>55</td><td class="domain">기술 인증</td><td>기술 인증 ID</td><td>등록한 인증 건 식별</td><td><code>technical_certification_id</code></td><td>UUID</td><td><code>technical_certification_id</code></td></tr>
+      <tr><td>56</td><td class="domain">기술 인증</td><td>수강생 UUID</td><td>기술 인증을 수강생에게 연결</td><td><code>technical_certification_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>57</td><td class="domain">기술 인증</td><td>기수 ID</td><td>수강 중 등록한 인증의 소속 기수 구분</td><td><code>technical_certification_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>58</td><td class="domain">기술 인증</td><td>인증 유형</td><td>PCCE·PCCP·PCSQL·기타 구분</td><td><code>technical_certification_id</code></td><td>enum</td><td><code>certification_type</code></td></tr>
+      <tr><td>59</td><td class="domain">기술 인증</td><td>자격증 이름</td><td>증명서 기술 인증 항목에 표시</td><td><code>technical_certification_id</code></td><td>text</td><td><code>certificate_name</code></td></tr>
+      <tr><td>60</td><td class="domain">기술 인증</td><td>기타 자격증 이름</td><td>기타 유형의 구체적인 자격증명</td><td><code>technical_certification_id</code></td><td>text/null</td><td><code>other_certificate_name</code></td></tr>
+      <tr><td>61</td><td class="domain">기술 인증</td><td>첨부 파일 참조</td><td>자격증 이미지 확인·검증</td><td><code>technical_certification_id</code></td><td>file key/URL</td><td><code>attachment_ref</code></td></tr>
+      <tr><td>62</td><td class="domain">기술 인증</td><td>승인 상태</td><td>확인 완료 인증만 증명서에 반영</td><td><code>technical_certification_id</code></td><td>enum</td><td><code>approval_status</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="project-source">
+  <h2>2. 프로젝트·동료 평가·GitHub 원천 데이터</h2>
+  <p class="lead">프로젝트 ID와 사용자 식별자를 기준으로 프로젝트 수행 내용, 동료 관찰, 저장소와 커밋 기록을 연결한다.</p>
+  <div class="table-wrap"><table>
+    <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
+    <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
+    <tbody>
+      <tr><td>63</td><td class="domain">프로젝트</td><td>프로젝트 ID</td><td>프로젝트·멤버·성과·평가·GitHub 기록 연결</td><td><code>project_id</code></td><td>UUID</td><td><code>project_id</code></td></tr>
+      <tr><td>64</td><td class="domain">프로젝트</td><td>기수 ID</td><td>프로젝트가 수행된 수강 기수 구분</td><td><code>project_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>65</td><td class="domain">프로젝트</td><td>프로젝트명</td><td>프로젝트 탭의 대표 제목</td><td><code>project_id</code></td><td>text</td><td><code>project_name</code></td></tr>
+      <tr><td>66</td><td class="domain">프로젝트</td><td>프로젝트 설명</td><td>문제 정의와 수행 목적의 분석 맥락</td><td><code>project_id</code></td><td>text</td><td><code>project_description</code></td></tr>
+      <tr><td>67</td><td class="domain">프로젝트</td><td>프로젝트 도메인</td><td>도메인 경험 산출과 프로젝트 맥락 분석</td><td><code>project_id</code></td><td>text/code</td><td><code>project_domain</code></td></tr>
+      <tr><td>68</td><td class="domain">프로젝트</td><td>시작일</td><td>프로젝트 수행 기간 시작 기준</td><td><code>project_id</code></td><td>date</td><td><code>project_start_date</code></td></tr>
+      <tr><td>69</td><td class="domain">프로젝트</td><td>종료일</td><td>프로젝트 수행 기간 종료 기준</td><td><code>project_id</code></td><td>date/null</td><td><code>project_end_date</code></td></tr>
+      <tr><td>70</td><td class="domain">프로젝트</td><td>프로젝트 상태</td><td>완료와 진행 중 프로젝트 구분</td><td><code>project_id</code></td><td>enum</td><td><code>project_status</code></td></tr>
+      <tr><td>71</td><td class="domain">프로젝트</td><td>인증 상태</td><td>강사 인증 완료 프로젝트를 공식 증거로 구분</td><td><code>project_id</code></td><td>enum</td><td><code>certification_status</code></td></tr>
+      <tr><td>72</td><td class="domain">프로젝트</td><td>인증 일시</td><td>공식 프로젝트 증거가 된 시점</td><td><code>project_id</code></td><td>datetime/null</td><td><code>certified_at</code></td></tr>
+      <tr><td>73</td><td class="domain">프로젝트</td><td>사용 기술</td><td>기술 경험과 온톨로지 역량 연결</td><td><code>project_id</code></td><td>text[]</td><td><code>tech_stacks</code></td></tr>
+      <tr><td>74</td><td class="domain">프로젝트 멤버</td><td>수강생 UUID</td><td>프로젝트 참여 멤버를 개인에게 연결</td><td><code>project_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>75</td><td class="domain">프로젝트 멤버</td><td>맡은 역할</td><td>실제 프로젝트에서 수행한 역할 표시</td><td><code>project_id + student_uuid</code></td><td>text</td><td><code>project_role</code></td></tr>
+      <tr><td>76</td><td class="domain">프로젝트 멤버</td><td>담당 업무</td><td>실제 수행 범위와 온톨로지 입력</td><td><code>project_id + student_uuid</code></td><td>text</td><td><code>responsibility</code></td></tr>
+      <tr><td>77</td><td class="domain">개인 기여</td><td>수행 업무 원문</td><td>본인이 작성한 업무를 AI 분석 증거로 보존</td><td><code>project_id + student_uuid</code></td><td>text</td><td><code>self_task_text</code></td></tr>
+      <tr><td>78</td><td class="domain">개인 기여</td><td>기여 정도 원문</td><td>본인이 작성한 기여 내용을 분석 증거로 보존</td><td><code>project_id + student_uuid</code></td><td>text</td><td><code>self_contribution_text</code></td></tr>
+      <tr><td>79</td><td class="domain">프로젝트 성과</td><td>성과 ID</td><td>복수 성과를 각각 구분</td><td><code>project_outcome_id</code></td><td>UUID</td><td><code>project_outcome_id</code></td></tr>
+      <tr><td>80</td><td class="domain">프로젝트 성과</td><td>성과 유형</td><td>비포·애프터 성과 종류 구분</td><td><code>project_id + project_outcome_id</code></td><td>text/code</td><td><code>outcome_type</code></td></tr>
+      <tr><td>81</td><td class="domain">프로젝트 성과</td><td>성과 설명</td><td>수치의 의미와 측정 맥락 보존</td><td><code>project_outcome_id</code></td><td>text</td><td><code>outcome_description</code></td></tr>
+      <tr><td>82</td><td class="domain">프로젝트 성과</td><td>이전 값</td><td>개선 전 기준값</td><td><code>project_outcome_id</code></td><td>number/text</td><td><code>before_value</code></td></tr>
+      <tr><td>83</td><td class="domain">프로젝트 성과</td><td>이후 값</td><td>개선 후 결과값</td><td><code>project_outcome_id</code></td><td>number/text</td><td><code>after_value</code></td></tr>
+      <tr><td>84</td><td class="domain">동료 평가</td><td>동료 평가 ID</td><td>평가 행 식별</td><td><code>peer_evaluation_id</code></td><td>UUID</td><td><code>peer_evaluation_id</code></td></tr>
+      <tr><td>85</td><td class="domain">동료 평가</td><td>평가자 UUID</td><td>평가자와 자기·타인 평가 구분</td><td><code>peer_evaluation_id + evaluator_student_uuid</code></td><td>UUID</td><td><code>evaluator_student_uuid</code></td></tr>
+      <tr><td>86</td><td class="domain">동료 평가</td><td>평가 대상 UUID</td><td>평가 결과를 대상 수강생에게 연결</td><td><code>peer_evaluation_id + target_student_uuid</code></td><td>UUID</td><td><code>target_student_uuid</code></td></tr>
+      <tr><td>87</td><td class="domain">동료 평가</td><td>기술 역량 점수</td><td>동료 관점 기술 역량 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number</td><td><code>technical_score</code></td></tr>
+      <tr><td>88</td><td class="domain">동료 평가</td><td>소통·협업 점수</td><td>동료 관점 소통·협업 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number</td><td><code>collaboration_score</code></td></tr>
+      <tr><td>89</td><td class="domain">동료 평가</td><td>문제 해결 점수</td><td>동료 관점 문제 해결 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number</td><td><code>problem_solving_score</code></td></tr>
+      <tr><td>90</td><td class="domain">동료 평가</td><td>책임감 점수</td><td>동료 관점 책임감 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number</td><td><code>responsibility_score</code></td></tr>
+      <tr><td>91</td><td class="domain">동료 평가</td><td>맡은 업무 원문</td><td>평가자가 작성한 대상자의 업무 증거</td><td><code>peer_evaluation_id</code></td><td>text</td><td><code>assigned_work_text</code></td></tr>
+      <tr><td>92</td><td class="domain">동료 평가</td><td>기여 원문</td><td>평가자가 작성한 대상자의 기여 증거</td><td><code>peer_evaluation_id</code></td><td>text</td><td><code>contribution_text</code></td></tr>
+      <tr><td>93</td><td class="domain">동료 평가</td><td>코멘트 원문</td><td>프로젝트 수행에 대한 구체적 관찰 증거</td><td><code>peer_evaluation_id</code></td><td>text/null</td><td><code>peer_comment</code></td></tr>
+      <tr><td>94</td><td class="domain">동료 평가</td><td>제출 일시</td><td>최종 제출 평가와 발생 시점 확인</td><td><code>peer_evaluation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+      <tr><td>95</td><td class="domain">GitHub 연결</td><td>저장소 ID</td><td>GitHub 저장소를 프로젝트와 매핑</td><td><code>project_id + github_repository_id</code></td><td>text/UUID</td><td><code>github_repository_id</code></td></tr>
+      <tr><td>96</td><td class="domain">GitHub 연결</td><td>저장소 URL</td><td>프로젝트 저장소 연결</td><td><code>github_repository_id</code></td><td>URL</td><td><code>repository_url</code></td></tr>
+      <tr><td>97</td><td class="domain">GitHub 연결</td><td>분석 브랜치</td><td>활동 분석 대상 브랜치 구분</td><td><code>github_repository_id</code></td><td>text</td><td><code>analysis_branch</code></td></tr>
+      <tr><td>98</td><td class="domain">GitHub 사용자 매핑</td><td>수강생 UUID</td><td>LMS 수강생과 GitHub 계정 연결</td><td><code>student_uuid + github_user_id</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>99</td><td class="domain">GitHub 사용자 매핑</td><td>GitHub 사용자 ID</td><td>커밋 작성자를 수강생에게 귀속</td><td><code>student_uuid + github_user_id</code></td><td>text</td><td><code>github_user_id</code></td></tr>
+      <tr><td>100</td><td class="domain">GitHub 커밋</td><td>커밋 SHA</td><td>커밋 로그 중복 방지 식별자</td><td><code>github_repository_id + commit_sha</code></td><td>text</td><td><code>commit_sha</code></td></tr>
+      <tr><td>101</td><td class="domain">GitHub 커밋</td><td>커밋 작성자 ID</td><td>커밋을 GitHub 사용자 매핑과 연결</td><td><code>commit_sha + github_user_id</code></td><td>text</td><td><code>commit_author_id</code></td></tr>
+      <tr><td>102</td><td class="domain">GitHub 커밋</td><td>커밋 일시</td><td>활동 일수·주기·연속성 산출</td><td><code>commit_sha</code></td><td>datetime</td><td><code>committed_at</code></td></tr>
+      <tr><td>103</td><td class="domain">GitHub 커밋</td><td>커밋 브랜치</td><td>분석 브랜치 포함 여부 판별</td><td><code>commit_sha</code></td><td>text</td><td><code>commit_branch</code></td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout">커밋 건수·활동 일수·주간 평균·연속 활동일은 커밋 로그에서 계산한다. 커밋 비율은 프로젝트 전체 기여도가 아니라 커밋 활동 비율로 사용한다.</div>
+</section>
+
+<section id="evaluation-source">
+  <h2>3. 문제해결·평가·추천 원천 데이터</h2>
+  <p class="lead">인증된 문제해결 기록과 동료·멘토·강사·운영의 관찰 근거를 수강생과 기수에 연결한다.</p>
+  <div class="table-wrap"><table>
+    <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
+    <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
+    <tbody>
+      <tr><td>104</td><td class="domain">트러블슈팅</td><td>트러블슈팅 ID</td><td>문제 해결 기록 식별</td><td><code>troubleshooting_id</code></td><td>UUID</td><td><code>troubleshooting_id</code></td></tr>
+      <tr><td>105</td><td class="domain">트러블슈팅</td><td>수강생 UUID</td><td>기록을 작성 수강생에게 연결</td><td><code>troubleshooting_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>106</td><td class="domain">트러블슈팅</td><td>기수 ID</td><td>기록의 소속 기수 구분</td><td><code>troubleshooting_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>107</td><td class="domain">트러블슈팅</td><td>프로젝트 ID</td><td>프로젝트에서 발생한 문제를 프로젝트와 연결</td><td><code>troubleshooting_id + project_id</code></td><td>UUID/null</td><td><code>project_id</code></td></tr>
+      <tr><td>108</td><td class="domain">트러블슈팅</td><td>제목</td><td>문제 해결 사례의 대표 제목</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>troubleshooting_title</code></td></tr>
+      <tr><td>109</td><td class="domain">트러블슈팅</td><td>카테고리</td><td>문제 유형 분류와 온톨로지 입력</td><td><code>troubleshooting_id</code></td><td>text/code</td><td><code>troubleshooting_category</code></td></tr>
+      <tr><td>110</td><td class="domain">트러블슈팅</td><td>사용 기술 태그</td><td>문제 해결 기술을 역량과 연결</td><td><code>troubleshooting_id</code></td><td>text[]</td><td><code>tech_tags</code></td></tr>
+      <tr><td>111</td><td class="domain">트러블슈팅</td><td>문제 상황</td><td>문제 인식의 원문 증거</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>situation</code></td></tr>
+      <tr><td>112</td><td class="domain">트러블슈팅</td><td>해결 과정</td><td>시도·판단·해결 절차의 분석 증거</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>resolution_process</code></td></tr>
+      <tr><td>113</td><td class="domain">트러블슈팅</td><td>해결 결과</td><td>해결 후 변화와 학습 결과 확인</td><td><code>troubleshooting_id</code></td><td>text</td><td><code>result</code></td></tr>
+      <tr><td>114</td><td class="domain">트러블슈팅</td><td>독립 해결 여부</td><td>자기주도 문제 해결 여부 산출</td><td><code>troubleshooting_id</code></td><td>boolean</td><td><code>independent</code></td></tr>
+      <tr><td>115</td><td class="domain">트러블슈팅</td><td>지원 유형</td><td>멘토·강사·팀원 도움의 맥락 구분</td><td><code>troubleshooting_id</code></td><td>text[]/null</td><td><code>support_types</code></td></tr>
+      <tr><td>116</td><td class="domain">트러블슈팅</td><td>해결 소요 일수</td><td>문제 해결 속도와 난이도 보조 원천</td><td><code>troubleshooting_id</code></td><td>number/null</td><td><code>resolution_days</code></td></tr>
+      <tr><td>117</td><td class="domain">트러블슈팅</td><td>인증 상태</td><td>강사 인증 완료 사례를 공식 증거로 구분</td><td><code>troubleshooting_id</code></td><td>enum</td><td><code>certification_status</code></td></tr>
+      <tr><td>118</td><td class="domain">트러블슈팅</td><td>작성 일시</td><td>발생 순서와 성장 흐름 분석</td><td><code>troubleshooting_id</code></td><td>datetime</td><td><code>created_at</code></td></tr>
+
+      <tr><td>119</td><td class="domain">멘토 평가</td><td>평가 ID</td><td>멘토 평가 행 식별</td><td><code>mentor_evaluation_id</code></td><td>UUID</td><td><code>mentor_evaluation_id</code></td></tr>
+      <tr><td>120</td><td class="domain">멘토 평가</td><td>기수 ID·팀 ID</td><td>평가 대상 기수와 담당 팀 연결</td><td><code>mentor_evaluation_id</code></td><td>UUID/text</td><td><code>cohort_id, team_id</code></td></tr>
+      <tr><td>121</td><td class="domain">멘토 평가</td><td>평가자 ID·이름</td><td>평가 작성 멘토와 표시 이름 식별</td><td><code>mentor_evaluation_id + evaluator_user_id</code></td><td>UUID, text</td><td><code>evaluator_user_id, evaluator_name</code></td></tr>
+      <tr><td>122</td><td class="domain">멘토 평가</td><td>수강생 UUID</td><td>평가를 대상 수강생에게 연결</td><td><code>mentor_evaluation_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>123</td><td class="domain">멘토 평가</td><td>평가 기준 버전</td><td>서로 다른 시점의 평가 기준 구분</td><td><code>mentor_evaluation_id</code></td><td>text</td><td><code>criteria_version</code></td></tr>
+      <tr><td>124</td><td class="domain">멘토 평가</td><td>공통 4축 점수</td><td>기술·소통협업·문제해결·책임감 원천 점수</td><td><code>mentor_evaluation_id</code></td><td>number 1~5</td><td><code>technical_score, collaboration_score, problem_solving_score, responsibility_score</code></td></tr>
+      <tr><td>125</td><td class="domain">멘토 평가</td><td>평가 코멘트</td><td>점수의 구체적인 관찰 근거</td><td><code>mentor_evaluation_id</code></td><td>text</td><td><code>evaluation_comment</code></td></tr>
+      <tr><td>126</td><td class="domain">멘토 평가</td><td>제출 일시</td><td>최종 제출 평가와 평가 시점 확인</td><td><code>mentor_evaluation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+
+      <tr><td>127</td><td class="domain">강사 평가</td><td>평가 ID</td><td>강사 평가 행 식별</td><td><code>instructor_evaluation_id</code></td><td>UUID</td><td><code>instructor_evaluation_id</code></td></tr>
+      <tr><td>128</td><td class="domain">강사 평가</td><td>기수 ID</td><td>강사가 담당한 기수와 평가 연결</td><td><code>instructor_evaluation_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>129</td><td class="domain">강사 평가</td><td>평가자 ID·이름</td><td>평가 작성 강사와 표시 이름 식별</td><td><code>instructor_evaluation_id + evaluator_user_id</code></td><td>UUID, text</td><td><code>evaluator_user_id, evaluator_name</code></td></tr>
+      <tr><td>130</td><td class="domain">강사 평가</td><td>수강생 UUID</td><td>평가를 대상 수강생에게 연결</td><td><code>instructor_evaluation_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>131</td><td class="domain">강사 평가</td><td>평가 기준 버전</td><td>서로 다른 시점의 평가 기준 구분</td><td><code>instructor_evaluation_id</code></td><td>text</td><td><code>criteria_version</code></td></tr>
+      <tr><td>132</td><td class="domain">강사 평가</td><td>공통 4축 점수</td><td>기술·소통협업·문제해결·책임감 원천 점수</td><td><code>instructor_evaluation_id</code></td><td>number 1~5</td><td><code>technical_score, collaboration_score, problem_solving_score, responsibility_score</code></td></tr>
+      <tr><td>133</td><td class="domain">강사 평가</td><td>평가 코멘트</td><td>점수의 구체적인 관찰 근거</td><td><code>instructor_evaluation_id</code></td><td>text</td><td><code>evaluation_comment</code></td></tr>
+      <tr><td>134</td><td class="domain">강사 평가</td><td>제출 일시</td><td>최종 제출 평가와 평가 시점 확인</td><td><code>instructor_evaluation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+
+      <tr><td>135</td><td class="domain">운영 평가</td><td>평가 ID</td><td>운영 평가 행 식별</td><td><code>manager_evaluation_id</code></td><td>UUID</td><td><code>manager_evaluation_id</code></td></tr>
+      <tr><td>136</td><td class="domain">운영 평가</td><td>기수 ID</td><td>운영 담당 기수와 평가 연결</td><td><code>manager_evaluation_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>137</td><td class="domain">운영 평가</td><td>평가자 ID·이름</td><td>평가 작성 운영 담당자와 표시 이름 식별</td><td><code>manager_evaluation_id + evaluator_user_id</code></td><td>UUID, text</td><td><code>evaluator_user_id, evaluator_name</code></td></tr>
+      <tr><td>138</td><td class="domain">운영 평가</td><td>수강생 UUID</td><td>평가를 대상 수강생에게 연결</td><td><code>manager_evaluation_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>139</td><td class="domain">운영 평가</td><td>평가 기준 버전</td><td>서로 다른 시점의 평가 기준 구분</td><td><code>manager_evaluation_id</code></td><td>text</td><td><code>criteria_version</code></td></tr>
+      <tr><td>140</td><td class="domain">운영 평가</td><td>공통 4축 점수</td><td>기술·소통협업·문제해결·책임감 원천 점수</td><td><code>manager_evaluation_id</code></td><td>number 1~5</td><td><code>technical_score, collaboration_score, problem_solving_score, responsibility_score</code></td></tr>
+      <tr><td>141</td><td class="domain">운영 평가</td><td>평가 코멘트</td><td>점수의 구체적인 관찰 근거</td><td><code>manager_evaluation_id</code></td><td>text</td><td><code>evaluation_comment</code></td></tr>
+      <tr><td>142</td><td class="domain">운영 평가</td><td>제출 일시</td><td>최종 제출 평가와 평가 시점 확인</td><td><code>manager_evaluation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+
+      <tr><td>143</td><td class="domain">강사 추천서</td><td>추천서 ID</td><td>강사 추천서 식별</td><td><code>instructor_recommendation_id</code></td><td>UUID</td><td><code>instructor_recommendation_id</code></td></tr>
+      <tr><td>144</td><td class="domain">강사 추천서</td><td>기수 ID</td><td>관찰한 수강 기수와 추천서 연결</td><td><code>instructor_recommendation_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>145</td><td class="domain">강사 추천서</td><td>강사 ID·이름</td><td>추천 작성자 식별과 화면 표시</td><td><code>instructor_recommendation_id + instructor_user_id</code></td><td>UUID, text</td><td><code>instructor_user_id, instructor_name</code></td></tr>
+      <tr><td>146</td><td class="domain">강사 추천서</td><td>수강생 UUID</td><td>추천서를 대상 수강생에게 연결</td><td><code>instructor_recommendation_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>147</td><td class="domain">강사 추천서</td><td>추천 내용 원문</td><td>강사가 작성한 실제 추천 내용 제공</td><td><code>instructor_recommendation_id</code></td><td>text</td><td><code>recommendation_text</code></td></tr>
+      <tr><td>148</td><td class="domain">강사 추천서</td><td>작성·제출 일시</td><td>작성 시점과 최종 제출본 확인</td><td><code>instructor_recommendation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+
+      <tr><td>149</td><td class="domain">멘토 추천서</td><td>추천서 ID</td><td>멘토 추천 제출 건 식별</td><td><code>mentor_recommendation_id</code></td><td>UUID</td><td><code>mentor_recommendation_id</code></td></tr>
+      <tr><td>150</td><td class="domain">멘토 추천서</td><td>기수 ID·팀 ID</td><td>관찰 기수와 팀당 추천 흐름 연결</td><td><code>mentor_recommendation_id</code></td><td>UUID/text</td><td><code>cohort_id, team_id</code></td></tr>
+      <tr><td>151</td><td class="domain">멘토 추천서</td><td>멘토 ID·이름</td><td>추천 작성자 식별과 화면 표시</td><td><code>mentor_recommendation_id + mentor_user_id</code></td><td>UUID, text</td><td><code>mentor_user_id, mentor_name</code></td></tr>
+      <tr><td>152</td><td class="domain">멘토 추천서</td><td>추천 유형</td><td>팀당 1명 추천과 추천하지 않음 구분</td><td><code>mentor_recommendation_id</code></td><td>enum</td><td><code>recommendation_type</code></td></tr>
+      <tr><td>153</td><td class="domain">멘토 추천서</td><td>추천 대상 수강생 UUID</td><td>추천 유형이 추천일 때 대상 연결</td><td><code>mentor_recommendation_id + student_uuid</code></td><td>UUID/null</td><td><code>student_uuid</code></td></tr>
+      <tr><td>154</td><td class="domain">멘토 추천서</td><td>추천 내용 원문</td><td>멘토가 입력한 추천 내용 보존</td><td><code>mentor_recommendation_id</code></td><td>text/null</td><td><code>recommendation_text</code></td></tr>
+      <tr><td>155</td><td class="domain">멘토 추천서</td><td>제출 상태</td><td>미작성·초안·추천·비추천 제출 구분</td><td><code>mentor_recommendation_id</code></td><td>enum</td><td><code>submission_status</code></td></tr>
+      <tr><td>156</td><td class="domain">멘토 추천서</td><td>제출 일시</td><td>최종 제출 여부와 추천 시점 확인</td><td><code>mentor_recommendation_id</code></td><td>datetime/null</td><td><code>submitted_at</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="resume-source">
+  <h2>4. 이력서 원천 데이터</h2>
+  <p class="lead">수강생이 이력서 관리에서 작성한 문서 구조와 원문을 이력서 탭에 동일하게 표시하기 위한 데이터다.</p>
+  <div class="table-wrap"><table>
+    <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
+    <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
+    <tbody>
+      <tr><td>157</td><td class="domain">이력서</td><td>이력서 ID</td><td>수강생이 작성한 복수 이력서 구분</td><td><code>resume_id</code></td><td>UUID</td><td><code>resume_id</code></td></tr>
+      <tr><td>158</td><td class="domain">이력서</td><td>수강생 UUID</td><td>이력서를 작성 수강생에게 연결</td><td><code>resume_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>159</td><td class="domain">이력서</td><td>이력서 제목</td><td>이력서 탭에서 문서 식별</td><td><code>resume_id</code></td><td>text</td><td><code>resume_title</code></td></tr>
+      <tr><td>160</td><td class="domain">이력서</td><td>작성 상태</td><td>작성 중과 작성 완료 문서 구분</td><td><code>resume_id</code></td><td>enum</td><td><code>resume_status</code></td></tr>
+      <tr><td>161</td><td class="domain">이력서</td><td>섹션 순서</td><td>수강생이 변경한 섹션 순서를 탭에 반영</td><td><code>resume_id</code></td><td>text[]</td><td><code>section_order</code></td></tr>
+      <tr><td>162</td><td class="domain">이력서 기본정보</td><td>이름</td><td>이력서 기본정보 표시</td><td><code>resume_id</code></td><td>text</td><td><code>basic_name</code></td></tr>
+      <tr><td>163</td><td class="domain">이력서 기본정보</td><td>연락처</td><td>이력서 기본정보 표시</td><td><code>resume_id</code></td><td>text</td><td><code>basic_phone</code></td></tr>
+      <tr><td>164</td><td class="domain">이력서 기본정보</td><td>이메일</td><td>이력서 기본정보 표시</td><td><code>resume_id</code></td><td>text</td><td><code>basic_email</code></td></tr>
+      <tr><td>165</td><td class="domain">이력서 기본정보</td><td>생년월일</td><td>이력서 기본정보 표시</td><td><code>resume_id</code></td><td>date/text</td><td><code>basic_birth</code></td></tr>
+      <tr><td>166</td><td class="domain">이력서 기본정보</td><td>GitHub URL</td><td>수강생의 개발 활동 채널 연결</td><td><code>resume_id</code></td><td>URL/null</td><td><code>github_url</code></td></tr>
+      <tr><td>167</td><td class="domain">이력서 기본정보</td><td>블로그 URL</td><td>수강생의 학습 기록 채널 연결</td><td><code>resume_id</code></td><td>URL/null</td><td><code>blog_url</code></td></tr>
+      <tr><td>168</td><td class="domain">이력서</td><td>핵심역량·강점</td><td>수강생이 작성한 강점 원문 표시</td><td><code>resume_id</code></td><td>text</td><td><code>strength</code></td></tr>
+      <tr><td>169</td><td class="domain">이력서 학력</td><td>항목 순서</td><td>수강생이 정한 학력 항목 순서 보존</td><td><code>resume_id + education_item_id</code></td><td>integer</td><td><code>education_order</code></td></tr>
+      <tr><td>170</td><td class="domain">이력서 학력</td><td>학력 항목</td><td>학교·학위·기간·설명 원문 표시</td><td><code>resume_id + education_item_id</code></td><td>object</td><td><code>educations</code></td></tr>
+      <tr><td>171</td><td class="domain">이력서 경력</td><td>항목 순서</td><td>수강생이 정한 경력 항목 순서 보존</td><td><code>resume_id + career_item_id</code></td><td>integer</td><td><code>career_order</code></td></tr>
+      <tr><td>172</td><td class="domain">이력서 경력</td><td>경력 항목</td><td>회사·역할·기간·설명 원문 표시</td><td><code>resume_id + career_item_id</code></td><td>object</td><td><code>careers</code></td></tr>
+      <tr><td>173</td><td class="domain">이력서 자격증</td><td>항목 순서</td><td>수강생이 정한 자격증 항목 순서 보존</td><td><code>resume_id + certificate_item_id</code></td><td>integer</td><td><code>certificate_order</code></td></tr>
+      <tr><td>174</td><td class="domain">이력서 자격증</td><td>자격증 항목</td><td>자격증명·발급처·기간·설명 원문 표시</td><td><code>resume_id + certificate_item_id</code></td><td>object</td><td><code>certificates</code></td></tr>
+      <tr><td>175</td><td class="domain">이력서 수상</td><td>항목 순서</td><td>수강생이 정한 수상 항목 순서 보존</td><td><code>resume_id + award_item_id</code></td><td>integer</td><td><code>award_order</code></td></tr>
+      <tr><td>176</td><td class="domain">이력서 수상</td><td>수상 항목</td><td>수상명·주관·기간·설명 원문 표시</td><td><code>resume_id + award_item_id</code></td><td>object</td><td><code>awards</code></td></tr>
+      <tr><td>177</td><td class="domain">이력서 교육 경험</td><td>항목 순서</td><td>수강생이 정한 교육 항목 순서 보존</td><td><code>resume_id + training_item_id</code></td><td>integer</td><td><code>training_order</code></td></tr>
+      <tr><td>178</td><td class="domain">이력서 교육 경험</td><td>교육 항목</td><td>교육명·기관·기간·설명 원문 표시</td><td><code>resume_id + training_item_id</code></td><td>object</td><td><code>trainings</code></td></tr>
+      <tr><td>179</td><td class="domain">이력서 기타 활동</td><td>항목 순서</td><td>수강생이 정한 활동 항목 순서 보존</td><td><code>resume_id + activity_item_id</code></td><td>integer</td><td><code>activity_order</code></td></tr>
+      <tr><td>180</td><td class="domain">이력서 기타 활동</td><td>활동 항목</td><td>활동명·역할·기간·설명 원문 표시</td><td><code>resume_id + activity_item_id</code></td><td>object</td><td><code>activities</code></td></tr>
+      <tr><td>181</td><td class="domain">이력서 기술스택</td><td>기술 순서</td><td>수강생이 정한 기술 표시 순서 보존</td><td><code>resume_id + skill_index</code></td><td>integer</td><td><code>skill_order</code></td></tr>
+      <tr><td>182</td><td class="domain">이력서 기술스택</td><td>기술명</td><td>이력서에 작성한 기술스택 원문 표시</td><td><code>resume_id + skill_index</code></td><td>text</td><td><code>skill_name</code></td></tr>
+      <tr><td>183</td><td class="domain">이력서 프로젝트</td><td>항목 순서</td><td>수강생이 정한 프로젝트 항목 순서 보존</td><td><code>resume_id + project_item_id</code></td><td>integer</td><td><code>resume_project_order</code></td></tr>
+      <tr><td>184</td><td class="domain">이력서 프로젝트</td><td>프로젝트 항목</td><td>프로젝트명·역할·기간·설명 원문 표시</td><td><code>resume_id + project_item_id</code></td><td>object</td><td><code>resume_projects</code></td></tr>
+      <tr><td>185</td><td class="domain">자기소개서</td><td>문항 순서</td><td>수강생이 정한 문항 순서를 탭에 반영</td><td><code>resume_id + cover_letter_item_id</code></td><td>integer</td><td><code>cover_letter_order</code></td></tr>
+      <tr><td>186</td><td class="domain">자기소개서</td><td>문항</td><td>자기소개서 질문 원문 표시</td><td><code>resume_id + cover_letter_item_id</code></td><td>text</td><td><code>cover_letter_question</code></td></tr>
+      <tr><td>187</td><td class="domain">자기소개서</td><td>답변</td><td>자기소개서 답변 원문 표시</td><td><code>resume_id + cover_letter_item_id</code></td><td>text</td><td><code>cover_letter_content</code></td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><strong>이력서 표시 기준:</strong> 이력서 탭은 선택된 <code>resume_id</code>의 <code>section_order</code>와 각 항목 순서에 따라 작성 원문을 표시한다.</div>
+</section></main>
+    <footer class="report-footer">수강역량증명서 콘텐츠 산출에 사용하는 원천 데이터 목록이다.</footer>
+  </article>
+</body>
+</html>

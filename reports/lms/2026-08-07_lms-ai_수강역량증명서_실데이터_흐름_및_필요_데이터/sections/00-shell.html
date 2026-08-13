@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LMS-AI 수강역량증명서 실데이터 흐름 및 필요 데이터</title>
+  <title>수강역량증명서 실데이터 종합 보고서</title>
   <style>
     :root {
       color-scheme: light;
@@ -228,8 +228,7 @@
 
     section + section { margin-top: 52px; }
 
-    #architecture { order: -1; margin-top: 0; }
-    #decisions { margin-top: 52px; }
+    #architecture { margin-top: 0; }
 
     h2 {
       margin: 0 0 18px;
@@ -244,23 +243,6 @@
     }
 
     .lead { margin: -8px 0 22px; color: var(--muted); font-size: 14px; }
-
-    .decisions {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    .decision {
-      min-width: 0;
-      padding: 17px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      background: var(--soft);
-    }
-
-    .decision strong { display: block; margin-bottom: 5px; font-size: 14px; }
-    .decision span { color: var(--muted); font-size: 12px; }
 
     .diagram-shell {
       width: 100%;
@@ -418,6 +400,52 @@
       font-size: 13px;
     }
 
+    .data-report-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .data-report-card {
+      display: block;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--soft);
+      color: var(--ink);
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .data-report-card:hover,
+    .data-report-card:focus-visible {
+      border-color: #8db4d3;
+      background: #f1f7fc;
+      box-shadow: 0 10px 24px rgba(31, 72, 105, 0.12);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .data-report-card strong { display: block; margin-bottom: 7px; font-size: 16px; }
+    .data-report-card > span { display: block; min-height: 38px; color: var(--muted); font-size: 12px; }
+
+    .data-report-cta {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 16px;
+      padding: 7px 11px;
+      border-radius: 8px;
+      background: var(--navy);
+      color: #fff;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 800;
+    }
+
+    .data-report-card:hover .data-report-cta,
+    .data-report-card:focus-visible .data-report-cta { background: #1769aa; }
+
     .status-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -552,7 +580,8 @@
     }
 
     @media (max-width: 1000px) {
-      .decisions, .status-grid, .roadmap, .aws-role-grid { grid-template-columns: repeat(2, 1fr); }
+      .status-grid, .roadmap, .aws-role-grid { grid-template-columns: repeat(2, 1fr); }
+      .data-report-grid { grid-template-columns: 1fr; }
       .aws-flow { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .aws-step::after { display: none; }
       .page { width: min(100% - 20px, 1480px); margin-top: 10px; }
@@ -564,7 +593,7 @@
     }
 
     @media (max-width: 700px) {
-      .decisions, .status-grid, .roadmap, .aws-role-grid, .aws-flow { grid-template-columns: 1fr; }
+      .status-grid, .roadmap, .aws-role-grid, .aws-flow { grid-template-columns: 1fr; }
       .toolbar nav { display: none; }
       .report-header { padding-top: 28px; }
       .diagram-shell svg { height: auto; aspect-ratio: 2 / 1; }
@@ -582,7 +611,7 @@
       .toolbar, .side-nav, button { display: none; }
       .report-header { min-height: 170mm; print-color-adjust: exact; break-after: page; }
       section { break-before: page; break-inside: auto; }
-      .diagram-shell, .diagram-note, .decision, .aws-role, .aws-step, .status-card { break-inside: avoid; }
+      .diagram-shell, .diagram-note, .aws-role, .aws-step, .status-card { break-inside: avoid; }
       .table-wrap { overflow: visible; break-inside: auto; }
       tr { break-inside: avoid; }
     }
@@ -592,14 +621,14 @@
   <article class="page">
     <header class="report-header">
       <p class="eyebrow">LMS-AI · Data Flow Report</p>
-      <h1>수강역량증명서 실데이터 흐름 및 필요 데이터</h1>
-      <p class="header-summary">수료 이후 운영 DB의 실제 데이터를 S3에 기수·학생별로 정제하고, Spring BE 경유형과 FastAPI 직접 연동형 두 후보를 비교해 최종 연동안 하나를 확정하기 위한 데이터 요구사항 및 AWS 배포 구현 현황을 정리한다.</p>
+      <h1>수강역량증명서 실데이터 종합 보고서</h1>
+      <p class="header-summary">수료 이후 운영 DB의 실제 데이터를 S3에 기수·학생별로 정제하고, LMS-AI 분석 결과를 Spring BE가 취합해 FE에 제공하는 데이터 흐름과 AWS 구현 현황을 정리한다.</p>
       <div class="meta">
+        <span class="badge">종합 보고서</span>
         <span class="badge">작성일 2026-08-07</span>
-        <span class="badge">상태 목표 구조 · 구현 현황 병기</span>
+        <span class="badge">최종 확인 2026-08-13</span>
         <span class="badge">범위 LMS-AI 데이터 흐름</span>
-        <span class="badge">연동안 택1 · 현재 미확정</span>
-        <span class="badge">상담노트 제외</span>
+        <span class="badge">Spring BE 경유</span>
       </div>
     </header>
 
@@ -607,10 +636,7 @@
       <nav aria-label="보고서 목차">
         <a href="../../../">← 전체 보고서</a>
         <a href="#architecture">데이터 흐름</a>
-        <a href="#decisions">결정사항</a>
-        <a href="#certificate-data">증명서 데이터</a>
-        <a href="#ai-data">AI 데이터</a>
-        <a href="#derived-data">파생데이터</a>
+        <a href="#data-reports">데이터 보고서</a>
         <a href="#aws-status">AWS 현황</a>
         <a href="#status">현재 상태</a>
       </nav>
@@ -622,20 +648,17 @@
 </main>
 
     <footer class="report-footer">
-      본 보고서는 LMS-AI 데이터 흐름의 목표 설계와 현재 구현 간 차이를 팀 공유하기 위한 문서다. LMS-FE·LMS-AI·LMS-BE 런타임 코드는 변경하지 않았다.
+      본 보고서는 LMS-AI 수강역량증명서의 실데이터 흐름과 구현 현황을 정리하고, 원천·정제·파생 데이터 보고서를 연결한다.
     </footer>
   </article>
   <details class="side-nav">
     <summary aria-label="빠른 이동 메뉴 열기">빠른 이동</summary>
     <nav aria-label="보고서 빠른 이동">
       <a href="#architecture"><span class="side-index">1</span>데이터 흐름</a>
-      <a href="#decisions"><span class="side-index">2</span>설계 기준</a>
-      <a href="#certificate-data"><span class="side-index">3</span>증명서 데이터</a>
-      <a href="#ai-data"><span class="side-index">4</span>AI 데이터</a>
-      <a href="#derived-data"><span class="side-index">5</span>파생데이터</a>
-      <a href="#aws-status"><span class="side-index">6</span>AWS 현황</a>
-      <a href="#status"><span class="side-index">7</span>통합 연동 상태</a>
-      <a href="#roadmap-section"><span class="side-index">8</span>남은 작업</a>
+      <a href="#data-reports"><span class="side-index">2</span>데이터 보고서</a>
+      <a href="#aws-status"><span class="side-index">3</span>AWS 현황</a>
+      <a href="#status"><span class="side-index">4</span>통합 연동 상태</a>
+      <a href="#roadmap-section"><span class="side-index">5</span>남은 작업</a>
     </nav>
   </details>
   <script>

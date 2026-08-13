@@ -18,36 +18,96 @@
 
     <section class="content" aria-labelledby="reports-title">
       <div class="section-head">
-        <h2 id="reports-title">보고서 목록</h2>
-        <span class="count">총 2건</span>
+        <h2 id="reports-title">프로젝트별 보고서</h2>
+        <span class="count">2개 프로젝트 · 보고서 5건</span>
       </div>
 
-      <div class="reports">
-        <a class="report-card" href="reports/lms/2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/">
-          <div>
-            <div class="report-card__meta">
-              <span>LMS</span>
-              <span>2026-08-07</span>
-              <span>데이터 아키텍처</span>
-            </div>
-            <h3>LMS-AI 수강역량증명서 실데이터 흐름 및 필요 데이터</h3>
-            <p>운영 DB부터 S3, FastAPI, Spring BE 또는 직접 연동, FE 출력까지의 목표 흐름과 현재 구현 상태를 정리합니다.</p>
-          </div>
-          <span class="report-card__arrow" aria-hidden="true">→</span>
-        </a>
+      <div class="project-folders">
+        <details class="project-folder">
+          <summary>
+            <span class="folder-icon" aria-hidden="true"></span>
+            <span class="folder-copy"><strong>LMS</strong><small>수강역량증명서 관련 보고서</small></span>
+            <span class="folder-count">4건</span>
+            <span class="folder-toggle" aria-hidden="true">펼치기</span>
+          </summary>
+          <div class="folder-content">
+            <section class="report-group report-group--summary" aria-labelledby="lms-summary-title">
+              <div class="report-group__head">
+                <div><p class="report-group__eyebrow">먼저 확인할 보고서</p><h3 id="lms-summary-title">종합 보고서</h3></div>
+                <p>전체 데이터 흐름과 구현 현황을 한 번에 확인하고, 필요한 세부 데이터 보고서로 이동할 수 있습니다.</p>
+              </div>
+              <div class="reports">
+                <a class="report-card report-card--featured" href="reports/lms/2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/">
+                  <div>
+                    <div class="report-card__meta"><span class="report-type">종합 보고서</span><span>2026-08-07</span><span>아키텍처·구현 현황</span></div>
+                    <h4>수강역량증명서 실데이터 종합 보고서</h4>
+                    <p>운영 DB부터 S3, LMS-AI FastAPI, Spring BE, FE 출력까지의 흐름과 AWS·통합 연동 현황을 정리합니다.</p>
+                    <span class="report-card__cta">종합 보고서 열기 →</span>
+                  </div>
+                  <span class="report-card__arrow" aria-hidden="true">→</span>
+                </a>
+              </div>
+            </section>
 
-        <a class="report-card" href="reports/chatbot/2026-08-09_chatbot-service-report/">
-          <div>
-            <div class="report-card__meta">
-              <span>CHATBOT</span>
-              <span>2026-08-09</span>
-              <span>서비스 아키텍처·운영</span>
-            </div>
-            <h3>엔코아 AI 캠퍼스 상담 챗봇 — 서비스 구조 및 운영 현황</h3>
-            <p>서비스 구조와 답변 흐름, 이용·상담 현황, 지식 관리, 운영 비용과 개선 우선순위를 정리합니다.</p>
+            <section class="report-group report-group--data" aria-labelledby="lms-data-title">
+              <div class="report-group__head">
+                <div><p class="report-group__eyebrow">항목별 데이터 명세</p><h3 id="lms-data-title">데이터 상세 보고서</h3></div>
+                <p>원천 수집 항목, 현재 정제 계약, LMS-AI 계산 결과를 단계별로 나누어 확인합니다.</p>
+              </div>
+              <div class="reports reports--data">
+                <a class="report-card report-card--data" href="reports/lms/2026-08-13_수강역량증명서_원천_데이터/">
+                  <div>
+                    <div class="report-card__meta"><span class="report-type">데이터 상세</span><span>원천 데이터</span></div>
+                    <h4>수강역량증명서 필요 원천 데이터</h4>
+                    <p>수강·학습, 프로젝트, 평가·추천과 이력서에 기록되는 원본 필드와 연결 키입니다.</p>
+                    <span class="report-card__cta">원천 데이터 열기 →</span>
+                  </div>
+                </a>
+                <a class="report-card report-card--data" href="reports/lms/2026-08-13_수강역량증명서_정제_데이터/">
+                  <div>
+                    <div class="report-card__meta"><span class="report-type">데이터 상세</span><span>정제 데이터</span></div>
+                    <h4>수강역량증명서 현재 정제 데이터</h4>
+                    <p>증명서 화면과 LMS-AI 입력에 사용하는 학생·기수 단위 필드와 이력서 문서 구조입니다.</p>
+                    <span class="report-card__cta">정제 데이터 열기 →</span>
+                  </div>
+                </a>
+                <a class="report-card report-card--data" href="reports/lms/2026-08-13_수강역량증명서_파생_데이터/">
+                  <div>
+                    <div class="report-card__meta"><span class="report-type">데이터 상세</span><span>파생 데이터</span></div>
+                    <h4>수강역량증명서 파생 데이터</h4>
+                    <p>LMS-AI가 요청 시 계산해 반환하는 역량 점수, 상태, KPI와 분석 결과입니다.</p>
+                    <span class="report-card__cta">파생 데이터 열기 →</span>
+                  </div>
+                </a>
+              </div>
+            </section>
           </div>
-          <span class="report-card__arrow" aria-hidden="true">→</span>
-        </a>
+        </details>
+
+        <details class="project-folder">
+          <summary>
+            <span class="folder-icon" aria-hidden="true"></span>
+            <span class="folder-copy"><strong>CHATBOT</strong><small>상담 챗봇 관련 보고서</small></span>
+            <span class="folder-count">1건</span>
+            <span class="folder-toggle" aria-hidden="true">펼치기</span>
+          </summary>
+          <div class="folder-content">
+            <section class="report-group" aria-labelledby="chatbot-report-title">
+              <div class="report-group__head"><div><p class="report-group__eyebrow">서비스 보고서</p><h3 id="chatbot-report-title">챗봇 보고서</h3></div></div>
+              <div class="reports">
+                <a class="report-card" href="reports/chatbot/2026-08-09_chatbot-service-report/">
+                  <div>
+                    <div class="report-card__meta"><span class="report-type">종합 보고서</span><span>2026-08-09</span><span>서비스 아키텍처·운영</span></div>
+                    <h4>엔코아 AI 캠퍼스 상담 챗봇 — 서비스 구조 및 운영 현황</h4>
+                    <p>서비스 구조와 답변 흐름, 이용·상담 현황, 지식 관리, 운영 비용과 개선 우선순위를 정리합니다.</p>
+                    <span class="report-card__cta">챗봇 보고서 열기 →</span>
+                  </div>
+                  <span class="report-card__arrow" aria-hidden="true">→</span>
+                </a>
+              </div>
+            </section>
+          </div>
+        </details>
       </div>
     </section>
 
