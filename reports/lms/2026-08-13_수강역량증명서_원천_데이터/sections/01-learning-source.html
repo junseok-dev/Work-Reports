@@ -66,7 +66,7 @@
     </tbody>
   </table></div>
 
-  <h3>멘토링·평가·기술 인증</h3>
+  <h3>멘토링</h3>
   <div class="table-wrap"><table>
     <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
     <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
@@ -77,22 +77,41 @@
       <tr><td>44</td><td class="domain">멘토링</td><td>진행 일시</td><td>전체 회차와 기간별 참석률 산출 기준</td><td><code>mentoring_id</code></td><td>datetime</td><td><code>mentoring_held_at</code></td></tr>
       <tr><td>45</td><td class="domain">멘토링 참석</td><td>수강생 UUID</td><td>회차별 참석자를 개인에게 연결</td><td><code>mentoring_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
       <tr><td>46</td><td class="domain">멘토링 참석</td><td>참석 여부</td><td>참석 횟수와 참석률 산출 원천</td><td><code>mentoring_id + student_uuid</code></td><td>boolean</td><td><code>attended</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>평가</h3>
+  <div class="table-wrap"><table>
+    <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
+    <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
+    <tbody>
       <tr><td>47</td><td class="domain">성취도·CS 평가</td><td>평가 ID</td><td>응시 결과와 평가 기준 연결</td><td><code>assessment_id</code></td><td>UUID</td><td><code>assessment_id</code></td></tr>
       <tr><td>48</td><td class="domain">성취도·CS 평가</td><td>기수 ID</td><td>평가가 시행된 기수 구분</td><td><code>assessment_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
       <tr><td>49</td><td class="domain">성취도·CS 평가</td><td>평가 유형</td><td>성취도 평가와 CS 평가 구분</td><td><code>assessment_id</code></td><td>enum</td><td><code>assessment_type</code></td></tr>
       <tr><td>50</td><td class="domain">성취도·CS 평가</td><td>평가 카테고리</td><td>기술·CS 영역 구분과 온톨로지 입력</td><td><code>assessment_id</code></td><td>text/code</td><td><code>assessment_category</code></td></tr>
       <tr><td>51</td><td class="domain">성취도·CS 평가</td><td>수강생 UUID</td><td>응시 결과를 수강생에게 연결</td><td><code>assessment_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
-      <tr><td>52</td><td class="domain">성취도·CS 평가</td><td>취득 점수</td><td>성취 수준과 기술 축 점수 산출 원천</td><td><code>assessment_id + student_uuid</code></td><td>number</td><td><code>score</code></td></tr>
-      <tr><td>53</td><td class="domain">성취도·CS 평가</td><td>채점 상태</td><td>채점 완료 유효 점수 판별</td><td><code>assessment_id + student_uuid</code></td><td>enum</td><td><code>grading_status</code></td></tr>
-      <tr><td>54</td><td class="domain">성취도·CS 평가</td><td>응시·제출 일시</td><td>발생 시점과 최신 결과 구분</td><td><code>assessment_id + student_uuid</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
-      <tr><td>55</td><td class="domain">기술 인증</td><td>기술 인증 ID</td><td>등록한 인증 건 식별</td><td><code>technical_certification_id</code></td><td>UUID</td><td><code>technical_certification_id</code></td></tr>
-      <tr><td>56</td><td class="domain">기술 인증</td><td>수강생 UUID</td><td>기술 인증을 수강생에게 연결</td><td><code>technical_certification_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
-      <tr><td>57</td><td class="domain">기술 인증</td><td>기수 ID</td><td>수강 중 등록한 인증의 소속 기수 구분</td><td><code>technical_certification_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
-      <tr><td>58</td><td class="domain">기술 인증</td><td>인증 유형</td><td>PCCE·PCCP·PCSQL·기타 구분</td><td><code>technical_certification_id</code></td><td>enum</td><td><code>certification_type</code></td></tr>
-      <tr><td>59</td><td class="domain">기술 인증</td><td>자격증 이름</td><td>증명서 기술 인증 항목에 표시</td><td><code>technical_certification_id</code></td><td>text</td><td><code>certificate_name</code></td></tr>
-      <tr><td>60</td><td class="domain">기술 인증</td><td>기타 자격증 이름</td><td>기타 유형의 구체적인 자격증명</td><td><code>technical_certification_id</code></td><td>text/null</td><td><code>other_certificate_name</code></td></tr>
-      <tr><td>61</td><td class="domain">기술 인증</td><td>첨부 파일 참조</td><td>자격증 이미지 확인·검증</td><td><code>technical_certification_id</code></td><td>file key/URL</td><td><code>attachment_ref</code></td></tr>
-      <tr><td>62</td><td class="domain">기술 인증</td><td>승인 상태</td><td>확인 완료 인증만 증명서에 반영</td><td><code>technical_certification_id</code></td><td>enum</td><td><code>approval_status</code></td></tr>
+      <tr><td>52</td><td class="domain">성취도·CS 평가</td><td>제출 ID</td><td>응시별 제출 결과를 식별하고 중복 제거</td><td><code>assessment_id + assessment_submission_id</code></td><td>UUID</td><td><code>assessment_submission_id</code></td></tr>
+      <tr><td>53</td><td class="domain">성취도·CS 평가</td><td>응시 회차</td><td>재응시 결과를 구분하고 회차별 성취 변화 산출</td><td><code>assessment_submission_id</code></td><td>integer</td><td><code>attempt_no</code></td></tr>
+      <tr><td>54</td><td class="domain">성취도·CS 평가 문항</td><td>문항 ID·카테고리·배점·획득 점수</td><td>문항 카테고리별 획득 점수를 배점으로 정규화하여 기술·CS 영역 점수 산출</td><td><code>assessment_submission_id + question_id</code></td><td>UUID/text/number</td><td><code>question_id, question_category_id, max_points, earned_points</code></td></tr>
+      <tr><td>55</td><td class="domain">성취도·CS 평가</td><td>취득 점수</td><td>응시 회차의 전체 성취 수준 표시</td><td><code>assessment_submission_id</code></td><td>number</td><td><code>score</code></td></tr>
+      <tr><td>56</td><td class="domain">성취도·CS 평가</td><td>채점 상태</td><td>채점 완료 유효 점수 판별</td><td><code>assessment_submission_id</code></td><td>enum</td><td><code>grading_status</code></td></tr>
+      <tr><td>57</td><td class="domain">성취도·CS 평가</td><td>응시·제출 일시</td><td>발생 시점과 최신 결과 구분</td><td><code>assessment_submission_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>기술 인증</h3>
+  <div class="table-wrap"><table>
+    <colgroup><col style="width:5%"><col style="width:13%"><col style="width:17%"><col style="width:25%"><col style="width:16%"><col style="width:12%"><col style="width:12%"></colgroup>
+    <thead><tr><th>No.</th><th>도메인</th><th>데이터 항목</th><th>필요 이유</th><th>매핑 키</th><th>타입 예시</th><th>원천 필드명</th></tr></thead>
+    <tbody>
+      <tr><td>58</td><td class="domain">기술 인증</td><td>기술 인증 ID</td><td>등록한 인증 건 식별</td><td><code>technical_certification_id</code></td><td>UUID</td><td><code>technical_certification_id</code></td></tr>
+      <tr><td>59</td><td class="domain">기술 인증</td><td>수강생 UUID</td><td>기술 인증을 수강생에게 연결</td><td><code>technical_certification_id + student_uuid</code></td><td>UUID</td><td><code>student_uuid</code></td></tr>
+      <tr><td>60</td><td class="domain">기술 인증</td><td>기수 ID</td><td>수강 중 등록한 인증의 소속 기수 구분</td><td><code>technical_certification_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
+      <tr><td>61</td><td class="domain">기술 인증</td><td>인증 유형</td><td>PCCE·PCCP·PCSQL·기타 구분</td><td><code>technical_certification_id</code></td><td>enum</td><td><code>certification_type</code></td></tr>
+      <tr><td>62</td><td class="domain">기술 인증</td><td>자격증 이름</td><td>증명서 기술 인증 항목에 표시</td><td><code>technical_certification_id</code></td><td>text</td><td><code>certificate_name</code></td></tr>
+      <tr><td>63</td><td class="domain">기술 인증</td><td>기타 자격증 이름</td><td>기타 유형의 구체적인 자격증명</td><td><code>technical_certification_id</code></td><td>text/null</td><td><code>other_certificate_name</code></td></tr>
+      <tr><td>64</td><td class="domain">기술 인증</td><td>첨부 파일 참조</td><td>자격증 이미지 확인·검증</td><td><code>technical_certification_id</code></td><td>file key/URL</td><td><code>attachment_ref</code></td></tr>
+      <tr><td>65</td><td class="domain">기술 인증</td><td>승인 상태</td><td>확인 완료 인증만 증명서에 반영</td><td><code>technical_certification_id</code></td><td>enum</td><td><code>approval_status</code></td></tr>
     </tbody>
   </table></div>
 </section>
