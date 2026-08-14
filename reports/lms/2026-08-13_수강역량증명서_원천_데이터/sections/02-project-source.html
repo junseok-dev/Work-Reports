@@ -7,7 +7,7 @@
     <tbody>
       <tr><td>66</td><td class="domain">프로젝트</td><td>프로젝트 ID</td><td>프로젝트·멤버·성과·평가·GitHub 기록 연결</td><td><code>project_id</code></td><td>UUID</td><td><code>project_id</code></td></tr>
       <tr><td>67</td><td class="domain">프로젝트</td><td>기수 ID</td><td>프로젝트가 수행된 수강 기수 구분</td><td><code>project_id + cohort_id</code></td><td>UUID/text</td><td><code>cohort_id</code></td></tr>
-      <tr><td>68</td><td class="domain">프로젝트</td><td>프로젝트명</td><td>프로젝트 탭의 대표 제목</td><td><code>project_id</code></td><td>text</td><td><code>project_name</code></td></tr>
+      <tr><td>68</td><td class="domain">프로젝트</td><td>프로젝트명</td><td>프로젝트 탭과 AI 프로젝트 분석에서 근거 묶음을 식별·표시. 이름만으로 직무 적합도나 기여도를 판정하지 않음</td><td><code>project_id</code></td><td>text</td><td><code>project_name</code></td></tr>
       <tr><td>69</td><td class="domain">프로젝트</td><td>프로젝트 설명</td><td>문제 정의와 수행 목적의 분석 맥락</td><td><code>project_id</code></td><td>text</td><td><code>project_description</code></td></tr>
       <tr><td>70</td><td class="domain">프로젝트</td><td>프로젝트 도메인</td><td>도메인 경험 산출과 프로젝트 맥락 분석</td><td><code>project_id</code></td><td>text/code</td><td><code>project_domain</code></td></tr>
       <tr><td>71</td><td class="domain">프로젝트</td><td>시작일</td><td>프로젝트 수행 기간 시작 기준</td><td><code>project_id</code></td><td>date</td><td><code>project_start_date</code></td></tr>
@@ -35,7 +35,7 @@
       <tr><td>93</td><td class="domain">동료 평가</td><td>문제 해결 점수</td><td>동료 관점 문제 해결 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number 1~5</td><td><code>peer_problem_solving_score</code></td></tr>
       <tr><td>94</td><td class="domain">동료 평가</td><td>책임감 점수</td><td>동료 관점 책임감 원천 점수</td><td><code>peer_evaluation_id</code></td><td>number 1~5</td><td><code>peer_responsibility_score</code></td></tr>
       <tr><td>95</td><td class="domain">동료 평가</td><td>코멘트 원문</td><td>프로젝트 수행에 대한 구체적 관찰 증거</td><td><code>peer_evaluation_id</code></td><td>text/null</td><td><code>peer_comment</code></td></tr>
-      <tr><td>96</td><td class="domain">동료 평가</td><td>임시저장 여부</td><td>FE의 임시저장 평가를 제외하고 최종 제출된 4축 점수·코멘트만 사용</td><td><code>peer_evaluation_id</code></td><td>boolean</td><td><code>peer_evaluation_draft</code></td></tr>
+      <tr><td>96</td><td class="domain">동료 평가</td><td>임시저장 여부</td><td>미완성 점수·코멘트를 제외하기 위한 원천 필터. <code>false</code>인 최종 제출본만 정제하며 분석값으로 사용하지 않음</td><td><code>peer_evaluation_id</code></td><td>boolean</td><td><code>is_draft</code></td></tr>
       <tr><td>97</td><td class="domain">동료 평가</td><td>제출 일시</td><td>최종 제출 평가와 발생 시점 확인</td><td><code>peer_evaluation_id</code></td><td>datetime</td><td><code>submitted_at</code></td></tr>
       <tr><td>98</td><td class="domain">GitHub 연결</td><td>프로젝트 ID·저장소 ID</td><td>GitHub 저장소를 프로젝트와 매핑</td><td><code>project_id + github_repository_id</code></td><td>text/integer</td><td><code>github_project_id, github_repository_id</code></td></tr>
       <tr><td>99</td><td class="domain">GitHub 연결</td><td>저장소 전체 이름</td><td>증명서에 분석 대상 저장소 표시</td><td><code>github_repository_id</code></td><td>text</td><td><code>github_repository_full_name</code></td></tr>

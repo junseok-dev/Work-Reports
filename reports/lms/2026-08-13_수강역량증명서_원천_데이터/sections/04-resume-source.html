@@ -35,7 +35,7 @@
       <tr><td>187</td><td class="domain">이력서 프로젝트</td><td>프로젝트 항목</td><td>프로젝트명·역할·기간·설명 원문 표시</td><td><code>resume_id + project_item_id</code></td><td>object</td><td><code>resume_projects</code></td></tr>
       <tr><td>188</td><td class="domain">자기소개서</td><td>문항 순서</td><td>수강생이 정한 문항 순서를 탭에 반영</td><td><code>resume_id + cover_letter_item_id</code></td><td>integer</td><td><code>cover_letter_order</code></td></tr>
       <tr><td>189</td><td class="domain">자기소개서</td><td>문항</td><td>자기소개서 질문 원문 표시</td><td><code>resume_id + cover_letter_item_id</code></td><td>text</td><td><code>cover_letter_question</code></td></tr>
-      <tr><td>190</td><td class="domain">자기소개서</td><td>답변</td><td>자기소개서 답변 원문 표시</td><td><code>resume_id + cover_letter_item_id</code></td><td>text</td><td><code>cover_letter_content</code></td></tr>
+      <tr><td>190</td><td class="domain">자기소개서</td><td>답변</td><td>증명서 이력서 탭의 자기소개서 영역에 수강생이 작성한 답변을 그대로 표시. 현재 AI 분석 입력에는 사용하지 않음</td><td><code>resume_id + cover_letter_item_id</code></td><td>text</td><td><code>cover_letter_content</code></td></tr>
     </tbody>
   </table></div>
   <div class="callout"><strong>이력서 표시 기준:</strong> 이력서 탭은 선택된 <code>resume_id</code>의 <code>section_order</code>와 각 항목 순서에 따라 작성 원문을 표시한다.</div>
