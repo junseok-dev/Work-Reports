@@ -1,22 +1,16 @@
 <section id="validation">
-  <h2>2. AI 분석이 의도대로 나왔는가</h2>
-  <p class="lead">자동검사는 현재 LMS-AI 요청과 응답 안에서 계약·계산·근거 코드·개인정보를 확인한다. 최종 데이터 계약 대조는 Work-Reports의 원천·정제·파생 정의가 실제 코드에 반영됐는지 별도로 확인한다. 두 검사를 섞어 100% 정확도라고 표현하지 않는다.</p>
+  <h2>2. 검증 결과</h2>
+  <p class="lead">자동검사는 코드가 정해진 계약과 산식을 반복 가능하게 지키는지 본다. 사람 검토는 생성 문장이 맥락상 자연스럽고 과장되지 않았는지 본다. 이번에는 최종 출력이 자동 검증을 통과하지 못했으므로 사람 품질 점수는 산출하지 않았다.</p>
   <div class="check-grid">
-    <div class="check"><strong>3/3</strong><span>계약 100%</span></div>
-    <div class="check"><strong>9/9</strong><span>근거 귀속 100%</span></div>
-    <div class="check"><strong>3/3</strong><span>범위 100%</span></div>
-    <div class="check"><strong>9/9</strong><span>계산 100%</span></div>
-    <div class="check"><strong>1/1</strong><span>개인정보 100%</span></div>
+    <div class="check"><strong>97/97</strong><span>전체 회귀 테스트 100%</span></div>
+    <div class="check"><strong>0건</strong><span>정제 ERROR</span></div>
+    <div class="check"><strong>1건</strong><span>정제 WARNING</span></div>
+    <div class="check"><strong>0/2</strong><span>실제 출력 수용</span></div>
+    <div class="check"><strong>0회</strong><span>자동 재호출</span></div>
   </div>
-  <div class="metric-grid" style="margin-top:16px">
-    <div class="metric"><small>자동 무결성</small><strong>100%</strong><span>25 / 25 통과</span></div>
-    <div class="metric"><small>검증 가능 범위</small><strong>83.3%</strong><span>15 / 18 · 황수빈 mock</span></div>
-    <div class="metric"><small>최종 계약 차이</small><strong>6종</strong><span>정책·4축·태그·프로젝트·평가·스터디</span></div>
-    <div class="metric"><small>실데이터 E2E</small><strong>미검증</strong><span>DB→S3→AI→BE→FE</span></div>
+  <div class="split" style="margin-top:18px">
+    <article class="boundary engine"><h3>비용 없는 자동검사</h3><ul><li>FE camelCase 요청·응답 계약</li><li>평가 문항 배점 환산</li><li>인증·개인 귀속·준비 상태</li><li>생성 POST와 조회 GET의 동일 계약</li><li>기존 mock 7블록 응답 차단</li></ul></article>
+    <article class="boundary ai"><h3>실제 호출 결과</h3><ul><li>1차: 프로젝트 요약에 직무 전용 근거 코드 혼입</li><li>2차: 직무 평가 근거와 중복 이론근거 목록 불일치</li><li>두 결과 모두 저장·공개 전에 거절</li><li>근거 필터와 중복 필드 제거를 코드에 반영</li><li>비용 제한 때문에 추가 호출하지 않음</li></ul></article>
   </div>
-  <div class="split" style="margin-top:16px">
-    <article class="boundary engine"><h3>현재 구현 자동검사 25/25</h3><p>동일 요청을 다시 만들었을 때 해시가 같았고, 실제 API 응답의 계약·근거·계산·범위·개인정보 검사 25건이 모두 통과했다. 이는 현재 조립 입력 내부 일관성 검사다.</p></article>
-    <article class="boundary ai"><h3>최종 계약 대조 결과</h3><p>직무와 문제해결 문장은 대체로 근거에 맞지만, 프로젝트 결과가 최종 원천에 없는 개인 기술·산출물·팀 전체 보드 수를 사용한다. 따라서 프로젝트 분석은 운영 품질 합격으로 판정하지 않는다.</p></article>
-  </div>
-  <div class="interpretation"><strong>해석 주의:</strong> 25/25는 현재 요청이 스스로 모순되지 않았다는 뜻이다. 검증 가능 범위 15/18은 황수빈 mock에서 사실 확인이 가능한 항목의 비율이다. 최종 계약 구현 차이 6종과 실데이터 E2E가 남아 있으므로 운영 정확도나 다른 수강생 정확도를 100%로 판단할 수 없다.</div>
+  <div class="interpretation"><strong>100%의 의미:</strong> 97/97은 코드 회귀검사 통과율이다. AI 정확도 100%가 아니다. 이번 최종 계약의 생성 품질은 수용된 결과가 없어 <strong>측정 보류</strong>가 맞다.</div>
 </section>

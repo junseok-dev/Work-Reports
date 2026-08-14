@@ -1,16 +1,11 @@
-<section id="troubleshooting">
-  <h2>8. 문제해결 역량 분석 결과</h2>
-  <p class="lead">세 인증 사례의 구조화된 상황·해결·결과를 분석하고, 통계는 원천 사례에서 다시 계산했다.</p>
-  <div class="metric-grid">
-    <div class="metric"><small>인증 사례</small><strong>3건</strong><span>데이터 · 머신러닝 · 협업</span></div>
-    <div class="metric"><small>독립 / 지원</small><strong>1 / 2</strong><span>각 사례의 해결 방식 기준</span></div>
-    <div class="metric"><small>평균 / 중앙</small><strong>1.3 / 1일</strong><span>(1 + 2 + 1) ÷ 3</span></div>
-    <div class="metric"><small>독립 해결률</small><strong>33.3%</strong><span>독립 1 ÷ 전체 3</span></div>
+<section>
+  <h2>8. 문제해결 분석 결과 상태</h2>
+  <p class="lead">상황·해결 과정·결과가 모두 있는 인증 사례가 1건 이상이므로 입력 상태는 READY다. 사례 수를 역량 점수나 성장률로 바꾸지 않는다.</p>
+  <div class="result-grid">
+    <article class="result-card"><span class="status-pill ready">READY</span><h3>데이터</h3><ul><li>merge 키 중복 원인 확인</li><li>키 유일화와 validate 적용</li><li>행 수 일치로 결과 검증</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">READY</span><h3>머신러닝</h3><ul><li>스케일러 데이터 누수 확인</li><li>Pipeline과 교차검증으로 이동</li><li>부풀림을 제거한 성능 확인</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">READY</span><h3>협업</h3><ul><li>rebase 충돌로 동료 커밋 손실</li><li>reflog와 백업 브랜치로 복구</li><li>사전 백업 규칙으로 재발 방지</li></ul></article>
   </div>
-  <div class="result-grid" style="margin-top:14px">
-    <article class="result-card"><span class="status-pill ready">READY</span><h3>반복 해결 흐름</h3><ul><li>원인 확인 → 조치 → 결과 검증</li><li>해결 후 재발 방지 규칙을 남김</li></ul></article>
-    <article class="result-card"><span class="status-pill partial">PARTIAL</span><h3>데이터 · 모델 개선</h3><ul><li>merge 문제는 데이터 처리로 분류</li><li>누수 문제는 모델 개선으로 분리</li></ul></article>
-    <article class="result-card"><span class="status-pill ready">원천 계산</span><h3>독립 · 지원 경계</h3><ul><li>독립 해결은 데이터 사례 1건</li><li>지원 포함은 머신러닝·협업 2건</li></ul></article>
-  </div>
-  <div class="interpretation"><strong>품질 판정:</strong> 상황·조치·검증 요약과 독립 1건·지원 2건 통계는 근거에 맞는다. 폐기된 성장 분석도 결과에서 제외됐다. 다만 데이터 처리·모델 개선·인프라 배포라는 고정 3축은 원천 카테고리 전체를 표현하지 못해 협업 사례 1건이 미매핑된다. 최종 결과는 원천 카테고리 그룹을 우선 표시하고, 고정 축은 보조 분류로만 사용하거나 제거해야 한다.</div>
+  <div class="formula"><strong>표시 기준</strong><code>원천 카테고리 그룹이 주 결과 · 데이터 처리/모델 개선/인프라 보조 축은 점수 없음</code><span>협업 사례처럼 고정 보조 축에 매핑되지 않는 사례도 원천 카테고리에서는 빠지지 않는다. 폐기된 문제해결 성장 분석은 생성하지 않는다.</span></div>
+  <div class="interpretation"><strong>품질 판정:</strong> 계산 가능한 건수·기간·독립 여부와 근거 원문은 충분하다. 최종 요약 문장의 정확도는 다음 수용 결과에서 확인해야 한다.</div>
 </section>

@@ -1,35 +1,10 @@
 <section id="input">
   <h2>4. 분석에 들어간 근거</h2>
-  <p class="lead">실제 호출에 사용한 구조화 입력이다. 평가·자격·문제해결은 현재 최종 계약과 호환되지만, 프로젝트 개인 근거 일부는 확정 원천에서 다시 만들 수 없는 mock 전용 필드이므로 구분해 본다.</p>
+  <p class="lead">황수빈 FE mock을 정답으로 삼지 않고, 확정 데이터 계약을 실제처럼 통과시키는 단일 입력 사례로 사용했다. 원천에서 확인할 수 없는 개인 활동은 비워 두었고, 그 결과도 NOT_READY로 보존했다.</p>
   <div class="source-grid">
-    <article class="source-card">
-      <h3>직무 판단 근거</h3>
-      <ul>
-        <li>관심: AI 엔지니어 · 백엔드 개발자</li>
-        <li>Python 100 · SQL 96</li>
-        <li>DB 95 · 네트워크 90 · 자료구조 85 · OS 80</li>
-        <li>SQLD · PCCE 승인 자격</li>
-      </ul>
-      <div class="tag-row"><span class="tag">수집·정규화</span><span class="tag">EDA</span><span class="tag">모델링·평가</span></div>
-    </article>
-    <article class="source-card">
-      <h3>프로젝트 판단 근거</h3>
-      <ul>
-        <li>상권 분석·시세 예측 2건은 팀 프로젝트 맥락으로 입력</li>
-        <li>채용 스택 지도의 과업 8건·완료 7건은 mock 구조 안에서 확인</li>
-        <li>팀 프로젝트 개인 기술·산출물은 최종 원천 계약에 없으므로 운영 근거에서 제외 필요</li>
-        <li>프로젝트별 담당자 UUID·본인 수행·동료 관찰은 최종 계약으로 다시 조립해야 함</li>
-      </ul>
-      <div class="tag-row"><span class="tag">개인 1</span><span class="tag">팀 2</span><span class="tag">프로젝트 재조립 필요</span></div>
-    </article>
-    <article class="source-card">
-      <h3>문제해결 판단 근거</h3>
-      <ul>
-        <li>merge 키 중복 진단 · 1일 · 독립</li>
-        <li>데이터 누수와 Pipeline 교정 · 2일 · 지원</li>
-        <li>reflog 커밋 복구 · 1일 · 지원</li>
-      </ul>
-      <div class="tag-row"><span class="tag">데이터</span><span class="tag">머신러닝</span><span class="tag">협업</span></div>
-    </article>
+    <article class="source-card"><h3>직무 적합도</h3><ul><li>평가 6건의 문항별 배점·획득점수</li><li>승인 자격 2건</li><li>개인 담당 과업과 역할 패턴</li><li>인증 문제해결 3건</li><li>관심 직무·기술은 희망 문맥으로만 사용</li></ul><div class="tag-row"><span class="tag">READY</span><span class="tag">자유 직무 1~3개</span></div></article>
+    <article class="source-card"><h3>프로젝트</h3><ul><li>인증 프로젝트 3건</li><li>개인 프로젝트 1건: 담당 과업·최종 기여·연결 문제해결</li><li>팀 프로젝트 2건: 개인 귀속 근거 없음</li><li>팀 기술·팀 성과는 배경 문맥만 허용</li><li>팀 전체 보드 수·개인 기술 추정·산출물 추정 제외</li></ul><div class="tag-row"><span class="tag">READY 1</span><span class="tag">NOT_READY 2</span></div></article>
+    <article class="source-card"><h3>문제해결</h3><ul><li>상황·조치·검증 결과가 완전한 인증 사례 3건</li><li>데이터·머신러닝·협업 카테고리</li><li>평균 1.3일·중앙 1일</li><li>독립 1건·지원 활용 2건</li><li>개인정보 마스킹 후 전달</li></ul><div class="tag-row"><span class="tag">READY</span><span class="tag">성장 점수 없음</span></div></article>
   </div>
+  <div class="interpretation"><strong>유일한 경고:</strong> 개인 프로젝트가 인증 완료지만 진행 상태는 IN_PROGRESS로 남아 있다. 분석에서 제외하지 않고 상태 충돌을 제한사항으로 전달한다. ERROR는 0건이다.</div>
 </section>

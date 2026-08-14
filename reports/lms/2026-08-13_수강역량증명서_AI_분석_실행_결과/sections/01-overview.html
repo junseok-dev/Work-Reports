@@ -1,26 +1,23 @@
 <section id="overview">
   <h2>1. 최종 판정과 전체 흐름</h2>
-  <p class="lead">데이터 단계의 책임과 필드 계약은 수강역량증명서 전체 및 AI 분석을 표현하기에 충분하다. 그러나 현재 LMS-AI 구현은 최종 계약보다 뒤에 있어 그대로 운영 연결하면 안 된다. 실제 gpt-5.4-mini 결과는 현재 조립 입력의 실행 가능성과 문장 품질을 확인하는 근거로만 사용한다.</p>
+  <p class="lead">원천·정제·파생 데이터 정의는 수정할 필요가 없다. 문제는 LMS-AI가 확정 계약보다 오래된 입력과 mock 조회 경로를 사용한 것이었고, 이번 작업에서 FE가 표시하는 직무 적합도·프로젝트·문제해결 3개 분석 계약으로 통일했다. 다만 실제 LLM 출력 2건이 후처리 검증에서 거절되어 최종 문장 품질은 아직 합격 처리하지 않는다.</p>
   <div class="result-grid" style="margin-bottom:20px">
-    <article class="result-card"><span class="status-pill ready">구조 유지</span><h3>원천·정제·파생 계약</h3><ul><li>증명서 표시값과 AI 근거를 단계별로 분리</li><li>새 원천 필드 추가 없이 정의 3곳 보정</li><li>개인 귀속·인증·결측 상태를 추적 가능</li></ul></article>
-    <article class="result-card"><span class="status-pill partial">조건부</span><h3>AI 결과 품질</h3><ul><li>직무 후보와 문제해결 요약은 맥락에 맞음</li><li>현재 입력 내부 자동검사 25/25 통과</li><li>프로젝트 개인 근거는 최종 계약과 불일치</li></ul></article>
-    <article class="result-card"><span class="status-pill not-ready">보류</span><h3>실데이터 운영 연결</h3><ul><li>LMS-AI 계약 차이 6종 수정 필요</li><li>DB·S3·Spring BE·FE E2E 미구현</li><li>수정 후 동일 기준으로 1회 재호출</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">유지</span><h3>데이터 3단계</h3><ul><li>원천: FE 취득 사실과 원문 보존</li><li>정제: 인증·개인 귀속·최종본 검증</li><li>파생: 점수·건수·준비 상태 계산</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">완료</span><h3>LMS-AI 계약</h3><ul><li>FE 표시 3개 분석 블록으로 통일</li><li>생성·조회가 동일 응답 계약 사용</li><li>기존 7블록 mock 응답 차단</li></ul></article>
+    <article class="result-card"><span class="status-pill partial">보류</span><h3>AI 결과 품질</h3><ul><li>무료 계약·회귀 검사 97/97 통과</li><li>실제 출력 수용 0/2</li><li>실패 원인 수정 후 비용 때문에 재호출 중단</li></ul></article>
   </div>
   <div class="flow">
-    <div class="flow-step"><strong>원천 사실</strong><span>FE에서 실제 취득 가능한 수강·평가·프로젝트·문제해결 원문과 ID를 보존한다.</span></div>
-    <div class="flow-step"><strong>정제 데이터</strong><span>기수·수강생·개인 귀속·인증을 검증하고 AI 허용 원문만 마스킹한다.</span></div>
-    <div class="flow-step"><strong>파생 데이터</strong><span>점수·건수·비율·준비 상태를 정책 버전이 있는 결정 함수로 계산한다.</span></div>
-    <div class="flow-step"><strong>LLM 판단</strong><span>고정 직무 없이 직무 후보와 프로젝트·문제해결 설명만 생성한다.</span></div>
-    <div class="flow-step"><strong>검증·조립</strong><span>근거 코드·개인/팀 경계·계산값을 검증한 뒤 BE가 증명서 응답을 조립한다.</span></div>
+    <div class="flow-step"><strong>원천 사실</strong><span>평가 문항, 개인 담당 과업, 최종 기여, 동료평가, 인증 문제해결을 ID와 함께 보존한다.</span></div>
+    <div class="flow-step"><strong>정제 데이터</strong><span>기수·수강생 귀속, 인증 상태, 최종 제출, 중복과 결측을 검증한다.</span></div>
+    <div class="flow-step"><strong>파생 데이터</strong><span>환산점수·담당/완료 수·준비 상태·신뢰 수준을 결정론적으로 계산한다.</span></div>
+    <div class="flow-step"><strong>LLM 판단</strong><span>고정 직무 없이 직무·역할과 프로젝트·문제해결 설명만 생성한다.</span></div>
+    <div class="flow-step"><strong>검증·응답</strong><span>허용 근거와 개인/팀 경계를 통과한 결과만 FE 계약으로 저장·조회한다.</span></div>
   </div>
   <div class="metric-grid" style="margin-top:20px">
-    <div class="metric"><small>평가 근거</small><strong>6건</strong><span>성취도 2 · CS 4</span></div>
-    <div class="metric"><small>승인 자격</small><strong>2건</strong><span>SQLD · PCCE</span></div>
-    <div class="metric"><small>인증 프로젝트</small><strong>3건</strong><span>개인 1 · A팀 2</span></div>
-    <div class="metric"><small>인증 문제해결</small><strong>3건</strong><span>독립 1 · 지원 2</span></div>
+    <div class="metric"><small>평가 근거</small><strong>6건</strong><span>문항 배점 기준 0~100 환산</span></div>
+    <div class="metric"><small>승인 자격</small><strong>2건</strong><span>승인 완료만 포함</span></div>
+    <div class="metric"><small>인증 프로젝트</small><strong>3건</strong><span>READY 1 · NOT_READY 2</span></div>
+    <div class="metric"><small>인증 문제해결</small><strong>3건</strong><span>READY · 독립 1 · 지원 2</span></div>
   </div>
-  <div class="formula">
-    <strong>분석 모델 · gpt-5.4-mini</strong>
-    <span>사용자 지정 모델이며 구조화 분석 품질과 반복 비용을 함께 관리하기 위한 실용적 선택이다. 2026-08-13 실제 Responses API 성공 결과의 요청 해시와 2026-08-14 재생성 요청 해시가 모두 <code>36326a…068a</code>로 같아, 비용이 발생하는 새 호출 없이 기존 실제 결과를 다시 평가했다. 입력 계약을 수정하면 해시가 달라지므로 그때 1회 재호출한다. 다른 모델보다 항상 우수하다는 뜻은 아니다. <a href="https://developers.openai.com/api/docs/models/gpt-5.4-mini">OpenAI 모델 문서</a></span>
-  </div>
+  <div class="formula"><strong>모델 선택 · gpt-5.4-mini</strong><code>구조화 출력 품질과 반복 호출 비용을 함께 관리하는 현재 선택</code><span>대형 모델보다 항상 우수하다는 뜻은 아니다. 이번 범위에서는 자유 직무 추론과 근거 기반 요약에 필요한 성능을 확보하면서 비용을 제한하기 위해 사용했다. 자동 재호출은 제거해 검증 실패가 추가 비용으로 이어지지 않게 했다.</span></div>
 </section>

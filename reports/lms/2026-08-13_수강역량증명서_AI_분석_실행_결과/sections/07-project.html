@@ -1,27 +1,11 @@
-<section id="project">
-  <h2>7. 프로젝트 분석 결과</h2>
-  <p class="lead">현재 출력은 자연스럽지만 최종 계약 기준으로는 재생성이 필요하다. 프로젝트 맥락 3건 중 개인 분석은 <code>project_id + student_uuid</code>로 귀속되는 담당 작업·본인 수행·동료 관찰·인증 문제해결만 사용해야 한다.</p>
+<section>
+  <h2>7. 프로젝트 분석 결과 상태</h2>
+  <p class="lead">이번 계약 수정의 핵심이다. 프로젝트 3건을 모두 보여 주되 개인 수행 판단은 학생 UUID로 귀속되는 근거가 있을 때만 허용한다.</p>
   <div class="result-grid">
-    <article class="result-card">
-      <span class="status-pill not-ready">재조립 필요</span>
-      <h3>상권별 매출 분석</h3>
-      <ul><li>팀 프로젝트의 도메인·기술·성과는 배경 문맥으로 사용 가능</li><li>개인 기술·산출물은 최종 원천에 없어 개인 근거에서 제외</li><li>담당 작업·본인 수행·동료 관찰로 다시 준비 상태 계산</li></ul>
-    </article>
-    <article class="result-card">
-      <span class="status-pill partial">현재 mock 내 READY</span>
-      <h3>채용 스택 지도</h3>
-      <ul><li>수집·정규화·대시보드 흐름은 맥락상 타당</li><li>과업 8개·완료 7개는 현재 mock 내부에서 일관됨</li><li>인증 완료와 진행 중 상태 충돌은 해결 또는 제한 표시 필요</li></ul>
-    </article>
-    <article class="result-card">
-      <span class="status-pill not-ready">재조립 필요</span>
-      <h3>중고 시세 예측</h3>
-      <ul><li>팀 프로젝트의 도메인·기술·성과는 배경 문맥으로 사용 가능</li><li>피처 설계·튜닝을 개인에게 귀속할 원천 행을 다시 확인</li><li>팀 MAE 개선·API 데모를 개인 성과로 표현하지 않도록 제한</li></ul>
-    </article>
+    <article class="result-card"><span class="status-pill not-ready">NOT_READY</span><h3>상권별 매출 분석</h3><ul><li>팀 도메인·기술·성과는 배경으로 표시 가능</li><li>황수빈 담당 과업·최종 기여·동료 관찰 없음</li><li>개인 역할·기술·성과 판단 금지</li></ul></article>
+    <article class="result-card"><span class="status-pill not-ready">NOT_READY</span><h3>시세 예측 모델</h3><ul><li>팀 모델·성과는 배경으로 표시 가능</li><li>황수빈 개인 귀속 근거 없음</li><li>튜닝·API 성과를 개인에게 자동 귀속하지 않음</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">READY</span><h3>채용 기술 스택 지도</h3><ul><li>개인 담당 과업 4건·완료 4건</li><li>최종 본인 수행 내용 존재</li><li>연결 인증 문제해결 1건으로 교차 확인</li></ul></article>
   </div>
-  <div class="formula">
-    <strong>개인 프로젝트 분석 기준</strong>
-    <div class="calc-line"><span class="calc-box">project_id</span><span class="calc-op">+</span><span class="calc-box">student_uuid</span><span class="calc-op">→</span><span class="calc-box">개인 과업·기여·평가</span></div>
-    <span>팀 전체 업무 수는 개인 분석의 필수값이 아니다. 과업은 담당 수강생 UUID, 동료평가는 피평가자 UUID, 본인 수행 내용은 작성자 UUID가 황수빈인 행만 사용한다. 프로젝트 성과는 배경 맥락이며 개인 성과로 자동 귀속하지 않는다.</span>
-  </div>
-  <div class="interpretation"><strong>품질 판정:</strong> 현재 문장은 읽기 쉽지만 개인 기술·산출물·보드 수와 팀 성과에 기대는 부분이 있어 최종 계약의 프로젝트 분석으로 합격 처리할 수 없다. 프롬프트를 먼저 고치는 문제가 아니라 입력 모델과 준비 상태 계산을 확정 계약으로 교체하는 것이 우선이다.</div>
+  <div class="formula"><strong>준비 상태 산식</strong><code>직접 근거(담당 과업 또는 최종 기여) + 교차 근거(동료 관찰 또는 연결 인증 문제해결)</code><span>둘 다 있으면 READY, 한쪽만 있으면 PARTIAL, 모두 없으면 NOT_READY다. 팀 전체 업무 수·팀 기술·팀 성과만으로 READY가 되지 않는다.</span></div>
+  <div class="interpretation"><strong>품질 판정:</strong> 입력과 계산 경계는 의도대로 바뀌었다. 다만 실제 생성 문장이 NOT_READY 프로젝트에서 개인 판단을 완전히 피하는지는 수용 결과가 없어 아직 미검증이다.</div>
 </section>
