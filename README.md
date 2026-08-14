@@ -28,7 +28,7 @@ LMS, 챗봇 등 프로젝트 작업 결과를 팀원에게 공유하기 위한 �
 
 ```text
 Work-Reports/
-├─ .github/workflows/pages.yml       main push 시 GitHub Pages 미러 자동 배포
+├─ .github/workflows/pages.yml       main push 시 Firebase Hosting·GitHub Pages 자동 배포
 ├─ assets/                           보고서 목록용 공통 자산
 ├─ reports/
 │  ├─ lms/
@@ -91,9 +91,17 @@ python build.py
 npx --yes firebase-tools deploy --only hosting --project work-report-277d7
 ```
 
+`main` 브랜치에 push되면 같은 빌드 검증을 통과한 보고서를 Firebase Hosting의 `live` 채널에도 자동 배포합니다. 자동 배포를 사용하려면 GitHub 저장소의 Actions secret에 Firebase 서비스 계정 JSON을 아래 이름으로 한 번 등록해야 합니다.
+
+```text
+FIREBASE_SERVICE_ACCOUNT_WORK_REPORT_277D7
+```
+
+서비스 계정 키는 저장소 파일이나 커밋에 포함하지 않습니다. Secret이 등록되지 않으면 GitHub Pages 배포와 별개로 Firebase 배포 작업만 실패합니다.
+
 ## GitHub Pages 미러 자동 배포
 
-`main`에 반영되면 `.github/workflows/pages.yml`이 다음 순서로 실행됩니다.
+`main`에 반영되면 `.github/workflows/pages.yml`이 보고서를 한 번 검증한 뒤 Firebase Hosting과 GitHub Pages 배포를 각각 실행합니다.
 
 1. `python3 build.py`로 모든 보고서를 조립합니다.
 2. 공개 가능한 파일만 `dist/`에 모읍니다.

@@ -1,4 +1,4 @@
-name: GitHub Pages
+name: Deploy reports
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: github-pages
+  group: work-reports-live-deploy
   cancel-in-progress: true
 
 jobs:
@@ -50,3 +50,27 @@ jobs:
       - name: GitHub Pages 배포
         id: deployment
         uses: actions/deploy-pages@v4
+
+  firebase:
+    name: Firebase Hosting 배포
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 저장소 가져오기
+        uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 보고서 조립
+        run: python3 build.py
+
+      - name: Firebase Hosting 실서비스 배포
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_WORK_REPORT_277D7 }}
+          projectId: work-report-277d7
+          channelId: live
+          firebaseToolsVersion: 15.22.1
