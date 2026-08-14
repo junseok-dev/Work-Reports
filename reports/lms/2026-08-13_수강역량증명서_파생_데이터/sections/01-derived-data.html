@@ -1,20 +1,103 @@
 <section id="derived-data">
-        <h2>1. LMS-AI가 요청 시 계산하는 파생데이터</h2>
-        <p class="lead">아래 내용은 현재 LMS-AI 정책 <code>2026.08.05-six-axis-four-rater-v1</code> 구현을 기준으로 한다. 파생값은 S3에 영구 저장하는 결과가 아니라 fixture 입력으로 요청 시 계산해 반환하는 값이며, 실데이터 전환 시에도 산식과 상태 계약을 먼저 일치시켜야 한다.</p>
-        <div class="table-wrap">
-          <table class="index-table calculation-table">
-            <colgroup><col style="width:4%"><col style="width:14%"><col style="width:20%"><col style="width:23%"><col style="width:19%"><col style="width:20%"></colgroup>
-            <thead><tr><th>No.</th><th>파생데이터</th><th>계산 입력</th><th>현재 계산식·정책</th><th>결과 필드·상태</th><th>사용처·준비되지 않은 경우</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td><strong>출석률</strong></td><td>인정 출석 일수, 전체 수업 일수</td><td><code>recognized_days / total_days × 100</code>을 5점 단위로 반올림해 학습지속성 계산에 사용한다.</td><td><code>attendanceRate</code></td><td>6축·핵심 KPI<br>분모 또는 필수 출결 입력이 없으면 관련 축을 계산하지 않는다.</td></tr>
-              <tr><td>2</td><td><strong>성취도</strong></td><td>완료된 성취도평가·CS 퀴즈의 최신 유효 점수</td><td>각 점수를 100점 기준으로 환산한 뒤 대상 결과의 평균을 계산한다.</td><td>성취도 축<br><span class="state">READY</span><span class="state">NOT_READY</span><span class="state">ERROR</span></td><td>6축·핵심 KPI<br>완료 결과가 없으면 <code>NOT_READY</code>, 예상 행이 누락되면 <code>ERROR</code></td></tr>
-              <tr><td>3</td><td><strong>4개 평가 역량축</strong></td><td>동료·멘토·강사·운영의 기술기여·소통협업·문제해결·책임감 점수</td><td>각 역할 그룹 평균을 동일한 25% 비중으로 결합한다. 누락 역할을 0점 처리하거나 남은 역할로 재가중하지 않는다.</td><td>기술기여·소통협업·문제해결·책임감 축</td><td>네 역할 중 하나라도 없으면 해당 축 전체가 <code>NOT_READY</code>다.</td></tr>
-              <tr><td>4</td><td><strong>학습지속성</strong></td><td>출석률, 블로그 제출률, 과제·스터디·멘토링 참여</td><td>5점 단위 출석률 70% + 블로그 완료율 30%를 기본점수로 하고 과제·스터디·멘토링 보너스를 더해 100점 상한을 적용한다.</td><td>학습지속성 축</td><td>6축·핵심 KPI<br>필수 입력 부족 시 <code>NOT_READY</code> 또는 <code>ERROR</code></td></tr>
-              <tr><td>5</td><td><strong>6축 종합점수·등급</strong></td><td>평가 4축, 학습지속성, 성취도</td><td>여섯 축이 모두 <code>READY</code>일 때만 단순 평균으로 종합점수를 만든 뒤 정책 임계값으로 등급을 결정한다.</td><td><code>overallScore</code>, <code>grade</code></td><td>하나라도 준비되지 않으면 종합점수와 등급은 <code>null</code>이며 <code>PARTIAL</code> 점수를 만들지 않는다.</td></tr>
-              <tr><td>6</td><td><strong>핵심 KPI</strong></td><td>평가 평균, 출석, 인증 프로젝트·문제해결·기술인증 건수</td><td>증명서 요약에 필요한 6개 KPI를 별도 집계한다. 인증 상태가 확인된 항목만 건수에 포함한다.</td><td><code>kpis</code></td><td>종합요약·AI 분석 경계<br>축 점수와 건수 지표를 같은 값으로 취급하지 않는다.</td></tr>
-              <tr><td>7</td><td><strong>프로젝트·문제해결 분석</strong></td><td>본인 귀속 과업·기여·동료평가와 인증 문제해결 사례</td><td>담당 수강생 UUID가 일치하는 과업에서 담당·완료 수를 계산하고, 피평가자·작성자 귀속이 확인된 근거만 <code>/analysis</code>에 사용한다. 프로젝트 수나 사례 수만으로 역량점수 또는 개인 기여율을 만들지 않는다.</td><td>개인 담당·완료 수, 분석별 <span class="state">READY</span><span class="state">PARTIAL</span><span class="state">NOT_READY</span></td><td>AI 분석 탭<br>개인 귀속 근거가 없으면 값을 추정하지 않고 상태와 제한을 반환한다.</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="note">현재 응답 메타는 <code>policyVersion</code>과 <code>calculatedAt</code>이다. 실데이터 연동 시 계산 입력과 정책 버전을 함께 관리해 동일 입력의 재검증이 가능해야 한다.</p>
-      </section>
+  <h2>1. 수강역량증명서·AI 분석 파생 데이터</h2>
+  <p class="lead">파생 데이터는 정제 데이터의 사실을 결정론적 산식으로 계산해 새로 만드는 값이다. 증명서 화면용 지표와 AI 입력용 집계를 함께 정의하되 동일한 계산값을 중복 생성하지 않는다. LLM은 이 값을 계산하거나 수정하지 않고, 근거 선택과 설명 생성에만 사용한다.</p>
+
+  <div class="callout"><strong>계약 기준:</strong> 증명서 종합점수는 FE가 요구하는 <code>2026.08.05-six-axis-four-rater-v2</code>, 상세 탭은 <code>2026.08.05-certificate-detail-tabs-v2</code>, AI 분석은 <code>2026.08.13-fe-llm-analysis-v1</code> 계열을 기준으로 한다. 실제 LMS-AI 종합점수 구현의 버전 문자열은 아직 <code>...v1</code>이라 후속 구현에서 FE와 통일해야 한다.</div>
+
+  <h3>증명서 종합점수·학습 지표</h3>
+  <div class="table-wrap">
+    <table class="index-table calculation-table">
+      <colgroup><col style="width:4%"><col style="width:13%"><col style="width:18%"><col style="width:27%"><col style="width:17%"><col style="width:21%"></colgroup>
+      <thead><tr><th>No.</th><th>파생 데이터</th><th>정제 입력</th><th>계산식·정책</th><th>결과 필드</th><th>사용처·결측 처리</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>전체 출결 일수</strong></td><td><code>attendance_days[]</code></td><td>대상 기수 기간 안에서 중복 제거된 일자 수</td><td><code>attendance_total_days</code></td><td>출석률 분모. 0건이면 출석률 <code>ERROR</code></td></tr>
+        <tr><td>2</td><td><strong>직접 결석 일수</strong></td><td>일자별 출결 상태</td><td><code>attendance_status = absent</code>인 일자 수</td><td><code>direct_absence_days</code></td><td>출석 인정 일수 계산 근거</td></tr>
+        <tr><td>3</td><td><strong>지각·조퇴 환산 결석</strong></td><td>지각·조퇴 일자</td><td><code>floor((late_days + early_leave_days) / 3)</code></td><td><code>converted_absence_days</code></td><td>현재 LMS-AI 출결 정책. 정책 변경 시 버전 분리</td></tr>
+        <tr><td>4</td><td><strong>출석 인정 일수</strong></td><td>1~3번</td><td><code>total_days - direct_absence_days - converted_absence_days</code>, 최솟값 0</td><td><code>attendance_recognized_days</code></td><td>출석률 분자</td></tr>
+        <tr><td>5</td><td><strong>출석률</strong></td><td>인정 일수·전체 일수</td><td><code>recognized_days / total_days × 100</code>, 소수 첫째 자리</td><td><code>attendance_rate</code></td><td>종합요약 KPI·학습지속성. 분모가 없으면 0점이 아니라 <code>ERROR</code></td></tr>
+        <tr><td>6</td><td><strong>블로그 제출률</strong></td><td><code>blog_records[]</code></td><td><code>approved 또는 completed 주차 수 / 전체 유효 주차 수 × 100</code></td><td><code>blog_completed_count, blog_total_count, blog_rate</code></td><td>학습지속성. 제출 기회 원천이 없으면 <code>ERROR</code></td></tr>
+        <tr><td>7</td><td><strong>과제 제출률</strong></td><td>마감 과제·개인 제출</td><td>기준일이 지난 과제 중 유효 제출 상태 건수 ÷ 마감 과제 수 × 100</td><td><code>assignment_completed_count, assignment_due_count, assignment_rate</code></td><td>학습지속성 가산점. 과제가 없으면 <code>NOT_APPLICABLE</code>, 제출 행 누락은 <code>ERROR</code></td></tr>
+        <tr><td>8</td><td><strong>스터디 참여율</strong></td><td><code>study_records[]</code></td><td><code>approved 건수 / 유효 스터디 기록 수 × 100</code></td><td><code>study_approved_count, study_total_count, study_rate</code></td><td>학습지속성 가산점. 공식 기회 분모가 없으면 <code>NOT_APPLICABLE</code></td></tr>
+        <tr><td>9</td><td><strong>멘토링 참석률</strong></td><td>유효 회차·개인 참석 기록</td><td><code>attended 회차 / 기준일 이전 valid 회차 × 100</code></td><td><code>mentoring_attended_count, mentoring_session_count, mentoring_rate</code></td><td>학습지속성 가산점. 참석 근거 누락·상충 시 <code>ERROR</code></td></tr>
+        <tr><td>10</td><td><strong>활동 가산점</strong></td><td>과제·스터디·멘토링 비율</td><td>비율이 0이면 0점, 그 외 <code>min(5, floor(rate / 10) × 0.5 + 0.5)</code>를 활동별 계산</td><td><code>assignment_bonus, study_bonus, mentoring_bonus</code></td><td>기회 없음은 0점이지만 데이터 오류는 경고와 함께 가산점 미반영</td></tr>
+        <tr><td>11</td><td><strong>학습지속성 축</strong></td><td>출석률·블로그 제출률·활동 가산점</td><td><code>min(nearest5(attendance_rate) × 0.7 + nearest5(blog_rate) × 0.3 + bonuses, 100)</code></td><td><code>axis.learning_persistence</code></td><td>필수인 출결·블로그 중 하나라도 준비되지 않으면 축 점수 미산출</td></tr>
+        <tr><td>12</td><td><strong>평가별 환산점수</strong></td><td>최신 채점 완료 응시의 문항별 배점·획득점수</td><td><code>sum(earned_points) / sum(max_points) × 100</code>. 평가·카테고리별 계산</td><td><code>assessment_normalized_scores[]</code></td><td>증명서 기술·검증과 AI 직무 근거. 배점 합계가 0이면 <code>ERROR</code></td></tr>
+        <tr><td>13</td><td><strong>성취도 평가 축</strong></td><td>성취도·CS 평가별 환산점수</td><td>대상 기수의 최신 유효 평가 환산점수 단순평균</td><td><code>axis.achievement</code>, <code>assessment_average</code></td><td>완료 평가가 없으면 <code>NOT_READY</code>, 예정 평가 행이 누락되면 <code>ERROR</code></td></tr>
+        <tr><td>14</td><td><strong>평가자 역할별 4축 평균</strong></td><td>동료·멘토·강사·운영 최종 4축 평가</td><td>평가자별 최신 제출 1건을 선택한 뒤 역할·축별 1~5점 평균. 동료평가는 프로젝트별 고유 평가자 3명 이상인 프로젝트만 사용하고 프로젝트 평균을 동일 가중</td><td><code>role_axis_averages[role][axis]</code></td><td>기술기여·소통협업팀워크·문제해결·책임감의 근거값</td></tr>
+        <tr><td>15</td><td><strong>평가자 역할별 100점 환산</strong></td><td>14번 역할별 평균</td><td><code>(role_average - 1) / 4 × 100</code>, 0~100 제한</td><td><code>role_axis_scores_100</code></td><td>1점=0점, 5점=100점. 누락 역할은 0점으로 대체하지 않음</td></tr>
+        <tr><td>16</td><td><strong>공통 4축 점수</strong></td><td>네 평가자 역할의 100점 환산값</td><td>동료·멘토·강사·운영을 각 25%로 동일 반영. 네 역할 중 하나라도 없으면 재가중하지 않음</td><td><code>axis.technical_contribution, collaboration, problem_solving, responsibility</code></td><td><code>문제해결</code> 축은 트러블슈팅 건수로 계산하지 않음. 역할 누락 시 해당 축 <code>NOT_READY</code></td></tr>
+        <tr><td>17</td><td><strong>6축 종합점수</strong></td><td>공통 4축·학습지속성·성취도 평가</td><td>6개 축이 모두 <code>READY</code>일 때만 단순평균, 소수 첫째 자리</td><td><code>overall_score</code></td><td>일부 축만으로 부분 점수를 만들지 않으며 하나라도 미산출이면 <code>null</code></td></tr>
+        <tr><td>18</td><td><strong>종합 등급</strong></td><td>6축 종합점수</td><td><code>S≥90, A≥80, B≥70, C≥60, D≥50, F&lt;50</code></td><td><code>grade</code></td><td>종합점수가 없으면 등급도 <code>null</code></td></tr>
+        <tr><td>19</td><td><strong>계산 상태</strong></td><td>각 구성요소 입력 상태</td><td><code>READY</code>: 필수 입력 충족, <code>NOT_READY</code>: 아직 유효 근거 없음, <code>ERROR</code>: 있어야 할 원천 누락·상충, <code>NOT_APPLICABLE</code>: 기회 없음</td><td><code>status, component_status, warnings[]</code></td><td>결측을 0으로 표시하지 않고 원인을 화면·품질검사에 전달</td></tr>
+        <tr><td>20</td><td><strong>상대 위치</strong></td><td>동일 정책으로 산출된 비교 점수</td><td>동점 평균순위로 <code>top_percent</code>와 <code>percentile</code> 계산. 축은 동일 기수, 종합은 전체 산출 가능 수강생 기준이며 유효 표본 15명 미만이면 미산출</td><td><code>relative.percentile, top_percent, population_size</code></td><td>실데이터 표본이 확보되기 전에는 <code>NOT_READY</code>. 황수빈 1명으로 계산 금지</td></tr>
+        <tr><td>21</td><td><strong>종합요약 KPI</strong></td><td>13·5번과 인증 프로젝트·문제해결·기술인증·4축 평가</td><td>성취도 평균, 출석률, 인증 프로젝트 수, 인증 문제해결 수, 승인 기술인증 수, 네 역할 전체 4축 원점수 평균을 각각 집계</td><td><code>kpis[]</code></td><td>서로 다른 단위의 KPI를 다시 하나의 점수로 합치지 않음</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>프로젝트·GitHub·문제해결·평가 상세</h3>
+  <div class="table-wrap">
+    <table class="index-table calculation-table">
+      <colgroup><col style="width:4%"><col style="width:13%"><col style="width:18%"><col style="width:27%"><col style="width:17%"><col style="width:21%"></colgroup>
+      <thead><tr><th>No.</th><th>파생 데이터</th><th>정제 입력</th><th>계산식·정책</th><th>결과 필드</th><th>사용처·결측 처리</th></tr></thead>
+      <tbody>
+        <tr><td>22</td><td><strong>프로젝트 상태별 건수</strong></td><td>대상 수강생 참여 프로젝트</td><td>전체, <code>COMPLETED</code>, <code>COMPLETED + CERTIFIED</code> 건수를 각각 집계</td><td><code>total_project_count, completed_project_count, certified_project_count</code></td><td>프로젝트 탭·KPI. 건수 자체를 역량점수로 사용하지 않음</td></tr>
+        <tr><td>23</td><td><strong>도메인 경험 분포</strong></td><td>인증 프로젝트 도메인</td><td>도메인별 프로젝트 수와 <code>도메인 수 / 도메인 보유 인증 프로젝트 수 × 100</code></td><td><code>domain_experience[].project_count, percentage</code></td><td>종합요약·직무 적합도 참고. 도메인 없는 프로젝트는 분모에서 제외</td></tr>
+        <tr><td>24</td><td><strong>담당 분야·기술 묶음</strong></td><td>개인 멤버 역할·프로젝트 기술</td><td>담당 분야는 공백·중복 제거, 기술은 카테고리별 고유 목록으로 집계</td><td><code>responsibilities[], tech_stack_groups[]</code></td><td>프로젝트 탭. 프로젝트 기술은 팀 문맥이며 개인 기술로 자동 귀속하지 않음</td></tr>
+        <tr><td>25</td><td><strong>저장소·개인 커밋 수</strong></td><td>유효 저장소·브랜치·개인 귀속 커밋</td><td>저장소 전체 고유 SHA 수와 대상 수강생에게 매핑된 고유 SHA 수를 각각 집계</td><td><code>repository_total_commits, student_commit_count</code></td><td>프로젝트 GitHub 상세. 봇·머지 정책은 후속 GitHub 수집 정책과 버전 관리</td></tr>
+        <tr><td>26</td><td><strong>개인 커밋 비율</strong></td><td>25번</td><td><code>student_commit_count / repository_total_commits × 100</code></td><td><code>commit_contribution_rate</code></td><td>참여 맥락으로만 표시하며 코드 품질·개인 성과 점수로 사용하지 않음</td></tr>
+        <tr><td>27</td><td><strong>GitHub 활동일</strong></td><td>개인 커밋 일자</td><td>프로젝트 기간 내 커밋 수가 1개 이상인 고유 날짜 수</td><td><code>active_days</code></td><td>활동 지속성 표시. 커밋 없는 날을 결석·저성과로 해석하지 않음</td></tr>
+        <tr><td>28</td><td><strong>최장 연속 활동일</strong></td><td>개인 활동일</td><td>연속된 달력 날짜 구간 중 최대 길이</td><td><code>longest_streak</code></td><td>GitHub 활동 패턴 표시</td></tr>
+        <tr><td>29</td><td><strong>주간 평균 커밋</strong></td><td>개인 커밋 수·프로젝트 기간</td><td><code>student_commit_count / max(1, ceil(project_days / 7))</code>, 소수 첫째 자리</td><td><code>weekly_average</code></td><td>프로젝트 기간이 유효할 때만 계산</td></tr>
+        <tr><td>30</td><td><strong>일별 활동 시계열</strong></td><td>개인 커밋 일자·수</td><td>프로젝트 시작일부터 종료일까지 날짜별 개인 커밋 수를 0 포함 시계열로 생성</td><td><code>daily_activity[], activity_grid</code></td><td>프로젝트 잔디밭 표시. 원천이 일부 기간만 수집됐다면 <code>PARTIAL</code></td></tr>
+        <tr><td>31</td><td><strong>인증 문제해결 건수</strong></td><td>인증 개인 문제해결 사례</td><td>대상 수강생에게 귀속되고 <code>CERTIFIED</code>인 고유 사례 수</td><td><code>certified_case_count</code></td><td>문제해결 탭·KPI·AI 입력. 4축 문제해결 점수에는 사용하지 않음</td></tr>
+        <tr><td>32</td><td><strong>문제해결 카테고리 분포</strong></td><td>인증 사례 카테고리</td><td>카테고리별 건수와 <code>카테고리 건수 / 인증 사례 수 × 100</code></td><td><code>case_categories[].count, percentage</code></td><td>문제해결 탭·AI 근거. 사례가 없으면 빈 배열</td></tr>
+        <tr><td>33</td><td><strong>해결 소요일 통계</strong></td><td>0 이상으로 검증된 <code>resolution_days</code></td><td>값이 있는 사례의 산술평균과 중앙값, 소수 첫째 자리</td><td><code>average_resolution_days, median_resolution_days</code></td><td>소요일이 없는 사례는 통계 분모에서 제외하되 사례 자체는 유지</td></tr>
+        <tr><td>34</td><td><strong>독립·지원 해결 통계</strong></td><td>인증 사례의 독립 해결 여부</td><td>독립 건수, <code>지원 건수 = 전체-독립</code>, <code>독립 건수/전체×100</code></td><td><code>independent_count, supported_count, independent_rate</code></td><td>사례가 없으면 비율 <code>null</code>. 지원 유형은 원천이 없어 만들지 않음</td></tr>
+        <tr><td>35</td><td><strong>문제해결 기술 태그 분포</strong></td><td>정규화 문제해결 기술 태그</td><td>태그별 인증 사례 수와 연결 사례 ID를 중복 없이 집계</td><td><code>troubleshooting_tags[].count, case_ids[]</code></td><td>기술 맥락 표시. 동료 코멘트에서 태그를 임의 추출하지 않음</td></tr>
+        <tr><td>36</td><td><strong>동료평가 건수·평가자 수</strong></td><td>유효 최종 동료평가</td><td>평가 ID 고유 건수와 평가자 UUID 고유 수를 각각 집계</td><td><code>peer_evaluation_count, peer_evaluator_count</code></td><td>평가·평판 상세와 데이터 충분성 판단</td></tr>
+        <tr><td>37</td><td><strong>평가 상세 4축 평균</strong></td><td>유효 동료·멘토·강사·운영 4축</td><td>역할별·축별 평균과 전체 원점수 평균을 1~5점으로 계산</td><td><code>peer_axis_averages, evaluator_average, mentor_average</code></td><td>평가·추천 탭과 KPI. 최신 원천은 4축이므로 협업과 소통을 별도 5축으로 분해하지 않음</td></tr>
+        <tr><td>38</td><td><strong>프로젝트 이동 대상</strong></td><td>완료 프로젝트·프로젝트 연결 인증 사례</td><td>문제해결 이동은 인증 사례가 있는 최근 완료 프로젝트, 동료평가 이동은 최근 완료 프로젝트 ID 선택</td><td><code>issues_project_id, peer_evaluation_project_id</code></td><td>증명서 화면 이동용 결정값. 대상이 없으면 <code>null</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>AI 분석 입력·검증용 파생 데이터</h3>
+  <div class="table-wrap">
+    <table class="index-table calculation-table">
+      <colgroup><col style="width:4%"><col style="width:13%"><col style="width:18%"><col style="width:27%"><col style="width:17%"><col style="width:21%"></colgroup>
+      <thead><tr><th>No.</th><th>파생 데이터</th><th>정제 입력</th><th>계산식·정책</th><th>결과 필드</th><th>사용처·결측 처리</th></tr></thead>
+      <tbody>
+        <tr><td>39</td><td><strong>직무 근거 평가점수</strong></td><td>12번 평가별 환산점수</td><td>평가 유형·카테고리·0~100 환산점수를 근거 참조와 함께 재사용</td><td><code>job_fit.assessments[]</code></td><td>별도 재계산·복제하지 않고 증명서 파생값을 AI 입력에서 참조</td></tr>
+        <tr><td>40</td><td><strong>프로젝트 역할 패턴</strong></td><td>개인 담당 분야·본인 담당 작업</td><td>역할 라벨별 고유 프로젝트 수와 개인 담당 작업 수를 집계</td><td><code>project_roles[].label, project_count, task_count</code></td><td>직무 적합도·프로젝트 분석. 팀 전체 작업을 개인 작업 수에 포함하지 않음</td></tr>
+        <tr><td>41</td><td><strong>프로젝트별 개인 과업 집계</strong></td><td>개인 담당 작업 상태</td><td>프로젝트별 담당 작업 수와 <code>DONE</code> 담당 작업 수를 계산</td><td><code>assigned_task_count, completed_assigned_task_count</code></td><td>프로젝트 분석. 완료 수가 담당 수를 넘으면 <code>ERROR</code></td></tr>
+        <tr><td>42</td><td><strong>개인 담당 작업 완료율</strong></td><td>41번</td><td><code>completed_assigned_task_count / assigned_task_count × 100</code></td><td><code>assigned_task_completion_rate</code></td><td>담당 작업이 있을 때만 계산. 팀 전체 작업 수를 분모로 사용하지 않음</td></tr>
+        <tr><td>43</td><td><strong>프로젝트 개인 근거 상태</strong></td><td>담당 작업·본인 수행 내용·동료 관찰·프로젝트 연결 문제해결</td><td>직접 근거(담당 작업 또는 본인 수행 내용)와 교차 근거(동료 관찰 또는 인증 문제해결)가 모두 있으면 <code>READY</code>, 한 종류만 있으면 <code>PARTIAL</code>, 모두 없으면 <code>NOT_READY</code></td><td><code>projects[].readiness_status</code></td><td>팀 성과·팀 기술만으로 개인 분석을 <code>READY</code> 처리하지 않음</td></tr>
+        <tr><td>44</td><td><strong>프로젝트 전체 분석 상태</strong></td><td>프로젝트별 개인 근거 상태</td><td>프로젝트가 없으면 <code>NOT_READY</code>, 모두 <code>READY</code>면 <code>READY</code>, 그 외는 <code>PARTIAL</code></td><td><code>projects.readiness_status</code></td><td>LLM 호출 전 분석 가능 범위와 제한사항 결정</td></tr>
+        <tr><td>45</td><td><strong>문제해결 AI 통계</strong></td><td>31~35번</td><td>인증 건수·카테고리 건수·평균/중앙 소요일·독립/지원 건수·비율을 그대로 재사용</td><td><code>troubleshooting.source_data</code></td><td>LLM이 통계를 다시 계산하지 않도록 결정값 제공</td></tr>
+        <tr><td>46</td><td><strong>문제해결 분석 상태</strong></td><td>상황·해결 과정·결과가 모두 있는 인증 사례</td><td>유효 사례가 1건 이상이면 <code>READY</code>, 없으면 <code>NOT_READY</code>. 임의 최소 사례 수를 요구하지 않음</td><td><code>troubleshooting.readiness_status</code></td><td>사례 수가 적다는 사실은 제한사항으로 표시하되 존재하는 근거를 폐기하지 않음</td></tr>
+        <tr><td>47</td><td><strong>직무 적합도 입력 상태</strong></td><td>평가·승인 인증·프로젝트 개인 근거·인증 문제해결</td><td>검증된 수행·성취 근거가 1종 이상이면 <code>READY</code>, 관심 직무·기술 또는 팀 문맥만 있으면 <code>PARTIAL</code>, 아무 근거도 없으면 <code>NOT_READY</code></td><td><code>job_fit.readiness_status</code></td><td>관심 직무를 정답으로 사용하지 않고 자유 직무 추천 가능 여부만 판단</td></tr>
+        <tr><td>48</td><td><strong>근거 신뢰 수준</strong></td><td>AI 결과가 인용한 고유 근거 코드</td><td>근거 4개 이상·유형 3종 이상 <code>HIGH</code>, 근거 2개 이상·유형 2종 이상 <code>MEDIUM</code>, 그 외 <code>LOW</code></td><td><code>confidence</code></td><td>직무·프로젝트 설명의 근거 다양성 표시. 적합도 점수와 혼합하지 않음</td></tr>
+        <tr><td>49</td><td><strong>직무별 이론 이해도</strong></td><td>직무 후보가 실제 인용한 평가 근거</td><td>인용 평가 점수 평균. 0건 <code>NOT_READY</code>, 1건 <code>PARTIAL/FOUNDATIONAL</code>, 2건 이상은 평균에 따라 <code>VERY_HIGH≥90, HIGH≥80, MEDIUM≥65, FOUNDATIONAL&lt;65</code></td><td><code>theory_understanding</code></td><td>LLM이 선택한 근거 코드를 검증한 뒤 결정론적으로 계산. 근거가 다른 직무끼리 점수를 공유하지 않음</td></tr>
+        <tr><td>50</td><td><strong>정제·파생 이슈 집계</strong></td><td>중복·결측·상충·제외 이슈</td><td>단계·코드·심각도별 건수와 영향을 받는 근거 ID 집계</td><td><code>issue_counts, limitations[]</code></td><td>AI 결과와 품질 보고서에 데이터 한계를 전달하며 이슈를 0값으로 대체하지 않음</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout"><strong>저장·재현 기준:</strong> 파생값은 같은 정제 입력과 같은 정책 버전에서 항상 동일해야 한다. 저장 여부와 형식은 인프라 정책으로 결정하되 <code>source_version</code>, 원천 해시, 파생 정책 버전, 계산 시각을 manifest에 함께 기록해야 한다.</div>
+  <div class="callout"><strong>AI 결과와의 경계:</strong> 직무명·역할 제안·적합도·강점·한계·프로젝트 요약·문제해결 요약은 파생 데이터가 아니다. 파생 데이터는 점수·건수·비율·기간·상태·근거 참조까지만 만든다.</div>
+
+  <h3>현재 구현과 최종 계약의 차이</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>구분</th><th>현재 상태</th><th>후속 조치</th></tr></thead>
+      <tbody>
+        <tr><td>종합점수 정책 버전</td><td>FE 타입은 <code>...four-rater-v2</code>, LMS-AI 구현·API 문서는 <code>...v1</code></td><td>FE 기준 버전으로 계약·응답·테스트 통일</td></tr>
+        <tr><td>동료평가 상세축</td><td>현재 FE 상세 계약과 일부 LMS-AI 코드는 협업·소통을 분리한 과거 5축을 기대하지만 최신 원천은 소통·협업·팀워크 통합 4축</td><td>하나의 통합 점수를 둘로 복제하지 말고 상세 계약도 4축으로 변경</td></tr>
+        <tr><td>동료 태그</td><td>기존 상세 계산은 원천에 없는 <code>peer_tags</code>를 사용</td><td>동료 태그 파생 제거. 문제해결의 실제 <code>tech_tags</code>만 별도 집계</td></tr>
+        <tr><td>프로젝트 개인 근거</td><td>현재 AI 파이프라인은 개인 기술·산출물·팀 전체 보드 수를 일부 기대</td><td>담당 작업·본인 수행 내용·동료 관찰·인증 문제해결 중심으로 변경하고 팀 기술·성과는 팀 문맥에만 유지</td></tr>
+        <tr><td>평가 환산</td><td>현재 종합 계산 일부는 평가 총점의 단순평균 사용</td><td>새 원천 계약의 문항 배점·획득점수 기반 0~100 환산값으로 통일</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
