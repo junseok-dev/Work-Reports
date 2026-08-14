@@ -1,6 +1,6 @@
 # Work-Reports
 
-LMS, 챗봇 등 프로젝트 작업 결과를 팀원에게 공유하기 위한 공개 HTML 보고서 저장소입니다.
+LMS 프로젝트 작업 결과를 팀원에게 공유하기 위한 공개 HTML 보고서 저장소입니다.
 
 설계·결정의 원본 문서는 각 프로젝트 문서 저장소에서 관리하고, 이 저장소에는 브라우저에서 바로 열람할 수 있는 공유용 보고서만 게시합니다.
 
@@ -12,7 +12,6 @@ LMS, 챗봇 등 프로젝트 작업 결과를 팀원에게 공유하기 위한 �
 ### 현재 배포 보고서
 
 - LMS: [LMS-AI 수강역량증명서 실데이터 흐름 및 필요 데이터](https://work-report-277d7.web.app/reports/lms/2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/)
-- 챗봇: [엔코아 AI 캠퍼스 상담 챗봇 — 서비스 구조 및 운영 현황](https://work-report-277d7.web.app/reports/chatbot/2026-08-09_chatbot-service-report/)
 
 > 최초 배포 전에는 GitHub 저장소의 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 선택해야 합니다.
 
@@ -31,26 +30,22 @@ Work-Reports/
 ├─ .github/workflows/pages.yml       main push 시 Firebase Hosting·GitHub Pages 자동 배포
 ├─ assets/                           보고서 목록용 공통 자산
 ├─ reports/
-│  ├─ lms/
-│  │  └─ <보고서>/
-│  │     ├─ sections/                본문 원본 조각
-│  │     │  ├─ 00-shell.html         문서 head·header·footer
-│  │     │  └─ 01-*.html             번호 순서대로 조립할 본문
-│  │     └─ index.html               build.py 생성 결과
-│  └─ chatbot/
-│     └─ 2026-08-09_chatbot-service-report/
-│        ├─ sections/                챗봇 공식 보고서 원본 조각
+│  └─ lms/
+│     └─ <보고서>/
+│        ├─ sections/                본문 원본 조각
+│        │  ├─ 00-shell.html         문서 head·header·footer
+│        │  └─ 01-*.html             번호 순서대로 조립할 본문
 │        └─ index.html               build.py 생성 결과
 ├─ tools/import_report.py            기존 단일 HTML을 sections로 변환
 ├─ build.py                          보고서 조립 및 dist 생성
 ├─ firebase.json                     dist 전용 Firebase Hosting 설정
 ├─ .firebaserc                       Firebase 프로젝트 연결
-├─ index.html                        전체 보고서 목록
+├─ index.html                        LMS 보고서 목록
 ├─ robots.txt
 └─ dist/                             배포 결과물, Git 미추적
 ```
 
-`LMS-REPORT`의 보고서별 `sections/`, 공통 자산, Python 조립기, 자동 배포 흐름을 유지했습니다. 여러 프로젝트를 한 저장소에서 구분하기 위해 `reports/lms`, `reports/chatbot` 단계를 추가했고, 공개 범위를 안전하게 제한하기 위해 배포 산출물은 `dist/`로 분리했습니다.
+`LMS-REPORT`의 보고서별 `sections/`, 공통 자산, Python 조립기, 자동 배포 흐름을 유지했습니다. LMS 보고서는 `reports/lms`에서 관리하며, 공개 범위를 안전하게 제한하기 위해 배포 산출물은 `dist/`로 분리했습니다.
 
 ## 로컬 확인
 
@@ -75,7 +70,7 @@ python build.py "reports/lms/2026-08-07_lms-ai_수강역량증명서_실데이�
 ```powershell
 python tools/import_report.py `
   "C:\path\to\report.html" `
-  "reports/<프로젝트>/<보고서>"
+  "reports/lms/<보고서>"
 
 python build.py
 ```
