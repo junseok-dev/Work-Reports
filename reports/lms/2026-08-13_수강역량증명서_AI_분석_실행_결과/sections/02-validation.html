@@ -1,6 +1,6 @@
 <section id="validation">
   <h2>2. AI 분석이 의도대로 나왔는가</h2>
-  <p class="lead">자동검사는 코드가 계약·계산·근거 코드·개인정보를 반복 확인하는 검사다. 의도 적합성 검토는 생성 결과가 입력 근거와 현재 화면 기획에 맞는지 항목별로 판단하는 검토다. 미리 만든 AI 답안과 문장 일치율은 사용하지 않았다.</p>
+  <p class="lead">자동검사는 현재 LMS-AI 요청과 응답 안에서 계약·계산·근거 코드·개인정보를 확인한다. 최종 데이터 계약 대조는 Work-Reports의 원천·정제·파생 정의가 실제 코드에 반영됐는지 별도로 확인한다. 두 검사를 섞어 100% 정확도라고 표현하지 않는다.</p>
   <div class="check-grid">
     <div class="check"><strong>3/3</strong><span>계약 100%</span></div>
     <div class="check"><strong>9/9</strong><span>근거 귀속 100%</span></div>
@@ -10,13 +10,13 @@
   </div>
   <div class="metric-grid" style="margin-top:16px">
     <div class="metric"><small>자동 무결성</small><strong>100%</strong><span>25 / 25 통과</span></div>
-    <div class="metric"><small>직무 의도 적합성</small><strong>100%</strong><span>6 / 6 검증</span></div>
-    <div class="metric"><small>프로젝트 검증 범위</small><strong>57.1%</strong><span>4 / 7 검증 가능</span></div>
-    <div class="metric"><small>문제해결 의도 적합성</small><strong>100%</strong><span>5 / 5 통과</span></div>
+    <div class="metric"><small>검증 가능 범위</small><strong>83.3%</strong><span>15 / 18 · 황수빈 mock</span></div>
+    <div class="metric"><small>최종 계약 차이</small><strong>6종</strong><span>정책·4축·태그·프로젝트·평가·스터디</span></div>
+    <div class="metric"><small>실데이터 E2E</small><strong>미검증</strong><span>DB→S3→AI→BE→FE</span></div>
   </div>
   <div class="split" style="margin-top:16px">
-    <article class="boundary engine"><h3>자동검사 25/25</h3><p>현재 조립된 입력 안에서 계약, 근거 코드, 계산 일관성, 개인/팀 경계와 개인정보 마스킹을 검사했다. 원천에 없는 개인 귀속 사실의 진위를 보증하는 지표는 아니다.</p></article>
-    <article class="boundary ai"><h3>의도 적합성 검토 15/15</h3><p>검증 가능한 15개 항목은 모두 통과했다. 전체 18개 중 팀 과업의 황수빈 귀속·완료 상태·프로젝트별 본인/동료 근거 3개는 현재 mock으로 판정하지 않았다.</p></article>
+    <article class="boundary engine"><h3>현재 구현 자동검사 25/25</h3><p>동일 요청을 다시 만들었을 때 해시가 같았고, 실제 API 응답의 계약·근거·계산·범위·개인정보 검사 25건이 모두 통과했다. 이는 현재 조립 입력 내부 일관성 검사다.</p></article>
+    <article class="boundary ai"><h3>최종 계약 대조 결과</h3><p>직무와 문제해결 문장은 대체로 근거에 맞지만, 프로젝트 결과가 최종 원천에 없는 개인 기술·산출물·팀 전체 보드 수를 사용한다. 따라서 프로젝트 분석은 운영 품질 합격으로 판정하지 않는다.</p></article>
   </div>
-  <div class="interpretation"><strong>해석 주의:</strong> 검증 가능 범위는 15 / 18 = 83.3%이며, 그 범위 안의 통과율은 15 / 15 = 100%다. 검증 불가 3건을 실패나 성공으로 계산하지 않았다. 따라서 다른 수강생이나 실데이터에 대한 정확도 100%를 의미하지 않는다.</div>
+  <div class="interpretation"><strong>해석 주의:</strong> 25/25는 현재 요청이 스스로 모순되지 않았다는 뜻이다. 검증 가능 범위 15/18은 황수빈 mock에서 사실 확인이 가능한 항목의 비율이다. 최종 계약 구현 차이 6종과 실데이터 E2E가 남아 있으므로 운영 정확도나 다른 수강생 정확도를 100%로 판단할 수 없다.</div>
 </section>

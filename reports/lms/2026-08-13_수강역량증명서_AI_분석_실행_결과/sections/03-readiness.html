@@ -1,6 +1,6 @@
 <section id="readiness">
-  <h2>3. 현재 구조로 계속 진행해도 되는가</h2>
-  <p class="lead">황수빈 mock의 채움 정도를 운영 데이터 준비도로 환산하지 않는다. 원천 데이터 계약의 개인 귀속 가능성, 로컬 실행 검증 범위, 실데이터 확인 시점을 서로 분리했다.</p>
+  <h2>3. 무엇을 유지하고 무엇을 수정해야 하는가</h2>
+  <p class="lead">원천→정제→파생이라는 구조와 필드 범위는 유지한다. 최종 점검에서 새 원천 필드 없이 블로그 상태·스터디 지표 명칭·도메인 비율 문구 3곳을 보정했다. 핵심 수정 대상은 이전 입력 계약을 사용하는 현재 LMS-AI 계산·AI 요청·상세 응답이다.</p>
   <div class="interpretation" style="margin-bottom:16px"><strong>삭제한 ‘경고 없는 원천’ 지표:</strong> mock 레코드 중 상태 충돌이 없는 비율을 뜻했지만 운영 품질처럼 해석될 수 있어 사용하지 않는다. 실데이터에서는 수강생 오귀속·계약 오류 같은 치명 오류는 0건이어야 한다. 복구 가능한 상태 경고는 해당 값을 분석에서 제외하거나 제한으로 표시하고 원인별 건수를 별도 관리한다.</div>
   <div class="metric-grid">
     <div class="metric"><small>자동 무결성</small><strong>100%</strong><span>25 / 25 · 조립 입력 기준</span></div>
@@ -9,24 +9,37 @@
     <div class="metric"><small>실데이터 준비도</small><strong>미평가</strong><span>실제 행 수신 후 측정</span></div>
   </div>
   <div class="result-grid" style="margin-top:14px">
-    <article class="result-card"><span class="status-pill ready">계약 적합</span><h3>원천 데이터</h3><ul><li>프로젝트·과업·평가·GitHub를 안정적인 ID로 연결</li><li>과업 담당자·기여 작성자·평가 대상자 UUID로 개인 귀속 가능</li><li>원문·상태·제출 시각을 보존해 정제 결과를 역추적 가능</li></ul></article>
-    <article class="result-card"><span class="status-pill ready">계약 적합</span><h3>정제 데이터</h3><ul><li>수강생·기수·입력·정책 버전으로 분석 단위를 고정</li><li>개인 귀속 과업 상세와 <code>evidence_ref</code>를 AI 입력으로 제한</li><li>원문 PII·미승인 기록을 제외하고 결손 상태를 명시</li></ul></article>
-    <article class="result-card"><span class="status-pill ready">계약 적합</span><h3>파생 데이터</h3><ul><li>개인 과업에서 담당·완료 수, 사례에서 통계를 재현 가능하게 계산</li><li>산식·정책 버전과 READY·PARTIAL·NOT_READY 상태를 함께 반환</li><li>근거가 없으면 점수·기여율을 추정하지 않음</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">유지</span><h3>원천 데이터 계약</h3><ul><li>증명서 전체 표시값 178개 원천 항목 정의</li><li>프로젝트·과업·평가·문제해결을 안정적인 ID로 연결</li><li>원문·상태·제출 시각을 보존해 역추적 가능</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">유지</span><h3>정제·파생 계약</h3><ul><li>증명서 정제 68개·AI 입력 정제 26개 항목</li><li>점수·건수·비율·상태 50개 파생 항목</li><li>결측을 0으로 만들지 않고 상태와 경고로 전달</li></ul></article>
+    <article class="result-card"><span class="status-pill partial">수정</span><h3>현재 LMS-AI</h3><ul><li>최종 계약보다 이전 정책과 입력 모델 사용</li><li>증명서 API와 실제 LLM 생성 경로가 분리됨</li><li>실데이터 Repository·S3·BE 조립은 미구현</li></ul></article>
   </div>
   <div class="formula">
     <strong>세 단계 구조를 유지해도 되는 근거</strong>
     <code>원천 식별·원문 보존 → 정제 개인 귀속·허용 근거 → 파생 재현 가능한 계산·상태</code>
-    <span>각 단계의 책임이 겹치지 않고, AI 설명에서 원천 근거까지 역추적할 수 있다. 따라서 현재 데이터 계약은 유지해도 된다. 다만 이는 구조 판정이며 실제 행의 누락·오귀속·분포 품질은 실데이터 수신 후 별도로 검사한다.</span>
+    <span>각 단계의 책임이 겹치지 않고 AI 설명에서 원천 근거까지 역추적할 수 있으므로 데이터 계약은 유지한다. 현재 실패 원인은 데이터 항목 부족이 아니라 LMS-AI가 확정 계약을 아직 완전히 사용하지 않는 데 있다.</span>
+  </div>
+  <div class="table-wrap" style="margin-top:16px">
+    <table>
+      <thead><tr><th>현재 구현 차이</th><th>영향</th><th>필수 수정</th></tr></thead>
+      <tbody>
+        <tr><td>종합점수 정책 <code>v1</code></td><td>FE 확정 <code>four-rater-v2</code>와 응답 버전 불일치</td><td>계산·API·테스트를 v2로 통일</td></tr>
+        <tr><td>동료평가 과거 5축·태그</td><td>최신 4축을 소통·협업으로 복제하고 원천에 없는 <code>peer_tags</code> 사용</td><td>통합 4축만 사용하고 태그 파생 제거</td></tr>
+        <tr><td>프로젝트 개인 기술·산출물·전체 보드 수</td><td>최종 원천에 없는 값을 개인 근거와 준비 상태에 사용</td><td>담당 작업·본인 수행·동료 관찰·인증 문제해결로 교체</td></tr>
+        <tr><td>평가 총점 평균</td><td>문항별 배점이 다른 평가의 0~100 환산이 부정확할 수 있음</td><td><code>sum(earned)/sum(max)×100</code>으로 통일</td></tr>
+        <tr><td>스터디 지표 라벨</td><td>승인 건수/제출 기록 수를 참여율처럼 해석할 위험</td><td><code>study_approval_rate</code>로 명명하고 참여율 표현 제거</td></tr>
+        <tr><td>증명서 경로와 LLM 경로 분리</td><td><code>/analysis</code>는 fixture 기반 구형 분석, 실제 LLM은 별도 <code>/analysis/generate</code></td><td>같은 정제·파생 입력 Repository를 공유</td></tr>
+      </tbody>
+    </table>
   </div>
   <div class="result-grid" style="margin-top:14px">
-    <article class="result-card"><span class="status-pill ready">구조 적합</span><h3>원천→정제→파생 흐름</h3><ul><li>프로젝트·수강생 복합 키로 개인 근거 연결</li><li>개인 귀속 불가 값은 분석 근거에서 제외</li><li>결손은 null·PARTIAL·NOT_READY로 보수 처리</li></ul></article>
-    <article class="result-card"><span class="status-pill ready">계속 진행</span><h3>로컬 AI 분석</h3><ul><li>직무·문제해결은 현재 mock 범위에서 검사 가능</li><li>프로젝트는 개인 귀속이 확인된 항목만 검사</li><li>검증 불가 항목을 결과 정확도에 포함하지 않음</li></ul></article>
-    <article class="result-card"><span class="status-pill partial">실데이터 확인</span><h3>운영 전 검사</h3><ul><li>과업 담당자 UUID·완료 상태 행 존재율</li><li>본인 수행 내용 최종 제출 행 존재율</li><li>피평가자 UUID 기준 동료평가 연결률</li></ul></article>
+    <article class="result-card"><span class="status-pill ready">1단계</span><h3>LMS-AI 계약 정합</h3><ul><li>확정 정제 26개·파생 50개 항목에 입력 모델 연결</li><li>위 5개 차이 제거</li><li>구형 fixture 분석 경계 분리 또는 폐기 결정</li></ul></article>
+    <article class="result-card"><span class="status-pill partial">2단계</span><h3>비용 없는 재검증</h3><ul><li>전체 테스트와 계산 골든 테스트 실행</li><li>원천→정제→파생 lineage·해시 비교</li><li>개인/팀 경계와 결측 상태 자동검사</li></ul></article>
+    <article class="result-card"><span class="status-pill partial">3단계</span><h3>API 1회 재호출</h3><ul><li>입력 해시가 바뀐 뒤 gpt-5.4-mini 1회 호출</li><li>자동검사와 사람 검토를 함께 수행</li><li>통과 후에만 S3·BE·FE 연결 진행</li></ul></article>
   </div>
   <div class="formula">
     <strong>실데이터에서 측정할 프로젝트 품질 지표</strong>
     <code>개인 귀속률 = student_uuid로 귀속된 분석 근거 수 / 개인 근거 후보 수</code>
     <span>여기에 과업 상태 유효율, 본인 수행 내용 최종 제출률, 피평가자 기준 동료평가 연결률을 함께 측정한다. 팀 전체 업무 수는 개인 프로젝트 분석의 필수 지표로 두지 않는다.</span>
   </div>
-  <div class="interpretation"><strong>최종 판정:</strong> 원천 데이터 계약은 개인 프로젝트 분석에 필요한 연결 키를 갖추고 있으므로 현재 구조로 진행할 수 있다. 현재 mock은 실행과 로직 검사용이며 운영 데이터 품질 판정 근거가 아니다. 실제 준비도와 정확도는 실데이터가 같은 계약으로 들어온 뒤 별도로 측정한다.</div>
+  <div class="interpretation"><strong>최종 판정:</strong> 원천·정제·파생의 구조와 데이터 범위는 충분하며 이번에 발견한 정의 3곳은 수정했다. 이제 LMS-AI를 보정된 최종 계약에 맞춰야 한다. 현재 결과는 직무·문제해결 품질 참고용으로는 유효하지만, 프로젝트 분석과 증명서 전체 실연동의 최종 합격 결과는 아니다.</div>
 </section>

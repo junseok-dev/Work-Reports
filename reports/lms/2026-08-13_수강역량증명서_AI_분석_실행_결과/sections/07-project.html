@@ -1,21 +1,21 @@
 <section id="project">
   <h2>7. 프로젝트 분석 결과</h2>
-  <p class="lead">프로젝트 맥락 3건을 입력하되 개인 성과는 <code>project_id + student_uuid</code>로 귀속되는 근거만 사용해야 한다. 현재 실행 결과와 사실 검증 범위를 분리해 표시한다.</p>
+  <p class="lead">현재 출력은 자연스럽지만 최종 계약 기준으로는 재생성이 필요하다. 프로젝트 맥락 3건 중 개인 분석은 <code>project_id + student_uuid</code>로 귀속되는 담당 작업·본인 수행·동료 관찰·인증 문제해결만 사용해야 한다.</p>
   <div class="result-grid">
     <article class="result-card">
-      <span class="status-pill partial">검증 불가</span>
+      <span class="status-pill not-ready">재조립 필요</span>
       <h3>상권별 매출 분석</h3>
-      <ul><li>팀 프로젝트의 도메인·기술·성과 맥락은 확인</li><li>현재 mock의 과업 담당자 UUID·상태 행은 확인 불가</li><li>개인 담당 2건·완료 2건이라는 결과는 품질 판정에서 제외</li></ul>
+      <ul><li>팀 프로젝트의 도메인·기술·성과는 배경 문맥으로 사용 가능</li><li>개인 기술·산출물은 최종 원천에 없어 개인 근거에서 제외</li><li>담당 작업·본인 수행·동료 관찰로 다시 준비 상태 계산</li></ul>
     </article>
     <article class="result-card">
-      <span class="status-pill ready">READY</span>
+      <span class="status-pill partial">현재 mock 내 READY</span>
       <h3>채용 스택 지도</h3>
-      <ul><li>수집·정규화·대시보드 개인 수행</li><li>개인 과업 8개 중 7개 완료</li><li>개인 프로젝트에 명시된 근거 범위에서 검증</li></ul>
+      <ul><li>수집·정규화·대시보드 흐름은 맥락상 타당</li><li>과업 8개·완료 7개는 현재 mock 내부에서 일관됨</li><li>인증 완료와 진행 중 상태 충돌은 해결 또는 제한 표시 필요</li></ul>
     </article>
     <article class="result-card">
-      <span class="status-pill partial">검증 불가</span>
+      <span class="status-pill not-ready">재조립 필요</span>
       <h3>중고 시세 예측</h3>
-      <ul><li>팀 프로젝트의 도메인·기술·성과 맥락은 확인</li><li>현재 mock의 과업 담당자 UUID·상태 행은 확인 불가</li><li>개인 담당 2건·완료 2건이라는 결과는 품질 판정에서 제외</li></ul>
+      <ul><li>팀 프로젝트의 도메인·기술·성과는 배경 문맥으로 사용 가능</li><li>피처 설계·튜닝을 개인에게 귀속할 원천 행을 다시 확인</li><li>팀 MAE 개선·API 데모를 개인 성과로 표현하지 않도록 제한</li></ul>
     </article>
   </div>
   <div class="formula">
@@ -23,4 +23,5 @@
     <div class="calc-line"><span class="calc-box">project_id</span><span class="calc-op">+</span><span class="calc-box">student_uuid</span><span class="calc-op">→</span><span class="calc-box">개인 과업·기여·평가</span></div>
     <span>팀 전체 업무 수는 개인 분석의 필수값이 아니다. 과업은 담당 수강생 UUID, 동료평가는 피평가자 UUID, 본인 수행 내용은 작성자 UUID가 황수빈인 행만 사용한다. 프로젝트 성과는 배경 맥락이며 개인 성과로 자동 귀속하지 않는다.</span>
   </div>
+  <div class="interpretation"><strong>품질 판정:</strong> 현재 문장은 읽기 쉽지만 개인 기술·산출물·보드 수와 팀 성과에 기대는 부분이 있어 최종 계약의 프로젝트 분석으로 합격 처리할 수 없다. 프롬프트를 먼저 고치는 문제가 아니라 입력 모델과 준비 상태 계산을 확정 계약으로 교체하는 것이 우선이다.</div>
 </section>

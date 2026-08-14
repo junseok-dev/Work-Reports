@@ -15,9 +15,9 @@
         <tr><td>3</td><td><strong>지각·조퇴 환산 결석</strong></td><td>지각·조퇴 일자</td><td><code>floor((late_days + early_leave_days) / 3)</code></td><td><code>converted_absence_days</code></td><td>현재 LMS-AI 출결 정책. 정책 변경 시 버전 분리</td></tr>
         <tr><td>4</td><td><strong>출석 인정 일수</strong></td><td>1~3번</td><td><code>total_days - direct_absence_days - converted_absence_days</code>, 최솟값 0</td><td><code>attendance_recognized_days</code></td><td>출석률 분자</td></tr>
         <tr><td>5</td><td><strong>출석률</strong></td><td>인정 일수·전체 일수</td><td><code>recognized_days / total_days × 100</code>, 소수 첫째 자리</td><td><code>attendance_rate</code></td><td>종합요약 KPI·학습지속성. 분모가 없으면 0점이 아니라 <code>ERROR</code></td></tr>
-        <tr><td>6</td><td><strong>블로그 제출률</strong></td><td><code>blog_records[]</code></td><td><code>approved 또는 completed 주차 수 / 전체 유효 주차 수 × 100</code></td><td><code>blog_completed_count, blog_total_count, blog_rate</code></td><td>학습지속성. 제출 기회 원천이 없으면 <code>ERROR</code></td></tr>
+        <tr><td>6</td><td><strong>블로그 제출률</strong></td><td><code>none</code>을 포함한 전체 계획 주차 <code>blog_records[]</code></td><td><code>approved 또는 completed 주차 수 / 전체 계획 주차 수 × 100</code></td><td><code>blog_completed_count, blog_total_count, blog_rate</code></td><td>학습지속성. 계획 주차 행이 누락되거나 주차가 불연속이면 <code>ERROR</code></td></tr>
         <tr><td>7</td><td><strong>과제 제출률</strong></td><td>마감 과제·개인 제출</td><td>기준일이 지난 과제 중 유효 제출 상태 건수 ÷ 마감 과제 수 × 100</td><td><code>assignment_completed_count, assignment_due_count, assignment_rate</code></td><td>학습지속성 가산점. 과제가 없으면 <code>NOT_APPLICABLE</code>, 제출 행 누락은 <code>ERROR</code></td></tr>
-        <tr><td>8</td><td><strong>스터디 참여율</strong></td><td><code>study_records[]</code></td><td><code>approved 건수 / 유효 스터디 기록 수 × 100</code></td><td><code>study_approved_count, study_total_count, study_rate</code></td><td>학습지속성 가산점. 공식 기회 분모가 없으면 <code>NOT_APPLICABLE</code></td></tr>
+        <tr><td>8</td><td><strong>스터디 활동 승인율</strong></td><td><code>study_records[]</code></td><td><code>approved 건수 / 제출된 유효 스터디 기록 수 × 100</code></td><td><code>study_approved_count, study_record_count, study_approval_rate</code></td><td>학습지속성 가산점. 공식 참여 기회 분모가 없으므로 참여율로 표현하지 않으며 기록이 없으면 <code>NOT_APPLICABLE</code></td></tr>
         <tr><td>9</td><td><strong>멘토링 참석률</strong></td><td>유효 회차·개인 참석 기록</td><td><code>attended 회차 / 기준일 이전 valid 회차 × 100</code></td><td><code>mentoring_attended_count, mentoring_session_count, mentoring_rate</code></td><td>학습지속성 가산점. 참석 근거 누락·상충 시 <code>ERROR</code></td></tr>
         <tr><td>10</td><td><strong>활동 가산점</strong></td><td>과제·스터디·멘토링 비율</td><td>비율이 0이면 0점, 그 외 <code>min(5, floor(rate / 10) × 0.5 + 0.5)</code>를 활동별 계산</td><td><code>assignment_bonus, study_bonus, mentoring_bonus</code></td><td>기회 없음은 0점이지만 데이터 오류는 경고와 함께 가산점 미반영</td></tr>
         <tr><td>11</td><td><strong>학습지속성 축</strong></td><td>출석률·블로그 제출률·활동 가산점</td><td><code>min(nearest5(attendance_rate) × 0.7 + nearest5(blog_rate) × 0.3 + bonuses, 100)</code></td><td><code>axis.learning_persistence</code></td><td>필수인 출결·블로그 중 하나라도 준비되지 않으면 축 점수 미산출</td></tr>
@@ -42,7 +42,7 @@
       <thead><tr><th>No.</th><th>파생 데이터</th><th>정제 입력</th><th>계산식·정책</th><th>결과 필드</th><th>사용처·결측 처리</th></tr></thead>
       <tbody>
         <tr><td>22</td><td><strong>프로젝트 상태별 건수</strong></td><td>대상 수강생 참여 프로젝트</td><td>전체, <code>COMPLETED</code>, <code>COMPLETED + CERTIFIED</code> 건수를 각각 집계</td><td><code>total_project_count, completed_project_count, certified_project_count</code></td><td>프로젝트 탭·KPI. 건수 자체를 역량점수로 사용하지 않음</td></tr>
-        <tr><td>23</td><td><strong>도메인 경험 분포</strong></td><td>인증 프로젝트 도메인</td><td>도메인별 프로젝트 수와 <code>도메인 수 / 도메인 보유 인증 프로젝트 수 × 100</code></td><td><code>domain_experience[].project_count, percentage</code></td><td>종합요약·직무 적합도 참고. 도메인 없는 프로젝트는 분모에서 제외</td></tr>
+        <tr><td>23</td><td><strong>도메인 경험 분포</strong></td><td>인증 프로젝트 도메인</td><td>도메인별 프로젝트 수와 <code>해당 도메인 프로젝트 수 / 도메인 보유 인증 프로젝트 수 × 100</code></td><td><code>domain_experience[].project_count, percentage</code></td><td>종합요약·직무 적합도 참고. 도메인 없는 프로젝트는 분모에서 제외</td></tr>
         <tr><td>24</td><td><strong>담당 분야·기술 묶음</strong></td><td>개인 멤버 역할·프로젝트 기술</td><td>담당 분야는 공백·중복 제거, 기술은 카테고리별 고유 목록으로 집계</td><td><code>responsibilities[], tech_stack_groups[]</code></td><td>프로젝트 탭. 프로젝트 기술은 팀 문맥이며 개인 기술로 자동 귀속하지 않음</td></tr>
         <tr><td>25</td><td><strong>저장소·개인 커밋 수</strong></td><td>유효 저장소·브랜치·개인 귀속 커밋</td><td>저장소 전체 고유 SHA 수와 대상 수강생에게 매핑된 고유 SHA 수를 각각 집계</td><td><code>repository_total_commits, student_commit_count</code></td><td>프로젝트 GitHub 상세. 봇·머지 정책은 후속 GitHub 수집 정책과 버전 관리</td></tr>
         <tr><td>26</td><td><strong>개인 커밋 비율</strong></td><td>25번</td><td><code>student_commit_count / repository_total_commits × 100</code></td><td><code>commit_contribution_rate</code></td><td>참여 맥락으로만 표시하며 코드 품질·개인 성과 점수로 사용하지 않음</td></tr>
@@ -97,6 +97,7 @@
         <tr><td>동료 태그</td><td>기존 상세 계산은 원천에 없는 <code>peer_tags</code>를 사용</td><td>동료 태그 파생 제거. 문제해결의 실제 <code>tech_tags</code>만 별도 집계</td></tr>
         <tr><td>프로젝트 개인 근거</td><td>현재 AI 파이프라인은 개인 기술·산출물·팀 전체 보드 수를 일부 기대</td><td>담당 작업·본인 수행 내용·동료 관찰·인증 문제해결 중심으로 변경하고 팀 기술·성과는 팀 문맥에만 유지</td></tr>
         <tr><td>평가 환산</td><td>현재 종합 계산 일부는 평가 총점의 단순평균 사용</td><td>새 원천 계약의 문항 배점·획득점수 기반 0~100 환산값으로 통일</td></tr>
+        <tr><td>스터디 지표 의미</td><td>현재 구현은 승인 건수/제출 기록 수를 계산하면서 화면 라벨을 스터디 제출·참여로 혼용</td><td>계산값을 <code>study_approval_rate</code>로 통일하고 참여율로 표현하지 않음</td></tr>
       </tbody>
     </table>
   </div>
