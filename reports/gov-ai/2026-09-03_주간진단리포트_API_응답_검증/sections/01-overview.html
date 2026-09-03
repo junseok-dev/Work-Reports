@@ -1,0 +1,33 @@
+<section id="overview">
+  <h2>1. 검증 개요</h2>
+  <p class="lead">GOV-AI DataLake 명세서(<code>REPORT-API-CALL.md</code> v1.3)가 정의한 5개 API를 2026-09-03에 직접 호출해 실제 응답 필드를 확인했다. 주간 진단 리포트 화면을 구성할 때 어떤 값을 쓸 수 있고 어떤 값이 없는지를 호출 근거와 함께 정리한다.</p>
+
+  <div class="callout"><strong>검증 대상:</strong> <code>https://datalake.isitsoft.kr/api/v1</code> · API v1.0.0 · 인증 헤더 <code>X-DE-API-KEY</code>. 검증 수강생은 명세서 예시와 동일한 <code>100030029410</code>(정승, 29기 A반)이다.</div>
+
+  <h3>호출 환경</h3>
+  <p>이 문서의 모든 명령은 아래 환경변수를 전제한다. 키는 저장소에 두지 않는다.</p>
+  <pre><code>export DE_API_KEY="&lt;명세서 1.1의 X-DE-API-KEY&gt;"
+export B="https://datalake.isitsoft.kr/api/v1"
+export U="100030029410"
+export PYTHONIOENCODING=utf-8</code></pre>
+
+  <div class="note"><strong>Windows 주의:</strong> Git Bash·PowerShell 모두 <code>curl.exe</code>에 명령행 인자를 넘길 때 한글을 시스템 코드페이지(CP949)로 변환한다. 한글이 든 요청 본문을 <code>-d</code>로 인라인 전달하면 서버가 UTF-8로 디코딩하지 못해 <code>400 There was an error parsing the body</code>가 난다. 본문은 파일로 저장해 <code>--data-binary @file</code>로 보내야 한다. macOS·Linux에서는 명세서 예시가 그대로 동작한다.</div>
+
+  <h3>응답을 읽을 때</h3>
+  <pre><code>curl -sS "$B/reports/weekly/$U?format=json" -H "X-DE-API-KEY: $DE_API_KEY"   | python -m json.tool --no-ensure-ascii</code></pre>
+  <p><code>PYTHONIOENCODING=utf-8</code>과 <code>--no-ensure-ascii</code>가 <strong>둘 다</strong> 있어야 한글이 보인다. 앞이 없으면 콘솔 코드페이지에서 깨지고, 뒤가 없으면 <code>정승</code> 형태로 이스케이프된다.</p>
+
+  <h3>이 문서가 답하는 질문</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:38%"><col style="width:62%"></colgroup>
+      <thead><tr><th>질문</th><th>결론</th></tr></thead>
+      <tbody>
+        <tr><td>주간 리포트에 출결이 오는가</td><td><strong>온다.</strong> API 1·2·4에 <code>attendance_rate</code> 필드가 있다. 다만 전 학생·전 주차가 <code>100.0</code> 상수다</td></tr>
+        <tr><td>과제가 오는가</td><td><strong>온다.</strong> <code>assignments_completed</code> 필드가 있다. 값은 <code>0</code>이고 같은 응답의 <code>missing_fields</code>가 미수집을 선언한다</td></tr>
+        <tr><td>퀴즈가 오는가</td><td><strong>5개 API 어디에도 없다.</strong> 명세서 필드 사전에도 없다. 문서 밖 엔드포인트 <code>/sync/students</code>에만 있다</td></tr>
+        <tr><td>왜 있었다 없었다 했는가</td><td>세 가지 층위(문서 안/밖 · 필드/값 · 주차별/누적)가 섞여 있어서다. 4장에서 다룬다</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>

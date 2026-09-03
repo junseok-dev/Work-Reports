@@ -1,0 +1,77 @@
+<section id="fields">
+  <h2>3. 필드 정리</h2>
+  <p class="lead">출처 기호는 <strong>W</strong>=API 1 weekly, <strong>C</strong>=API 2 certificate, <strong>D</strong>=API 3 diagnose, <strong>H</strong>=API 4 history, <strong>A</strong>=API 5 approve, <strong>S</strong>=<code>/sync/students</code>(문서 밖)이다.</p>
+
+  <h3>출결</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:6%"><col style="width:38%"><col style="width:26%"><col style="width:30%"></colgroup>
+      <thead><tr><th>출처</th><th>필드 경로</th><th>실측값</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td><strong>W</strong></td><td><code>metrics.attendance_rate</code></td><td><code>100.0</code></td><td>—</td></tr>
+        <tr><td><strong>C</strong></td><td><code>project_and_portfolio.attendance_rate</code></td><td><code>100.0</code></td><td>—</td></tr>
+        <tr><td><strong>H</strong></td><td><code>metrics_snapshot.attendance_rate</code></td><td><code>100.0</code> (W33~W36 <strong>4주 전부</strong>)</td><td>7필드 축약 주차에도 살아 있음</td></tr>
+        <tr><td><strong>S</strong></td><td><code>attendance {present, late, early_leave, absent, excused}</code></td><td><code>{101, 5, 5, 4, 4}</code></td><td>누적. 비율 필드는 <strong>없음</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>값이 상수다.</strong> 학생 5명을 대조한 결과 결석 일수와 무관하게 전원 <code>100.0</code>이었다. <code>missing_fields</code>에 <code>attendance</code>가 <strong>없으므로</strong> 서버는 출결을 "받았다"고 본다. 원천은 있는데 집계가 동작하지 않는 상태다.</div>
+  <pre><code>이름     S의 출결 상세 (present/late/early/absent/excused)   합계    W의 attendance_rate
+정승     100/5/5/4/4                                      118    100.0
+박상희   61/3/8/11/2                                        85    100.0
+장규원   92/2/1/5/4                                       104    100.0
+윤승혁   112/1/0/1/4                                      118    100.0
+정예린   47/1/0/4/2                                        54    100.0</code></pre>
+  <p>결석 11일인 학생도 <code>100.0</code>이다. <code>present/합계</code>는 84.7%, <code>(present+late+early)/합계</code>는 93.2%로 어느 계산으로도 100이 나오지 않는다.</p>
+
+  <h3>과제</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:6%"><col style="width:38%"><col style="width:26%"><col style="width:30%"></colgroup>
+      <thead><tr><th>출처</th><th>필드 경로</th><th>실측값</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td><strong>W</strong></td><td><code>metrics.assignments_completed</code></td><td><code>0</code></td><td>—</td></tr>
+        <tr><td><strong>W</strong></td><td><code>metrics.missing_fields</code></td><td><code>["assignments"]</code></td><td><strong>서버가 미수집을 선언</strong></td></tr>
+        <tr><td><strong>C</strong></td><td><code>project_and_portfolio.completed_assignments</code></td><td><code>0</code></td><td>필드명이 W와 반대 순서</td></tr>
+        <tr><td><strong>H</strong></td><td><code>metrics_snapshot.assignments_completed</code></td><td>W35·W36만 <code>0</code><br>W33·W34는 <strong>필드 자체가 없음</strong></td><td>축약 주차에서 소멸</td></tr>
+        <tr><td><strong>S</strong></td><td><code>assignments {total, submitted, not_submitted}</code></td><td><code>{0, 0, 0}</code></td><td>누적</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>출결과 원인이 다르다.</strong> 과제는 <code>missing_fields</code>에 잡혀 있다. 값 <code>0</code>은 미수집의 기본값이지 "0건 제출"이 아니다. 화면에 "과제 0건 제출"로 표시하면 거짓이 된다.</div>
+
+  <h3>퀴즈</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:6%"><col style="width:38%"><col style="width:26%"><col style="width:30%"></colgroup>
+      <thead><tr><th>출처</th><th>필드 경로</th><th>실측값</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>W · C · D · H · A</td><td>—</td><td>—</td><td><strong>필드 없음.</strong> 명세서 §4 필드 사전에도 없음</td></tr>
+        <tr><td><strong>S</strong></td><td><code>quizzes {total, attempted, avg_score_pct}</code></td><td><code>{0, 0, 0.0}</code></td><td>누적. 문서 밖 엔드포인트</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>주간 리포트에 쓸 수 있는가</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:12%"><col style="width:26%"><col style="width:26%"><col style="width:36%"></colgroup>
+      <thead><tr><th>항목</th><th>주차별 필드</th><th>값 상태</th><th>판정</th></tr></thead>
+      <tbody>
+        <tr><td><strong>출결</strong></td><td>있음 — H에 4주 전부</td><td><code>100.0</code> 상수</td><td>필드가 실재하므로 <strong>값이 채워지면 바로 쓸 수 있다</strong></td></tr>
+        <tr><td><strong>과제</strong></td><td>W35·W36만</td><td><code>0</code> + <code>missing_fields</code></td><td>서버가 미수집을 선언 — 값을 채우면 그 선언과 모순</td></tr>
+        <tr><td><strong>퀴즈</strong></td><td><strong>없음</strong></td><td>—</td><td><strong>불가.</strong> 계약에 없는 필드를 만들어야 함</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>진단 리포트가 실제로 쓰는 지표</h3>
+  <p>위 셋을 제외하면 주간 진단 리포트의 원천은 PlayLang 실습 로그다.</p>
+  <pre><code>진도    steps_completed · current_step · (total_steps는 C에만)
+활동    active_days_count · stalled_days_on_current_step · days_since_last_activity
+실행    total_runs · total_errors · error_per_run
+힌트    hint_requests_count · hint_per_active_day
+재시도  avg_retry_gap_min · max_retry_gap_min
+에러    top_error_types[{type, count}]   ← 상위 3개만</code></pre>
+  <div class="note"><code>top_error_types</code>는 상위 3개만 온다. 실측에서 세 건의 합이 <code>total_errors</code>의 62.6%였다. 나머지 37.4%는 어느 응답에도 나타나지 않으며 "기타" 항목도 없다. 화면에 막대그래프를 그리면 합이 전체와 맞지 않는다.</div>
+</section>

@@ -12,6 +12,7 @@ LMS 프로젝트 작업 결과를 팀원에게 공유하기 위한 공개 HTML �
 ### 현재 배포 보고서
 
 - LMS: [LMS-AI 수강역량증명서 실데이터 흐름 및 필요 데이터](https://work-report-277d7.web.app/reports/lms/2026-08-07_lms-ai_수강역량증명서_실데이터_흐름_및_필요_데이터/)
+- GOV-AI: [주간 진단 리포트 API 응답 검증](https://work-report-277d7.web.app/reports/gov-ai/2026-09-03_주간진단리포트_API_응답_검증/)
 
 > 최초 배포 전에는 GitHub 저장소의 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 선택해야 합니다.
 

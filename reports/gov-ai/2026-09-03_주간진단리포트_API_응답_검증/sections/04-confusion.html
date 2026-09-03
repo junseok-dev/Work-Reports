@@ -1,0 +1,92 @@
+<section id="confusion">
+  <h2>4. 출결·과제·퀴즈가 "있다/없다"로 갈린 이유</h2>
+  <p class="lead">검토 과정에서 이 셋을 두고 "온다"와 "없다"가 반복해서 뒤집혔다. 세 가지 층위가 섞여 있었기 때문이다. 각각을 분리하면 모순이 사라진다.</p>
+
+  <h3>층위 1 — 문서 안의 API인가, 문서 밖인가</h3>
+  <p>명세서 <code>REPORT-API-CALL.md</code>는 5개 API만 다룬다. 그런데 실제 서버의 <code>/openapi.json</code>에는 24개 엔드포인트가 있고, 그중 <code>/sync/students</code>에 출결·과제·퀴즈 <strong>상세</strong>가 들어 있다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup>
+      <thead><tr><th>말한 내용</th><th>가리킨 곳</th><th>참·거짓</th></tr></thead>
+      <tbody>
+        <tr><td>"퀴즈 데이터가 왔다"</td><td><code>/sync/students</code> (문서 밖)</td><td>참</td></tr>
+        <tr><td>"퀴즈 필드가 없다"</td><td>명세서 5개 API</td><td>참</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>둘 다 사실이지만 <strong>가리키는 엔드포인트가 달랐다.</strong> 어느 쪽을 말하는지 붙이지 않아 모순처럼 들렸다. 이 문서에서 <code>/sync/students</code>를 <strong>S</strong>로 따로 표기하고 fixture 파일명에 <code>ext-</code> 접두사를 붙인 이유가 이것이다.</p>
+
+  <h3>층위 2 — 필드가 있는가, 값이 쓸모 있는가</h3>
+  <p>출결·과제는 <strong>필드가 실제로 온다.</strong> 그래서 "온다"는 말이 맞다. 그러나 값이 상수라 화면에 쓸 수 없다. "쓸 수 있나"로 물으면 답이 뒤집힌다.</p>
+  <pre><code>필드 존재 여부   attendance_rate  ✅ 있음      assignments_completed  ✅ 있음
+값의 유효성      100.0 상수       ❌ 못 씀     0 + missing_fields     ❌ 못 씀</code></pre>
+  <p>게다가 둘은 <strong>못 쓰는 이유가 서로 다르다.</strong></p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:14%"><col style="width:28%"><col style="width:58%"></colgroup>
+      <thead><tr><th>항목</th><th><code>missing_fields</code></th><th>해석</th></tr></thead>
+      <tbody>
+        <tr><td>과제</td><td><code>["assignments"]</code>에 <strong>포함</strong></td><td>서버가 "이 데이터를 못 받았다"고 스스로 알린다. 값 <code>0</code>은 기본값이다. 정직한 처리다</td></tr>
+        <tr><td>출결</td><td><strong>미포함</strong></td><td>서버는 "받았다"고 본다. 그런데 값이 전원 <code>100.0</code>이다. 결측이 아니라 <strong>틀린 값</strong>이라 더 위험하다</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>층위 3 — 주차별인가, 누적인가</h3>
+  <p><strong>S</strong>의 상세값은 실제 데이터다. 문제는 <code>last_synced_at</code> 시점의 <strong>누적 현재값</strong>이라는 점이다. 주차를 바꿔가며 봐도 같은 값이 나온다.</p>
+  <pre><code>11주차(W33)를 봐도  → attendance {present 101, late 5, absent 4}
+14주차(W36)를 봐도  → attendance {present 101, late 5, absent 4}   동일</code></pre>
+  <p>그래서 "지난주 대비 출석률" 같은 문장을 만들 수 없다. 비교할 이전 주 값이 존재하지 않는다.</p>
+
+  <h3>정리하면</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:14%"><col style="width:22%"><col style="width:22%"><col style="width:20%"><col style="width:22%"></colgroup>
+      <thead><tr><th>항목</th><th>5개 API 필드</th><th>값</th><th>S의 상세</th><th>주간 리포트 사용</th></tr></thead>
+      <tbody>
+        <tr><td><strong>출결</strong></td><td>있음 (W·C·H)</td><td><code>100.0</code> 상수</td><td>있음 (누적)</td><td>값 보강 시 가능</td></tr>
+        <tr><td><strong>과제</strong></td><td>있음 (W·C·H)</td><td><code>0</code> + 미수집 선언</td><td>있음 (누적)</td><td>불가</td></tr>
+        <tr><td><strong>퀴즈</strong></td><td><strong>없음</strong></td><td>—</td><td>있음 (누적)</td><td>불가</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>이 값들의 원천은 LMS다</h3>
+  <p><strong>S</strong>의 출결·과제·퀴즈는 GOV-AI가 수집한 것이 아니라 <strong>LMS가 넘긴 데이터</strong>다. <code>LMS-DOCS/10_데이터/외부_AI_코칭_API.md</code>가 정의한 <code>data-ingest-api</code>가 원천이며, 양쪽이 같은 <code>X-DE-API-KEY</code> 헤더를 쓴다.</p>
+  <pre><code>LMS data-ingest-api ──X-DE-API-KEY──▶ GOV-AI 수집 ──▶ /sync/students
+  GET /ingest/v1/courses?include=activities</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:20%"><col style="width:44%"><col style="width:36%"></colgroup>
+      <thead><tr><th>블록</th><th>LMS가 주는 필드</th><th>GOV-AI가 저장한 것</th></tr></thead>
+      <tbody>
+        <tr><td><code>attendance</code></td><td>present, late, earlyLeave, absent, excused</td><td><strong>5개 전부</strong> (snake_case 변환)</td></tr>
+        <tr><td><code>assignments</code></td><td>total, submitted, supplementRequested, reviewDone, notSubmitted</td><td>3개만</td></tr>
+        <tr><td><code>quizzes</code></td><td>totalOpen, attempted, finalized, avgScorePct</td><td>2~3개만</td></tr>
+        <tr><td><code>qna</code> · <code>projects</code> · <code>troubleshooting</code></td><td>전부 제공</td><td><strong>사용 안 함</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>즉 GOV-AI는 우리가 준 값을 받아만 두고 <strong>주간 리포트에는 반영하지 않는다.</strong> 출결이 <code>100.0</code>인 것도 원천이 없어서가 아니라 집계 단계에서 쓰이지 않기 때문이다.</p>
+
+  <h3>화면 설계에 미치는 결론</h3>
+  <p><code>LMS-DOCS/30_설계/60_기능/기능_명세/P0_12_수강생_과정별_역량_리포트.md</code>가 이미 원천을 나눠 놓았다.</p>
+  <div class="callout"><strong>P0-STU-DIAG-004 완료 기준:</strong> "지표는 퀴즈·과제 점수가 아니라 <strong>실습 행동 로그</strong>(정체·에러율·힌트 의존·재시도 간격) 기반임"</div>
+  <p>같은 문서가 구 <code>competency</code> 화면과의 차이를 <strong>데이터 원천</strong>으로 구분한다 — 구 화면은 "퀴즈·과제·출결·기록 집계", 진단 리포트는 "실습 단계 진행·에러·힌트·재시도 지표"다. 실제 API 응답이 이 구분과 일치한다. 출결·과제·퀴즈는 교육과정 허브의 <code>출결/태도</code>·<code>과제</code>·<code>퀴즈</code> 전용 탭이 담당한다.</p>
+
+  <h3>GOV-AI 팀 확인 요청 항목</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:6%"><col style="width:34%"><col style="width:60%"></colgroup>
+      <thead><tr><th>No.</th><th>항목</th><th>근거</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>출결 집계 미동작</td><td><code>attendance_rate</code>가 학생 5명·주차 4개 전부 <code>100.0</code>. <code>/sync/students</code>에는 결석·지각 상세가 살아 있다</td></tr>
+        <tr><td>2</td><td>과제 미수집</td><td><code>missing_fields: ["assignments"]</code>. LMS는 <code>data-ingest-api</code>로 제공 중이다</td></tr>
+        <tr><td>3</td><td>퀴즈 필드 부재</td><td>5개 API와 명세서 §4 필드 사전 모두에 없음. <code>/sync/students</code>에만 존재</td></tr>
+        <tr><td>4</td><td>과거 주차 지표 축약</td><td>W33·W34의 <code>metrics_snapshot</code>이 7필드. 힌트·재시도·에러 유형이 사라진다</td></tr>
+        <tr><td>5</td><td>타임존 혼재</td><td><code>log_id</code>는 KST, <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 UTC</td></tr>
+        <tr><td>6</td><td>승인 로그 삭제 수단 없음</td><td><code>/feedback/approve</code>가 누적 생성만 하고 삭제 API가 없다. 검증 호출분에 <code>[TEST]</code> 표기를 남겼다</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>

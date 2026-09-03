@@ -1,0 +1,100 @@
+<section id="api-calls">
+  <h2>2. API 1~5 호출과 응답</h2>
+  <p class="lead">명세서 §2의 다섯 엔드포인트를 순서대로 호출한 결과다. 각 호출의 실제 명령, 응답 최상위 구조, 출결·과제·퀴즈 필드의 유무를 함께 기록한다.</p>
+
+  <h3>API 1. 주간 AI 학습 맞춤 진단 리포트</h3>
+  <pre><code>curl -X GET "$B/reports/weekly/$U?format=json" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <p>최상위 10개 블록이 온다.</p>
+  <pre><code>studentUuid · year_week · week_no · week_label · week_range · cached
+metrics · diagnosis · weakness · risk</code></pre>
+  <p><code>metrics</code>는 24필드다. 이 목록이 진단 리포트가 쓸 수 있는 지표의 전부다.</p>
+  <pre><code>studentUuid  userId  name  cohortId  cohort  group  language
+steps_completed  current_step  stalled_days_on_current_step  days_since_last_activity
+active_days_count  total_runs  total_errors  error_per_run
+hint_requests_count  hint_per_active_day  avg_retry_gap_min  max_retry_gap_min
+top_error_types  assignments_completed  attendance_rate  data_freshness  missing_fields</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:20%"><col style="width:24%"><col style="width:56%"></colgroup>
+      <thead><tr><th>항목</th><th>실측값</th><th>확인 내용</th></tr></thead>
+      <tbody>
+        <tr><td>출결</td><td><code>attendance_rate = 100.0</code></td><td>필드 존재. 값은 상수(3장 참조)</td></tr>
+        <tr><td>과제</td><td><code>assignments_completed = 0</code><br><code>missing_fields = ["assignments"]</code></td><td>필드 존재. 서버가 같은 응답에서 미수집을 선언</td></tr>
+        <tr><td>퀴즈</td><td>—</td><td><strong>필드 없음.</strong> 24필드 전수에 <code>quiz</code>를 포함하는 키가 하나도 없다</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>API 2. LMS 연동용 역량 증명서</h3>
+  <pre><code>curl -X GET "$B/certificate/$U" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <pre><code>version · issue_timestamp · student · summary · technical_proof
+project_and_portfolio · ai_analysis_narrative · human_in_the_loop</code></pre>
+  <p>출결·과제는 <code>project_and_portfolio</code> 안에 있고, 필드명이 API 1과 다르다.</p>
+  <pre><code>"project_and_portfolio": {
+  "completed_assignments": 0,      // API 1은 assignments_completed
+  "attendance_rate": 100.0,
+  "collaboration_score": 85.0
+}</code></pre>
+  <p>퀴즈 필드는 없다. <code>summary.total_steps = 10</code>은 <strong>이 API에만</strong> 있어, 진행률을 <code>10/10</code>으로 표시하려면 여기서 가져오거나 상수로 두어야 한다.</p>
+
+  <h3>API 3. 온디맨드 수준 진단</h3>
+  <pre><code>curl -X POST "$B/analysis/diagnose/$U" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <p>최상위 10필드가 평탄하게 온다. API 1의 <code>diagnosis</code> 블록과 같은 구성이다.</p>
+  <pre><code>studentUuid · grade · confidence · grade_rationale · weak_patterns · risk_flags
+recommendations_for_instructor · suggested_feedback_draft · analyzed_at · model_meta</code></pre>
+  <div class="callout"><strong>지표가 아예 없다.</strong> <code>total_runs</code>·<code>error_per_run</code> 같은 정량 값도, 출결·과제·퀴즈도 오지 않는다. 진단 텍스트만 반환하는 엔드포인트다.</div>
+
+  <h3>API 4. 주차별 리포트 이력</h3>
+  <pre><code>curl -X GET "$B/reports/history/$U?limit=5" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <p>배열로 오며 항목당 20필드다. API 1과 <strong>필드명이 다르다</strong>.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:50%"><col style="width:50%"></colgroup>
+      <thead><tr><th>API 1 (weekly)</th><th>API 4 (history)</th></tr></thead>
+      <tbody>
+        <tr><td><code>studentUuid</code></td><td><code>student_uuid</code></td></tr>
+        <tr><td><code>diagnosis.recommendations_for_instructor</code></td><td><code>recommendations</code></td></tr>
+        <tr><td><code>diagnosis.suggested_feedback_draft</code></td><td><code>feedback_draft</code></td></tr>
+        <tr><td><code>risk.status</code></td><td><code>risk_status</code></td></tr>
+        <tr><td><code>diagnosis.model_meta.provider</code> · <code>.model</code></td><td><code>llm_provider</code> · <code>llm_model</code></td></tr>
+        <tr><td>4개 블록 중첩</td><td>전부 평탄화 + <code>metrics_snapshot</code> · <code>markdown_content</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>주차별 <code>metrics_snapshot</code>을 열면 <strong>주차마다 필드 수가 다르다</strong>.</p>
+  <pre><code>2026-W33  필드  7개  attendance_rate=100.0  assignments_completed=(필드 없음)
+2026-W34  필드  7개  attendance_rate=100.0  assignments_completed=(필드 없음)
+2026-W35  필드 24개  attendance_rate=100.0  assignments_completed=0
+2026-W36  필드 24개  attendance_rate=100.0  assignments_completed=0</code></pre>
+  <p>과거 두 주차는 <code>steps_completed · current_step · total_runs · total_errors · error_per_run · active_days_count · attendance_rate</code> 7개로 축약된다. 힌트·재시도·정체·에러 유형이 없다. <strong>출결만 모든 주차에 살아 있다.</strong></p>
+
+  <h3>API 5. 강사 피드백 승인</h3>
+  <pre><code>cat &gt; payload.json &lt;&lt;'EOF'
+{
+  "studentUuid": "100030029410",
+  "approved_by": "[TEST] 필드 확인",
+  "feedback_text": "[TEST] API 5 응답 필드 확인용",
+  "status": "APPROVED"
+}
+EOF
+
+curl -X POST "$B/feedback/approve" -H "X-DE-API-KEY: $DE_API_KEY"   -H "Content-Type: application/json" --data-binary @payload.json</code></pre>
+  <pre><code>{"status": "SUCCESS", "log_id": "fb_20260903103059_100030029410", "approved_by": "[TEST] 필드 확인"}</code></pre>
+  <p>응답은 3필드뿐이다. 출결·과제·퀴즈와 무관하다. 승인 로그가 <strong>누적 생성</strong>되고 삭제 API가 없으므로, 검증 호출에는 <code>[TEST]</code> 표기를 붙여 나중에 골라낼 수 있게 했다.</p>
+  <div class="note"><code>log_id</code>의 시각 <code>103059</code>는 <strong>KST</strong>다. 같은 순간 다른 응답의 <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 UTC로 온다. 한 서비스 안에서 타임존이 섞여 있다.</p></div>
+
+  <h3>문서 밖 엔드포인트 — <code>/sync/students</code></h3>
+  <p>명세서 5개 API에는 없고 <code>/openapi.json</code>에서 찾은 엔드포인트다. 이 문서에서 <strong>S</strong>로 표기한다.</p>
+  <pre><code>curl -X GET "$B/sync/students?limit=200" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <pre><code>student_uuid · user_id · name · cohort_id · cohort_label · education_title · training_status
+assignments {total, submitted, not_submitted}
+quizzes     {total, attempted, avg_score_pct}
+attendance  {present, late, early_leave, absent, excused}
+atmux       {total_duration_sec, total_duration_hours, weekly_daily_avg_hours, avg_cpu_util, telemetry_count}
+playlang    {current_step, course, language, total_events, runs_count, errors_count, hints_count, error_rate_pct}
+last_synced_at</code></pre>
+  <p>학생 마스터라 123명 전원이 오고, <strong>주차 개념이 없다.</strong> <code>last_synced_at</code> 시점의 누적 현재값이다. 출결 상세·퀴즈 점수·과제 제출 건수는 <strong>여기에만</strong> 있다.</p>
+  <pre><code>attendance  {"present": 101, "late": 5, "early_leave": 5, "absent": 4, "excused": 4}
+quizzes     {"total": 0, "attempted": 0, "avg_score_pct": 0.0}
+assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
+</section>
