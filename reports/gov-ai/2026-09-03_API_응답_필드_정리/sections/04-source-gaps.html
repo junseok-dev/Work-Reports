@@ -143,7 +143,10 @@ curl -X GET &quot;$B/sync/students?limit=200&quot; -H &quot;X-DE-API-KEY: $DE_AP
         <tr><td>5</td><td>과거 주차 지표 축약</td><td>W33·W34의 <code>metrics_snapshot</code>이 7필드. 힌트·재시도·에러 유형이 사라진다 (4.1)</td></tr>
         <tr><td>6</td><td><code>total_steps</code> 부재</td><td>진도의 분모가 API 2에만 있어 화면이 상수 <code>10</code>을 쓰고 있다 (4.4)</td></tr>
         <tr><td>7</td><td>타임존 혼재</td><td><code>log_id</code>는 KST, <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 UTC (2장)</td></tr>
-        <tr><td>8</td><td>승인 로그 삭제 수단 없음</td><td><code>/feedback/approve</code>가 누적 생성만 하고 삭제 API가 없다. 검증 호출분에 <code>[TEST]</code> 표기를 남겼다</td></tr>
+        <tr><td>8</td><td><strong>주차별 승인 상태 필드 부재</strong></td><td>화면에 강사 승인 게이트가 있는데 승인 여부를 주는 필드가 API 4에 없다. API 2의 <code>human_in_the_loop</code>은 증명서 단위라 주차별이 아니다. <code>/feedback/approve</code>로 승인해도 수강생 화면이 알 수 없다 (3장)</td></tr>
+        <tr><td>9</td><td><strong>학생 프로필 불일치</strong></td><td>같은 학생이 <code>/reports/weekly</code>에서는 <code>python</code>·<code>current_step 10</code>·<code>total_runs 4,946</code>인데 <code>/sync/students</code>에서는 <code>typescript</code>·프런트엔드·<code>7</code>·<code>6,364</code>다. 어느 쪽이 기준인지 확인이 필요하다</td></tr>
+        <tr><td>10</td><td><strong>주차 간 실행량 급증</strong></td><td>W35→W36에 <code>total_runs</code>가 <code>264 → 4,946</code>(18.7배)로 뛰었다. 활동일은 1.75배만 늘어 학습량 증가로 설명되지 않는다. 수집 범위가 바뀐 것인지 확인이 필요하다</td></tr>
+        <tr><td>11</td><td>승인 로그 삭제 수단 없음</td><td><code>/feedback/approve</code>가 누적 생성만 하고 삭제 API가 없다. 검증 호출분에 <code>[TEST]</code> 표기를 남겼다</td></tr>
       </tbody>
     </table>
   </div>

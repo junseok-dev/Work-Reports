@@ -2,20 +2,21 @@
   <h2>1. 검증 개요</h2>
   <p class="lead">GOV-AI DataLake 명세서(<code>REPORT-API-CALL.md</code> v1.3)가 정의한 5개 API를 2026-09-03에 직접 호출해 실제 응답을 확인했다. 주간 진단 리포트 화면이 어떤 값을 쓸 수 있고 어떤 값을 쓸 수 없는지를, 호출 명령과 응답 값을 근거로 정리한다.</p>
   <div class="callout"><strong>대상</strong> <code>https://datalake.isitsoft.kr/api/v1</code> · API v1.0.0 · 인증 헤더 <code>X-DE-API-KEY</code>. 검증 수강생은 명세서 예시와 같은 <code>100030029410</code>(정승, 29기 A반)이며, 화면 구성 예시에는 데모 계정 <code>100051503818</code>(황수빈, 34기)을 쓴다.</div>
-  <h3>이 문서가 답하는 것</h3>
+  <h3>이 문서의 구성</h3>
+  <p>호출에서 시작해 필드, 그리고 쓸 수 있는지 판단 순으로 간다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:30%"><col style="width:48%"><col style="width:22%"></colgroup>
-      <thead><tr><th>질문</th><th>결론</th><th>근거</th></tr></thead>
+      <colgroup><col style="width:14%"><col style="width:34%"><col style="width:52%"></colgroup>
+      <thead><tr><th>장</th><th>다루는 것</th><th>여기서 답하는 질문</th></tr></thead>
       <tbody>
-        <tr><td>주간 리포트는 어떤 데이터로 그려지는가</td><td><strong>API 4 한 번의 호출</strong>이 주는 25개 필드다. 항목별 대응은 별도 보고서에서 다룬다</td><td><a href="../2026-09-03_주간진단리포트_항목별_데이터/">항목별 데이터 보고서</a></td></tr>
-        <tr><td>출결이 오는가</td><td><strong>온다.</strong> API 1·2·4에 <code>attendance_rate</code>가 있다. 다만 학생·주차와 무관하게 전부 <code>100.0</code>이다</td><td><a href="#source-gaps">4장</a></td></tr>
-        <tr><td>과제가 오는가</td><td><strong>온다.</strong> <code>assignments_completed</code>가 있다. 값은 <code>0</code>이고 같은 응답의 <code>missing_fields</code>가 미수집을 선언한다</td><td><a href="#source-gaps">4장</a></td></tr>
-        <tr><td>퀴즈가 오는가</td><td><strong>5개 API 어디에도 없다.</strong> 명세서 필드 사전에도 없다. 문서 밖 <code>/sync/students</code>에만 있다</td><td><a href="#source-gaps">4장</a></td></tr>
-        <tr><td>그럼 출결·과제·퀴즈는 못 쓰는가</td><td>주차별은 못 쓴다. <strong>누적 기준이면 지금도 가능하다</strong> — 출결 구성·출석률·과제 제출률·퀴즈 응시율</td><td><a href="#source-gaps">4장</a></td></tr>
+        <tr><td><a href="#api-calls"><strong>2장</strong></a></td><td>다섯 엔드포인트를 어떤 명령으로 불렀고 응답의 최상위 구조가 어떤가</td><td>어떻게 부르는가 · 무엇이 통째로 오는가 · 문서 밖 <code>/sync/students</code>는 왜 응답하는가</td></tr>
+        <tr><td><a href="#fields"><strong>3장</strong></a></td><td>응답 필드 전체 사전 — 각 필드의 의미·타입·실측값</td><td>이 필드가 무슨 뜻인가 · 어떤 값이 왔는가 · 호출마다 이름이 왜 다른가</td></tr>
+        <tr><td><a href="#source-gaps"><strong>4장</strong></a></td><td>출결·과제·퀴즈 — 어떤 통계가 되고 무엇이 안 되는가</td><td>필드는 오는데 왜 못 쓰는가 · 그래도 낼 수 있는 통계는 무엇인가 · GOV-AI에 무엇을 요청해야 하는가</td></tr>
       </tbody>
     </table>
   </div>
+  <div class="note">화면 항목마다 어떤 값이 들어가 어떤 숫자·문장이 되는지는 이 보고서가 아니라 <a href="../2026-09-03_주간진단리포트_항목별_데이터/">주간 진단 리포트 항목별 데이터</a>에서 다룬다.</div>
+
   <h3>호출 환경</h3>
   <p>이 문서의 모든 명령은 아래 환경변수를 전제한다. 키는 저장소에 두지 않는다.</p>
   <pre><code>export DE_API_KEY="&lt;명세서 1.1의 X-DE-API-KEY&gt;"

@@ -1,0 +1,23 @@
+<section id="cumulative">
+  <h2>4. 누적으로 만들 수 있는 것</h2>
+  <p><code>/sync/students</code>는 주차가 없는 대신 <strong>주간 리포트에 없는 재료</strong>를 준다. 출결·과제·퀴즈에 더해 <strong>학습 시간</strong>이 여기 있다.</p>
+  <pre><code>curl -X GET "$B/sync/students?limit=200" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:18%"><col style="width:26%"><col style="width:22%"><col style="width:34%"></colgroup>
+      <thead><tr><th>항목</th><th>원천 필드</th><th>황수빈 실측</th><th>계산과 의미</th></tr></thead>
+      <tbody>
+        <tr><td><strong>학습 시간</strong></td><td><code>atmux.total_duration_hours</code></td><td><code>28.7</code>시간</td><td>실습 서버에 접속해 있던 총 시간. <strong>주간 리포트에 없는 값</strong></td></tr>
+        <tr><td>일 평균 학습 시간</td><td><code>atmux.weekly_daily_avg_hours</code></td><td><code>4.1</code>시간</td><td>서버가 이미 계산해 준다. 우리가 나눌 필요가 없다</td></tr>
+        <tr><td>실습 서버 부하</td><td><code>atmux.avg_cpu_util</code></td><td><code>29.5%</code></td><td>평균 CPU 사용률. 학습 강도의 보조 신호</td></tr>
+        <tr><td>텔레메트리 수집량</td><td><code>atmux.telemetry_count</code></td><td><code>7,238</code>건</td><td>10초 주기 수집이므로 접속 시간과 교차 검증할 수 있다</td></tr>
+        <tr><td>출결 구성</td><td><code>attendance{5종}</code></td><td><code>36/11/2/3/2</code></td><td>출석·지각·조퇴·결석·공결 일수</td></tr>
+        <tr><td>출석률</td><td><code>present ÷ 합계</code></td><td><code>36 ÷ 54 = 66.7%</code></td><td>지각·조퇴를 출석으로 치면 <code>90.7%</code>. 어느 정의를 쓸지 정해야 한다</td></tr>
+        <tr><td>과제 제출률</td><td><code>submitted ÷ total</code></td><td><code>9 ÷ 10 = 90.0%</code></td><td>주간 리포트의 <code>assignments_completed</code>는 <code>0</code>이다</td></tr>
+        <tr><td>퀴즈 응시율</td><td><code>attempted ÷ total</code></td><td><code>6 ÷ 7 = 85.7%</code></td><td>주간 리포트에는 퀴즈 필드가 아예 없다</td></tr>
+        <tr><td>퀴즈 평균</td><td><code>quizzes.avg_score_pct</code></td><td><code>91.0</code>점</td><td><code>attempted</code>가 0이면 <code>0.0</code>이 오므로 미채점과 구분해야 한다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>학습 시간은 지금까지 놓치고 있던 재료다.</strong> "일일 평균 학습 시간"을 화면에 넣으려면 별도 수집이 필요하다고 봤지만, <code>atmux.weekly_daily_avg_hours</code>가 이미 계산된 값으로 온다. 다만 <strong>누적이라 주차별로는 나눌 수 없다.</strong></div>
+</section>

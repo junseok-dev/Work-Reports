@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>API 응답 기반 분석 가능성</title>
+  <link rel="stylesheet" href="../../../../assets/data-report.css" />
+</head>
+<body>
+  <article class="page">
+    <header class="report-header">
+      <p class="eyebrow">GOV-AI DataLake &middot; Analysis Scope</p>
+      <h1>API 응답 기반 분석 가능성</h1>
+      <p class="header-summary">실호출로 받은 값만으로 어떤 통계를 계산할 수 있고 어떤 분석을 문장으로 풀 수 있는지, 반대로 무엇이 불가능한지를 실측으로 가른다.</p>
+      <div class="meta"><span class="badge">작성일 2026-09-03</span><span class="badge">실응답 계산 검증</span><span class="badge">황수빈 W33~W36</span></div>
+    </header>
+    <main class="content"><section id="criteria">
+  <h2>1. 무엇으로 가르는가</h2>
+  <p class="lead">"만들 수 있다"를 세 가지로 나눠 판단했다. <strong>재료가 응답에 있는가</strong>, <strong>어느 단위로 오는가</strong>, <strong>값을 믿을 수 있는가</strong>. 셋이 다 통과해야 화면에 올릴 수 있다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:16%"><col style="width:36%"><col style="width:48%"></colgroup>
+      <thead><tr><th>기준</th><th>묻는 것</th><th>걸러지는 예</th></tr></thead>
+      <tbody>
+        <tr><td><strong>재료</strong></td><td>그 값을 주는 필드가 응답에 있는가</td><td>정답률·코드 품질은 어느 응답에도 없다</td></tr>
+        <tr><td><strong>단위</strong></td><td>주차별인가 누적인가</td><td>출결·과제·퀴즈는 <code>/sync/students</code>의 누적값뿐이라 "이번 주"를 만들 수 없다</td></tr>
+        <tr><td><strong>신뢰</strong></td><td>값이 실제를 반영하는가</td><td><code>attendance_rate</code>는 필드도 있고 주차별인데 전원 <code>100.0</code>이다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>아래 계산은 모두 데모 계정 황수빈(<code>100051503818</code>)의 실응답에서 나왔다. 계산식과 결과를 함께 적어 재현할 수 있게 했다. 필드가 무엇인지는 <a href="../2026-09-03_API_응답_필드_정리/index.html#fields">필드 정리 보고서 3장</a>에 있다.</p>
+</section>
+
+<section id="per-week">
+  <h2>2. 한 주차에서 뽑을 수 있는 것</h2>
+  <p>API 4가 주는 한 행(<code>metrics_snapshot</code>)만으로 계산되는 값이다. 지금 화면이 쓰는 8칸 외에 <strong>일곱 가지를 더 만들 수 있다.</strong></p>
+  <pre><code>curl -X GET "$B/reports/history/$U?limit=5" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:20%"><col style="width:28%"><col style="width:20%"><col style="width:32%"></colgroup>
+      <thead><tr><th>파생 지표</th><th>계산</th><th>W36 실측</th><th>무엇을 말해주나</th></tr></thead>
+      <tbody>
+        <tr><td>단계당 실행 횟수</td><td><code>total_runs ÷ steps_completed</code></td><td><code>4,946 ÷ 10 = 494.6</code></td><td>한 단계를 넘기는 데 몇 번 시도했나. 시행착오의 양</td></tr>
+        <tr><td>활동 밀도</td><td><code>active_days_count ÷ 7</code></td><td><code>7 ÷ 7 = 1.00</code></td><td>그 주에 며칠이나 손을 댔나. 학습 리듬</td></tr>
+        <tr><td>에러 집중도</td><td><code>top3 합 ÷ total_errors</code></td><td><code>304 ÷ 478 = 63.6%</code></td><td>에러가 몇 가지에 몰려 있나. 높으면 특정 개념에 막힌 것</td></tr>
+        <tr><td>최다 에러 비중</td><td><code>top1 ÷ total_errors</code></td><td><code>105 ÷ 478 = 22.0%</code></td><td>한 가지가 얼마나 지배적인가</td></tr>
+        <tr><td>실행 대비 힌트</td><td><code>hint_requests_count ÷ total_runs</code></td><td><code>286 ÷ 4,946 = 5.8%</code></td><td>몇 번 실행할 때마다 힌트를 여나</td></tr>
+        <tr><td>에러당 힌트</td><td><code>hint_requests_count ÷ total_errors</code></td><td><code>286 ÷ 478 = 0.60</code></td><td>막혔을 때 스스로 보는 비율. 1에 가까울수록 에러마다 힌트</td></tr>
+        <tr><td>진도율</td><td><code>steps_completed ÷ total_steps</code></td><td><code>10 ÷ 10 = 100%</code></td><td>분모가 API 2에만 있어 지금은 상수 <code>10</code>을 쓴다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">에러 집중도의 분모에 주의가 필요하다. <code>top_error_types</code>는 <strong>상위 3개만</strong> 오므로 63.6%는 "상위 3종이 전체의 63.6%"라는 뜻이고, 나머지 36.4%가 몇 종인지는 알 수 없다. 원형 그래프로 그리면 합이 100이 되지 않는다.</div>
+</section>
+
+<section id="trend">
+  <h2>3. 주차를 이어 붙이면 나오는 것</h2>
+  <p>API 4는 여러 주차를 배열로 준다. 한 번의 호출로 시계열이 만들어지므로 추이 분석에 추가 호출이 필요 없다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:12%"><col style="width:12%"><col style="width:10%"><col style="width:10%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:20%"></colgroup>
+      <thead><tr><th>주차</th><th>등급</th><th>확신도</th><th>완료 단계</th><th>실행</th><th>에러율</th><th>힌트/일</th><th>단계당 실행</th></tr></thead>
+      <tbody>
+        <tr><td>W33</td><td>초급</td><td>0.88</td><td>1</td><td>80</td><td>0.45</td><td>—</td><td>80.0</td></tr>
+        <tr><td>W34</td><td>중급</td><td>0.80</td><td>3</td><td>140</td><td>0.22</td><td>—</td><td>46.7</td></tr>
+        <tr><td>W35</td><td>해결사</td><td>0.75</td><td>5</td><td>264</td><td>0.10</td><td>4.5</td><td>52.8</td></tr>
+        <tr><td>W36</td><td>해결사</td><td>0.80</td><td>10</td><td>4,946</td><td>0.10</td><td>40.86</td><td>494.6</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>여기서 나오는 통계</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:30%"><col style="width:48%"></colgroup>
+      <thead><tr><th>항목</th><th>W33 → W36</th><th>읽는 법</th></tr></thead>
+      <tbody>
+        <tr><td>등급 변화</td><td>초급 → 중급 → 해결사 → 해결사</td><td>상승 2회 후 유지. 등급이 오른 주차를 짚을 수 있다</td></tr>
+        <tr><td>에러율 추세</td><td><code>0.45 → 0.22 → 0.10 → 0.10</code></td><td><strong>78% 감소</strong> 후 유지. 가장 뚜렷한 개선 신호</td></tr>
+        <tr><td>단계 증가 속도</td><td>주당 <code>+2 · +2 · +5</code></td><td>마지막 주에 가속. 완주 시점을 특정할 수 있다</td></tr>
+        <tr><td>실행량 추세</td><td><code>80 → 140 → 264 → 4,946</code></td><td>마지막 주가 <strong>18.7배</strong>. 아래 주의 항목 참조</td></tr>
+        <tr><td>확신도 추세</td><td><code>0.88 → 0.80 → 0.75 → 0.80</code></td><td>등급이 오를수록 낮아지다 회복. 판정이 어려워진 구간을 보여준다</td></tr>
+        <tr><td>힌트 추세</td><td><code>— → — → 4.5 → 40.86</code></td><td><strong>두 주가 결측</strong>이라 추세선을 그릴 수 없다</td></tr>
+        <tr><td>활동 밀도 추세</td><td><code>0.43 → 0.57 → 0.57 → 1.00</code></td><td>주 3일에서 7일로. 학습 리듬이 잡히는 과정</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>축약 주차가 추이를 끊는다.</strong> W33·W34는 <code>metrics_snapshot</code>이 7필드라 힌트·재시도·정체·에러 유형이 없다. 이 넷은 <strong>4주 중 2주만</strong> 선이 그려진다. 결측을 <code>0</code>으로 이으면 "힌트를 안 쓰다가 갑자기 40회"라는 없는 이야기가 만들어진다.</div>
+</section>
+
+<section id="cumulative">
+  <h2>4. 누적으로 만들 수 있는 것</h2>
+  <p><code>/sync/students</code>는 주차가 없는 대신 <strong>주간 리포트에 없는 재료</strong>를 준다. 출결·과제·퀴즈에 더해 <strong>학습 시간</strong>이 여기 있다.</p>
+  <pre><code>curl -X GET "$B/sync/students?limit=200" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:18%"><col style="width:26%"><col style="width:22%"><col style="width:34%"></colgroup>
+      <thead><tr><th>항목</th><th>원천 필드</th><th>황수빈 실측</th><th>계산과 의미</th></tr></thead>
+      <tbody>
+        <tr><td><strong>학습 시간</strong></td><td><code>atmux.total_duration_hours</code></td><td><code>28.7</code>시간</td><td>실습 서버에 접속해 있던 총 시간. <strong>주간 리포트에 없는 값</strong></td></tr>
+        <tr><td>일 평균 학습 시간</td><td><code>atmux.weekly_daily_avg_hours</code></td><td><code>4.1</code>시간</td><td>서버가 이미 계산해 준다. 우리가 나눌 필요가 없다</td></tr>
+        <tr><td>실습 서버 부하</td><td><code>atmux.avg_cpu_util</code></td><td><code>29.5%</code></td><td>평균 CPU 사용률. 학습 강도의 보조 신호</td></tr>
+        <tr><td>텔레메트리 수집량</td><td><code>atmux.telemetry_count</code></td><td><code>7,238</code>건</td><td>10초 주기 수집이므로 접속 시간과 교차 검증할 수 있다</td></tr>
+        <tr><td>출결 구성</td><td><code>attendance{5종}</code></td><td><code>36/11/2/3/2</code></td><td>출석·지각·조퇴·결석·공결 일수</td></tr>
+        <tr><td>출석률</td><td><code>present ÷ 합계</code></td><td><code>36 ÷ 54 = 66.7%</code></td><td>지각·조퇴를 출석으로 치면 <code>90.7%</code>. 어느 정의를 쓸지 정해야 한다</td></tr>
+        <tr><td>과제 제출률</td><td><code>submitted ÷ total</code></td><td><code>9 ÷ 10 = 90.0%</code></td><td>주간 리포트의 <code>assignments_completed</code>는 <code>0</code>이다</td></tr>
+        <tr><td>퀴즈 응시율</td><td><code>attempted ÷ total</code></td><td><code>6 ÷ 7 = 85.7%</code></td><td>주간 리포트에는 퀴즈 필드가 아예 없다</td></tr>
+        <tr><td>퀴즈 평균</td><td><code>quizzes.avg_score_pct</code></td><td><code>91.0</code>점</td><td><code>attempted</code>가 0이면 <code>0.0</code>이 오므로 미채점과 구분해야 한다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>학습 시간은 지금까지 놓치고 있던 재료다.</strong> "일일 평균 학습 시간"을 화면에 넣으려면 별도 수집이 필요하다고 봤지만, <code>atmux.weekly_daily_avg_hours</code>가 이미 계산된 값으로 온다. 다만 <strong>누적이라 주차별로는 나눌 수 없다.</strong></div>
+</section>
+
+<section id="narrative">
+  <h2>5. 문장으로 풀 수 있는 분석</h2>
+  <p>숫자를 그대로 두지 않고 서술로 바꿀 수 있는 것들이다. <strong>지표 조합</strong>이 근거가 되므로 "왜 그렇게 말하는가"를 항상 댈 수 있다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:20%"><col style="width:30%"><col style="width:50%"></colgroup>
+      <thead><tr><th>분석</th><th>쓰는 지표</th><th>어떻게 서술되나</th></tr></thead>
+      <tbody>
+        <tr><td><strong>문제 해결 방식</strong></td><td><code>hint_per_active_day</code> × <code>avg_retry_gap_min</code></td><td>힌트를 많이 보면서 재시도까지 빠르면 <em>의존·즉시 시도형</em>, 힌트가 적고 간격이 길면 <em>자력·숙고형</em>이다. 황수빈은 하루 40.9회 · 0.2분으로 <strong>전형적인 의존·즉시 시도형</strong>이다</td></tr>
+        <tr><td><strong>학습 리듬</strong></td><td><code>active_days_count</code> · <code>days_since_last_activity</code></td><td>활동일이 늘고 미접속이 0이면 리듬이 잡힌 것이다. W33의 3일에서 W36의 7일로 올라왔다</td></tr>
+        <tr><td><strong>막힌 영역</strong></td><td><code>top_error_types</code>의 예외 클래스명</td><td><code>ConnectionError</code>·<code>TimeoutError</code>는 네트워크·비동기, <code>IntegrityError</code>는 DB 제약이다. 예외 이름만으로 <strong>어느 영역에서 막혔는지</strong> 분류된다</td></tr>
+        <tr><td><strong>시행착오의 양</strong></td><td>단계당 실행 횟수</td><td>W33의 80회에서 W36의 494.6회로 늘었다. 진도가 빨라진 만큼 시도도 늘었다는 뜻이지, 나빠진 것이 아니다</td></tr>
+        <tr><td><strong>판정의 확실성</strong></td><td><code>grade</code> × <code>confidence</code></td><td>확신도가 <code>0.75</code>로 떨어진 W35는 등급만 보고 단정하기 어려운 주차다. 등급 옆에 확신도를 함께 싣는 근거</td></tr>
+        <tr><td><strong>개선 폭</strong></td><td><code>error_per_run</code> 추세</td><td><code>0.45 → 0.10</code>은 78% 감소다. 수강생에게 가장 설득력 있는 한 문장이 된다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">이 서술들은 <strong>지표에 근거가 있는 문장만</strong> 만든다는 원칙 위에 있다. 근거 없는 격려나 추측은 넣지 않는다. 현재 화면이 만드는 문장과 임계값은 <a href="../2026-09-03_주간진단리포트_항목별_데이터/index.html#derived">항목별 데이터 보고서 3장</a>에 있다.</div>
+</section>
+
+<section id="limits">
+  <h2>6. 만들 수 없는 것과 조심할 것</h2>
+  <h3>재료가 없어 못 만드는 것</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:26%"><col style="width:18%"><col style="width:56%"></colgroup>
+      <thead><tr><th>분석</th><th>막히는 지점</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td>주차별 출결·과제·퀴즈</td><td>단위</td><td>주차별 필드는 값이 상수이거나 미수집이고, 실값은 <code>/sync/students</code>의 누적뿐이다</td></tr>
+        <tr><td>주차별 학습 시간</td><td>단위</td><td><code>atmux</code>도 누적이다. 어느 주에 몇 시간인지 나눌 수 없다</td></tr>
+        <tr><td>에러 전체 분포</td><td>재료</td><td><code>top_error_types</code>가 상위 3개만 준다. 나머지 36.4%는 종류도 개수도 없다</td></tr>
+        <tr><td>정답률·코드 품질</td><td>재료</td><td>어느 응답에도 채점이나 코드 평가 필드가 없다</td></tr>
+        <tr><td>동료 대비 백분위</td><td>표본</td><td>리포트가 있는 학생이 적다. 15명 표본에서 6명만 리포트가 있었고 대부분 1주치였다</td></tr>
+        <tr><td>승인 이력·피드백 변경 이력</td><td>재료</td><td>주차별 승인 상태 필드가 없다. 재분석하면 같은 <code>id</code>에 덮어써져 이전 문안이 남지 않는다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>값이 어긋나는 지점</h3>
+  <p>계산은 되는데 <strong>어느 값을 믿을지</strong> 정해야 하는 곳이다. 같은 학생을 두 호출로 보면 값이 다르다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:26%"><col style="width:26%"><col style="width:24%"></colgroup>
+      <thead><tr><th>항목</th><th>API 4 (weekly)</th><th><code>/sync/students</code></th><th>차이</th></tr></thead>
+      <tbody>
+        <tr><td>실행 횟수</td><td><code>4,946</code></td><td><code>6,364</code></td><td><strong>1,418회</strong></td></tr>
+        <tr><td>현재 단계</td><td><code>10</code></td><td><code>7</code></td><td>3단계</td></tr>
+        <tr><td>언어</td><td><code>python</code></td><td><code>typescript</code></td><td>다름</td></tr>
+        <tr><td>과정</td><td>—</td><td>프런트엔드</td><td>weekly에 과정 필드가 없다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>학생 프로필은 <code>/sync/students</code>가 맞다.</strong> 황수빈은 프런트엔드 과정이고 TypeScript를 쓴다. 그런데 주간 리포트는 전원을 <code>python</code>으로 준다. 지표는 weekly를, 프로필은 sync를 써야 하며, 화면에 언어를 표시한다면 <strong>weekly의 값을 쓰면 안 된다.</strong></div>
+  <h3>추세로 읽으면 안 되는 값</h3>
+  <p>W35에서 W36으로 실행 횟수가 <code>264 → 4,946</code>으로 <strong>18.7배</strong> 뛴다. 같은 기간 활동일은 4일에서 7일로 1.75배만 늘었다.</p>
+  <pre><code>활동일   4일 → 7일      (1.75배)
+실행량   264 → 4,946회   (18.7배)
+힌트     18 → 286회      (15.9배)
+에러     27 → 478회      (17.7배)</code></pre>
+  <p>실행·힌트·에러가 나란히 16~19배로 움직였다. 활동일 증가만으로는 설명되지 않는 폭이므로, 학습량이 실제로 늘었다기보다 <strong>수집 범위가 달라졌을 가능성</strong>이 있다. "실행 횟수가 18배 늘었어요" 같은 문장은 확인 전까지 쓰지 않는 편이 안전하다.</p>
+  <div class="note">확인이 필요한 항목은 <a href="../2026-09-03_API_응답_필드_정리/index.html#source-gaps">필드 정리 보고서 4.7</a>에 모았다. 이 절의 언어 불일치와 실행량 급증도 그 목록에 들어간다.</div>
+</section></main>
+    <footer class="report-footer">2026-09-03 기준 실호출 결과다. 인증 키는 저장소에 두지 않고 환경변수로 참조한다.</footer>
+  </article>
+</body>
+</html>

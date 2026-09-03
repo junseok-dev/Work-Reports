@@ -16,6 +16,7 @@ LMS 프로젝트 작업 결과를 팀원에게 공유하기 위한 공개 HTML �
   - [① API 응답 필드 정리](https://work-report-277d7.web.app/reports/gov-ai/2026-09-03_API_응답_필드_정리/)
   - [② 주간 진단 리포트 항목별 데이터](https://work-report-277d7.web.app/reports/gov-ai/2026-09-03_주간진단리포트_항목별_데이터/)
   - [③ mock 데이터 구성안](https://work-report-277d7.web.app/reports/gov-ai/2026-09-03_mock_데이터_구성안/)
+  - [④ API 응답 기반 분석 가능성](https://work-report-277d7.web.app/reports/gov-ai/2026-09-03_API_응답_기반_분석_가능성/)
 
 > 최초 배포 전에는 GitHub 저장소의 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 선택해야 합니다.
 

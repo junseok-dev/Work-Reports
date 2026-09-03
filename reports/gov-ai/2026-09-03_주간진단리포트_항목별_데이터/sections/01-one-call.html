@@ -1,7 +1,7 @@
 <section id="one-call">
   <h2>1. 화면은 호출 하나만 쓴다</h2>
   <p class="lead">진단 리포트는 <strong>수강생 한 명의 한 주</strong>를 다룬다. 화면 항목마다 어떤 필드를 읽고 그 값이 어떻게 문장·숫자가 되는지를 실측과 함께 정리한다.</p>
-  <p>3장의 다섯 호출 중 화면이 부르는 것은 <strong>API 4</strong> 하나다. 한 번에 여러 주차가 배열로 오므로 주차 전환에 추가 호출이 필요 없다.</p>
+  <p>다섯 호출 중 화면이 부르는 것은 <strong>API 4</strong> 하나다. 한 번에 여러 주차가 배열로 오므로 주차 전환에 추가 호출이 필요 없다. 리포트가 <strong>수강생별</strong>이므로 경로에 학번이 들어가고, 받아온 이력을 화면에 붙일 때는 LMS <code>user.id</code>(UUID)로 맞춘다 — 계약 ①이 정한 기준 식별자다.</p>
   <pre><code>curl -X GET &quot;$B/reports/history/$U?limit=5&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
   <p>데모 계정 황수빈(<code>100051503818</code>)은 4주치가 온다. 주차마다 값이 실제로 달라진다.</p>
   <div class="table-wrap">

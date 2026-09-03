@@ -1,0 +1,33 @@
+<section id="trend">
+  <h2>3. 주차를 이어 붙이면 나오는 것</h2>
+  <p>API 4는 여러 주차를 배열로 준다. 한 번의 호출로 시계열이 만들어지므로 추이 분석에 추가 호출이 필요 없다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:12%"><col style="width:12%"><col style="width:10%"><col style="width:10%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:20%"></colgroup>
+      <thead><tr><th>주차</th><th>등급</th><th>확신도</th><th>완료 단계</th><th>실행</th><th>에러율</th><th>힌트/일</th><th>단계당 실행</th></tr></thead>
+      <tbody>
+        <tr><td>W33</td><td>초급</td><td>0.88</td><td>1</td><td>80</td><td>0.45</td><td>—</td><td>80.0</td></tr>
+        <tr><td>W34</td><td>중급</td><td>0.80</td><td>3</td><td>140</td><td>0.22</td><td>—</td><td>46.7</td></tr>
+        <tr><td>W35</td><td>해결사</td><td>0.75</td><td>5</td><td>264</td><td>0.10</td><td>4.5</td><td>52.8</td></tr>
+        <tr><td>W36</td><td>해결사</td><td>0.80</td><td>10</td><td>4,946</td><td>0.10</td><td>40.86</td><td>494.6</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>여기서 나오는 통계</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:30%"><col style="width:48%"></colgroup>
+      <thead><tr><th>항목</th><th>W33 → W36</th><th>읽는 법</th></tr></thead>
+      <tbody>
+        <tr><td>등급 변화</td><td>초급 → 중급 → 해결사 → 해결사</td><td>상승 2회 후 유지. 등급이 오른 주차를 짚을 수 있다</td></tr>
+        <tr><td>에러율 추세</td><td><code>0.45 → 0.22 → 0.10 → 0.10</code></td><td><strong>78% 감소</strong> 후 유지. 가장 뚜렷한 개선 신호</td></tr>
+        <tr><td>단계 증가 속도</td><td>주당 <code>+2 · +2 · +5</code></td><td>마지막 주에 가속. 완주 시점을 특정할 수 있다</td></tr>
+        <tr><td>실행량 추세</td><td><code>80 → 140 → 264 → 4,946</code></td><td>마지막 주가 <strong>18.7배</strong>. 아래 주의 항목 참조</td></tr>
+        <tr><td>확신도 추세</td><td><code>0.88 → 0.80 → 0.75 → 0.80</code></td><td>등급이 오를수록 낮아지다 회복. 판정이 어려워진 구간을 보여준다</td></tr>
+        <tr><td>힌트 추세</td><td><code>— → — → 4.5 → 40.86</code></td><td><strong>두 주가 결측</strong>이라 추세선을 그릴 수 없다</td></tr>
+        <tr><td>활동 밀도 추세</td><td><code>0.43 → 0.57 → 0.57 → 1.00</code></td><td>주 3일에서 7일로. 학습 리듬이 잡히는 과정</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>축약 주차가 추이를 끊는다.</strong> W33·W34는 <code>metrics_snapshot</code>이 7필드라 힌트·재시도·정체·에러 유형이 없다. 이 넷은 <strong>4주 중 2주만</strong> 선이 그려진다. 결측을 <code>0</code>으로 이으면 "힌트를 안 쓰다가 갑자기 40회"라는 없는 이야기가 만들어진다.</div>
+</section>

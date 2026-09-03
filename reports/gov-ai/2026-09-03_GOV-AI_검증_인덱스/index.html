@@ -16,8 +16,8 @@
       <div class="meta"><span class="badge">작성일 2026-09-03</span><span class="badge">보고서 3건</span><span class="badge">API 실호출 검증</span></div>
     </header>
     <main class="content"><section id="index">
-  <h2>세 보고서</h2>
-  <p class="lead">2026-09-03에 GOV-AI DataLake 명세서(<code>REPORT-API-CALL.md</code> v1.3)의 5개 API를 직접 호출해 응답을 확인했다. 확인한 내용을 성격에 따라 셋으로 나눴다.</p>
+  <h2>네 보고서</h2>
+  <p class="lead">2026-09-03에 GOV-AI DataLake 명세서(<code>REPORT-API-CALL.md</code> v1.3)의 5개 API를 직접 호출해 응답을 확인했다. 확인한 내용을 성격에 따라 넷으로 나눴다.</p>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:22%"><col style="width:30%"><col style="width:48%"></colgroup>
@@ -26,6 +26,7 @@
         <tr><td><a href="../2026-09-03_API_응답_필드_정리/"><strong>① API 응답 필드 정리</strong></a></td><td>5개 API를 어떻게 불렀고 무엇이 왔는가. 필드 전체와 출결·과제·퀴즈</td><td>어떤 필드가 오는가 · 그 필드가 무슨 뜻인가 · 출결이 왜 100.0인가 · 퀴즈로 통계를 낼 수 있는가</td></tr>
         <tr><td><a href="../2026-09-03_주간진단리포트_항목별_데이터/"><strong>② 주간 진단 리포트 항목별 데이터</strong></a></td><td>화면 항목마다 어떤 값이 들어가 어떤 숫자·문장이 되는가</td><td>지난주 대비 변화는 어떻게 만들어지나 · 학습 제안은 무슨 기준인가 · 진도의 분모는 어디서 오나</td></tr>
         <tr><td><a href="../2026-09-03_mock_데이터_구성안/"><strong>③ mock 데이터 구성안</strong></a></td><td>실응답만으로 mock을 어떻게 나누고 무엇을 넣는가</td><td>몇 개 파일로 나누나 · 원본을 어디까지 바꿨나 · 결측을 어떻게 두나 · 실연동 전환은 어디를 고치나</td></tr>
+        <tr><td><a href="../2026-09-03_API_응답_기반_분석_가능성/"><strong>④ API 응답 기반 분석 가능성</strong></a></td><td>받은 값으로 어떤 통계를 계산하고 어떤 분석을 서술할 수 있는가</td><td>더 뽑을 수 있는 지표가 있나 · 추이로 무엇을 말할 수 있나 · 학습 시간은 어디 있나 · 무엇을 못 만드나</td></tr>
       </tbody>
     </table>
   </div>
@@ -52,10 +53,17 @@
         <tr><td>원본 값을 어디까지 바꿨는가</td><td><a href="../2026-09-03_mock_데이터_구성안/#contents">③ 3장 — 식별자만 바꾸고 지표는 그대로</a></td></tr>
         <tr><td>결측을 어떻게 다루는가</td><td><a href="../2026-09-03_mock_데이터_구성안/#missing">③ 4장 — 0으로 채우지 않는다</a></td></tr>
         <tr><td>실연동으로 바꿀 때 어디를 고치는가</td><td><a href="../2026-09-03_mock_데이터_구성안/#switch">③ 5장 — 실연동으로 바꿀 때</a></td></tr>
+        <tr><td>한 주차에서 더 뽑을 수 있는 지표가 있나</td><td><a href="../2026-09-03_API_응답_기반_분석_가능성/#per-week">④ 2장 — 한 주차에서 뽑을 수 있는 것</a></td></tr>
+        <tr><td>주차 추이로 무엇을 말할 수 있나</td><td><a href="../2026-09-03_API_응답_기반_분석_가능성/#trend">④ 3장 — 주차를 이어 붙이면 나오는 것</a></td></tr>
+        <tr><td>일일 평균 학습 시간은 어디서 오나</td><td><a href="../2026-09-03_API_응답_기반_분석_가능성/#cumulative">④ 4장 — 누적으로 만들 수 있는 것</a></td></tr>
+        <tr><td>숫자를 어떤 문장으로 바꿀 수 있나</td><td><a href="../2026-09-03_API_응답_기반_분석_가능성/#narrative">④ 5장 — 문장으로 풀 수 있는 분석</a></td></tr>
+        <tr><td>무엇을 못 만들고 어떤 값이 어긋나나</td><td><a href="../2026-09-03_API_응답_기반_분석_가능성/#limits">④ 6장 — 만들 수 없는 것과 조심할 것</a></td></tr>
+        <tr><td>mock 필드가 각각 무엇인지 (이름·학번 등)</td><td><a href="../2026-09-03_mock_데이터_구성안/#meaning">③ 6장 — mock 안의 필드가 각각 무엇인가</a></td></tr>
+        <tr><td>분석을 붙이면 mock에 무엇이 더 필요한가</td><td><a href="../2026-09-03_mock_데이터_구성안/#for-analysis">③ 7장 — 분석을 붙인다면</a></td></tr>
       </tbody>
     </table>
   </div>
-  <h2>세 보고서가 공유하는 전제</h2>
+  <h2>네 보고서가 공유하는 전제</h2>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:24%"><col style="width:76%"></colgroup>

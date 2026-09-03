@@ -1,0 +1,19 @@
+<section id="narrative">
+  <h2>5. 문장으로 풀 수 있는 분석</h2>
+  <p>숫자를 그대로 두지 않고 서술로 바꿀 수 있는 것들이다. <strong>지표 조합</strong>이 근거가 되므로 "왜 그렇게 말하는가"를 항상 댈 수 있다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:20%"><col style="width:30%"><col style="width:50%"></colgroup>
+      <thead><tr><th>분석</th><th>쓰는 지표</th><th>어떻게 서술되나</th></tr></thead>
+      <tbody>
+        <tr><td><strong>문제 해결 방식</strong></td><td><code>hint_per_active_day</code> × <code>avg_retry_gap_min</code></td><td>힌트를 많이 보면서 재시도까지 빠르면 <em>의존·즉시 시도형</em>, 힌트가 적고 간격이 길면 <em>자력·숙고형</em>이다. 황수빈은 하루 40.9회 · 0.2분으로 <strong>전형적인 의존·즉시 시도형</strong>이다</td></tr>
+        <tr><td><strong>학습 리듬</strong></td><td><code>active_days_count</code> · <code>days_since_last_activity</code></td><td>활동일이 늘고 미접속이 0이면 리듬이 잡힌 것이다. W33의 3일에서 W36의 7일로 올라왔다</td></tr>
+        <tr><td><strong>막힌 영역</strong></td><td><code>top_error_types</code>의 예외 클래스명</td><td><code>ConnectionError</code>·<code>TimeoutError</code>는 네트워크·비동기, <code>IntegrityError</code>는 DB 제약이다. 예외 이름만으로 <strong>어느 영역에서 막혔는지</strong> 분류된다</td></tr>
+        <tr><td><strong>시행착오의 양</strong></td><td>단계당 실행 횟수</td><td>W33의 80회에서 W36의 494.6회로 늘었다. 진도가 빨라진 만큼 시도도 늘었다는 뜻이지, 나빠진 것이 아니다</td></tr>
+        <tr><td><strong>판정의 확실성</strong></td><td><code>grade</code> × <code>confidence</code></td><td>확신도가 <code>0.75</code>로 떨어진 W35는 등급만 보고 단정하기 어려운 주차다. 등급 옆에 확신도를 함께 싣는 근거</td></tr>
+        <tr><td><strong>개선 폭</strong></td><td><code>error_per_run</code> 추세</td><td><code>0.45 → 0.10</code>은 78% 감소다. 수강생에게 가장 설득력 있는 한 문장이 된다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">이 서술들은 <strong>지표에 근거가 있는 문장만</strong> 만든다는 원칙 위에 있다. 근거 없는 격려나 추측은 넣지 않는다. 현재 화면이 만드는 문장과 임계값은 <a href="../2026-09-03_주간진단리포트_항목별_데이터/index.html#derived">항목별 데이터 보고서 3장</a>에 있다.</div>
+</section>

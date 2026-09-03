@@ -1,0 +1,16 @@
+<section id="criteria">
+  <h2>1. 무엇으로 가르는가</h2>
+  <p class="lead">"만들 수 있다"를 세 가지로 나눠 판단했다. <strong>재료가 응답에 있는가</strong>, <strong>어느 단위로 오는가</strong>, <strong>값을 믿을 수 있는가</strong>. 셋이 다 통과해야 화면에 올릴 수 있다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:16%"><col style="width:36%"><col style="width:48%"></colgroup>
+      <thead><tr><th>기준</th><th>묻는 것</th><th>걸러지는 예</th></tr></thead>
+      <tbody>
+        <tr><td><strong>재료</strong></td><td>그 값을 주는 필드가 응답에 있는가</td><td>정답률·코드 품질은 어느 응답에도 없다</td></tr>
+        <tr><td><strong>단위</strong></td><td>주차별인가 누적인가</td><td>출결·과제·퀴즈는 <code>/sync/students</code>의 누적값뿐이라 "이번 주"를 만들 수 없다</td></tr>
+        <tr><td><strong>신뢰</strong></td><td>값이 실제를 반영하는가</td><td><code>attendance_rate</code>는 필드도 있고 주차별인데 전원 <code>100.0</code>이다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>아래 계산은 모두 데모 계정 황수빈(<code>100051503818</code>)의 실응답에서 나왔다. 계산식과 결과를 함께 적어 재현할 수 있게 했다. 필드가 무엇인지는 <a href="../2026-09-03_API_응답_필드_정리/index.html#fields">필드 정리 보고서 3장</a>에 있다.</p>
+</section>

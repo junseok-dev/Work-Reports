@@ -10,7 +10,7 @@
         <tr><td><code>attendance_rate: 100.0</code></td><td>출석률이 100%다</td><td><strong>집계가 안 된 값이다.</strong> 결석 11일인 학생도 <code>100.0</code>이다. mock에 원본 그대로 두되 매니페스트에 특이사항으로 기록했다</td></tr>
         <tr><td><code>avg_score_pct: 0.0</code></td><td>퀴즈 평균이 0점이다</td><td><strong>미채점이다.</strong> 응시가 0이면 이 값이 온다. 점수로 그리면 0점을 받은 것처럼 보인다</td></tr>
         <tr><td>W33·W34의 사라진 필드</td><td>힌트를 한 번도 안 썼다</td><td><strong>수집 자체가 없다.</strong> <code>metrics_snapshot</code>이 7필드로 축약된다. mock은 <strong>없는 키를 만들어 넣지 않고</strong> 그대로 비운다. 화면은 이 주차를 축약으로 표시한다</td></tr>
-        <tr><td><code>top_error_types</code> 3건</td><td>이게 에러의 전부다</td><td><strong>상위 3개만 온다.</strong> 실측에서 세 건의 합이 <code>total_errors</code>의 62.6%였다. 나머지 37.4%는 어디에도 없고 '기타' 항목도 없다</td></tr>
+        <tr><td><code>top_error_types</code> 3건</td><td>이게 에러의 전부다</td><td><strong>상위 3개만 온다.</strong> 실측에서 세 건의 합이 <code>total_errors</code>의 63.6%였다. 나머지 36.4%는 어디에도 없고 '기타' 항목도 없다</td></tr>
       </tbody>
     </table>
   </div>
