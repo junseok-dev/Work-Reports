@@ -1,0 +1,192 @@
+<section id="detail">
+  <h2>3. 파일별 상세</h2>
+  <p class="lead">mock 7종을 하나씩 편다. <strong>무엇을 나타내는가</strong> → <strong>안에 어떤 값이 있는가</strong> → <strong>주간 진단 리포트의 어느 항목이 되는가</strong> 순서다. 화면에 가까운 순으로 놓았다. 값은 데모 계정 황수빈(<code>100051503818</code>) 기준 실응답이다.</p>
+  <h3>3.1 <code>api4-history.json</code></h3>
+  <p><strong>주차별 리포트 이력 — 화면이 소비하는 유일한 파일</strong> · 12,114 bytes</p>
+  <pre><code>curl -X GET "$B/reports/history/$U?limit=30" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <p><strong>4주가 배열로</strong> 온다. 배열 하나가 곧 주차 브라우저가 되므로 주차를 넘길 때 추가 호출이 없다. 행마다 최상위 20키 + <code>metrics_snapshot</code>이다.</p>
+  <h4>주차별로 오는 값</h4>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:14%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:14%"><col style="width:36%"></colgroup>
+      <thead><tr><th>주차</th><th>등급</th><th>확신도</th><th>위험 점수</th><th>위험 상태</th><th>스냅샷</th></tr></thead>
+      <tbody>
+        <tr><td>2026-W33 <span>(11주차)</span></td><td>초급</td><td>0.88</td><td>38.5</td><td><code>stalled_learning</code></td><td><strong>7필드</strong> — 축약</td></tr>
+        <tr><td>2026-W34 <span>(12주차)</span></td><td>중급</td><td>0.80</td><td>15.2</td><td><code>normal</code></td><td><strong>7필드</strong> — 축약</td></tr>
+        <tr><td>2026-W35 <span>(13주차)</span></td><td>해결사</td><td>0.75</td><td>16.2</td><td><code>normal</code></td><td>23필드</td></tr>
+        <tr><td>2026-W36 <span>(14주차)</span></td><td>해결사</td><td>0.80</td><td>5.0</td><td><code>completed_waiting</code></td><td>23필드</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>행 최상위 20키 — 무엇이고 화면 어디에 나오나</h4>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:34%"><col style="width:42%"></colgroup>
+      <thead><tr><th>필드</th><th>무엇인가</th><th>화면 항목</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>레코드 식별자 <code>rep_2026-W36_100051503818</code></td><td>—  <span>주차+학생이 키라 재분석하면 덮어써진다</span></td></tr>
+        <tr><td><code>student_uuid</code></td><td>학번 12자리</td><td>—  <span>실연동에서 요청 경로에 들어간다</span></td></tr>
+        <tr><td><code>cohort_label</code></td><td>기수 표시명 <code>34기</code></td><td>—</td></tr>
+        <tr><td><code>year_week</code></td><td>ISO 연-주차 <code>2026-W36</code></td><td>정렬·키</td></tr>
+        <tr><td><code>week_no</code></td><td>ISO 주차 번호 <code>36</code></td><td><strong>헤더 주차</strong> — 기수 시작일에서 14주차로 환산</td></tr>
+        <tr><td><code>week_label</code></td><td>표시 문자열</td><td>—</td></tr>
+        <tr><td><code>week_range</code></td><td>기간 <code>08/31~09/06</code></td><td><strong>헤더 · 분석 기준일</strong></td></tr>
+        <tr><td><code>grade</code></td><td>수준 등급 <code>해결사</code></td><td><strong>이번 주 나의 수준</strong> 배지</td></tr>
+        <tr><td><code>confidence</code></td><td>판정 확신도 <code>0.8</code></td><td><strong>확신도</strong> — 높음·중간·낮음으로 변환</td></tr>
+        <tr><td><code>risk_score</code></td><td>위험 점수 <code>5.0</code></td><td>—</td></tr>
+        <tr><td><code>risk_status</code></td><td>위험 상태 코드</td><td><strong>주차 관리 표시</strong> — <code>stalled_learning</code>·<code>at_risk</code>만 강조</td></tr>
+        <tr><td><code>grade_rationale</code></td><td>등급 근거 서술 326자</td><td>—  <span>수강생 화면에는 싣지 않는다</span></td></tr>
+        <tr><td><code>weak_patterns</code></td><td>약점 패턴 2건</td><td><strong>보완하면 좋은 점</strong> — 원천 서술 그대로</td></tr>
+        <tr><td><code>risk_flags</code></td><td>위험 신호 2건</td><td>—</td></tr>
+        <tr><td><code>recommendations</code></td><td>강사 권장 조치 227자</td><td>—  <span>강사용이라 노출하지 않는다</span></td></tr>
+        <tr><td><code>feedback_draft</code></td><td>피드백 초안 417자</td><td><strong>강사 피드백</strong> — 승인 전이면 감춤</td></tr>
+        <tr><td><code>metrics_snapshot</code></td><td>그 주차 지표 묶음</td><td><strong>지표 8칸</strong> 전체 (아래)</td></tr>
+        <tr><td><code>llm_provider</code></td><td><code>google</code></td><td><strong>생성 표기</strong></td></tr>
+        <tr><td><code>llm_model</code></td><td><code>gemini-3.5-flash</code></td><td><strong>생성 표기</strong></td></tr>
+        <tr><td><code>created_at</code></td><td>레코드 생성 시각</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4><code>metrics_snapshot</code> 23필드 — W36 실측</h4>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:26%"><col style="width:16%"><col style="width:26%"><col style="width:32%"></colgroup>
+      <thead><tr><th>필드</th><th>값</th><th>무엇인가</th><th>화면 항목</th></tr></thead>
+      <tbody>
+        <tr><td><code>studentUuid</code></td><td><code>100051503818</code></td><td>학번</td><td>—</td></tr>
+        <tr><td><code>userId</code></td><td><code>f074a93b-…</code></td><td>LMS <code>user.id</code></td><td><strong>이력 조회 키</strong> — 값은 안 그린다</td></tr>
+        <tr><td><code>name</code></td><td><code>황수빈</code></td><td><strong>수강생 이름</strong></td><td>—  <span>본인 화면이라 다시 안 그린다</span></td></tr>
+        <tr><td><code>cohortId</code></td><td><code>f34c88f3-…</code></td><td>기수 UUID</td><td>—</td></tr>
+        <tr><td><code>cohort</code></td><td><code>34기</code></td><td>기수 표시명</td><td>—</td></tr>
+        <tr><td><code>language</code></td><td><code>python</code></td><td>실습 언어</td><td>—  <span>전원 python이라 확인 필요</span></td></tr>
+        <tr><td><code>steps_completed</code></td><td><code>10</code></td><td>완료 단계 수</td><td><strong>진행 단계</strong> · 지난주 대비 변화 · 잘하고 있는 점</td></tr>
+        <tr><td><code>current_step</code></td><td><code>10</code></td><td>현재 단계</td><td><strong>진행 단계</strong></td></tr>
+        <tr><td><code>stalled_days_on_current_step</code></td><td><code>0</code></td><td>현 단계 정체 일수</td><td><strong>현 단계 정체</strong> · 잘하고 있는 점 · 학습 제안</td></tr>
+        <tr><td><code>days_since_last_activity</code></td><td><code>0</code></td><td>미접속 일수</td><td><strong>최근 미접속</strong> · 잘하고 있는 점 · 학습 제안</td></tr>
+        <tr><td><code>active_days_count</code></td><td><code>7</code></td><td>활동일 수</td><td><strong>활동일</strong> · 잘하고 있는 점</td></tr>
+        <tr><td><code>total_runs</code></td><td><code>4946</code></td><td>코드 실행 횟수</td><td><strong>실행당 에러</strong> · 지난주 대비 변화</td></tr>
+        <tr><td><code>total_errors</code></td><td><code>478</code></td><td>에러 난 실행 수</td><td><strong>실행당 에러</strong></td></tr>
+        <tr><td><code>error_per_run</code></td><td><code>0.1</code></td><td>실행당 에러</td><td><strong>실행당 에러</strong> · 변화 · 강점 · 제안</td></tr>
+        <tr><td><code>hint_requests_count</code></td><td><code>286</code></td><td>힌트 요청 횟수</td><td><strong>힌트 요청</strong></td></tr>
+        <tr><td><code>hint_per_active_day</code></td><td><code>40.86</code></td><td>활동일당 힌트</td><td><strong>힌트 요청</strong> · 학습 제안</td></tr>
+        <tr><td><code>avg_retry_gap_min</code></td><td><code>0.2</code></td><td>재시도까지 평균 분</td><td><strong>재시도 간격</strong> · 학습 제안</td></tr>
+        <tr><td><code>max_retry_gap_min</code></td><td><code>23.0</code></td><td>재시도 간격 최댓값</td><td><strong>재시도 간격</strong></td></tr>
+        <tr><td><code>top_error_types</code></td><td>객체 3건</td><td>빈발 에러 상위 3종</td><td><strong>주요 에러</strong> — 클래스명만 축약</td></tr>
+        <tr><td><code>assignments_completed</code></td><td><code>0</code></td><td>완료 과제 수</td><td>—  <span>미수집이라 못 쓴다</span></td></tr>
+        <tr><td><code>attendance_rate</code></td><td><code>100.0</code></td><td>출석률(%)</td><td>—  <span>전원 100.0이라 못 쓴다</span></td></tr>
+        <tr><td><code>data_freshness</code></td><td>집계 시각</td><td>지표 집계 시각</td><td>—</td></tr>
+        <tr><td><code>missing_fields</code></td><td><code>["assignments"]</code></td><td>미수집 항목</td><td>—  <span>과제를 못 쓰는 근거</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>W33·W34는 이 중 7개만 온다.</strong> <code>steps_completed</code>·<code>current_step</code>·<code>total_runs</code>·<code>total_errors</code>·<code>error_per_run</code>·<code>active_days_count</code>·<code>attendance_rate</code>뿐이고 <strong>나머지 16개는 키 자체가 없다.</strong> 화면은 이 주차를 <code>partialMetrics</code>로 표시하고, 힌트·재시도 기반 문장을 만들지 않는다.</div>
+  <h3>3.2 <code>api2-certificate.json</code></h3>
+  <p><strong>역량 증명서 — 진도의 분모가 여기에만 있다</strong> · 3,629 bytes</p>
+  <pre><code>curl -X GET "$B/certificate/$U" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:40%"><col style="width:36%"></colgroup>
+      <thead><tr><th>블록</th><th>안에 있는 값</th><th>화면 항목</th></tr></thead>
+      <tbody>
+        <tr><td><code>student</code> (5키)</td><td><code>studentUuid</code>·<code>userId</code>·<code>name</code>(황수빈)·<code>cohortId</code>·<code>cohort</code></td><td>—</td></tr>
+        <tr><td><code>summary</code> (6키)</td><td><code>overall_grade</code> 해결사 · <code>confidence</code> 0.8 · <code>completed_steps</code> 10 · <strong><code>total_steps</code> 10</strong> · <code>total_active_days</code> 7 · <code>data_freshness</code></td><td><strong>진행 단계의 분모</strong> — <code>10/10 완료</code>의 뒤 숫자</td></tr>
+        <tr><td><code>technical_proof</code> (5키)</td><td><code>tech_stack</code> 3건 · <code>error_resolution_rate</code> 0.95 · <code>avg_retry_gap_min</code> 0.2 · <code>frequent_errors</code> 3건 · <code>weakness_patterns</code> 2건</td><td>—  <span><code>error_resolution_rate</code>는 고정값</span></td></tr>
+        <tr><td><code>project_and_portfolio</code> (3키)</td><td><code>completed_assignments</code> 0 · <code>attendance_rate</code> 100.0 · <code>collaboration_score</code> 85.0</td><td>—  <span>셋 다 고정이거나 미수집</span></td></tr>
+        <tr><td><code>ai_analysis_narrative</code> (4키)</td><td><code>grade_rationale</code> 326자 · <code>strength_keywords</code> 3건 · <code>suggested_feedback_draft</code> 417자 · <code>model_meta</code></td><td>—  <span>api4와 같은 서술</span></td></tr>
+        <tr><td><code>human_in_the_loop</code> (3키)</td><td><code>approved_by</code> 강사 이정훈 · <code>approved_at</code> · <strong><code>status</code> APPROVED</strong></td><td>—  <span>승인 상태를 주는 유일한 필드지만 증명서 단위라 주차별이 아니다</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>3.3 <code>api1-weekly-cached.json</code></h3>
+  <p><strong>주간 리포트 기본형 — 스키마 기준</strong> · 5,452 bytes</p>
+  <pre><code>curl -X GET "$B/reports/weekly/$U?format=json" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:44%"><col style="width:34%"></colgroup>
+      <thead><tr><th>블록</th><th>안에 있는 값</th><th>화면 항목</th></tr></thead>
+      <tbody>
+        <tr><td>최상위 6키</td><td><code>studentUuid</code> · 주차 4종 · <strong><code>cached</code> true</strong></td><td>—</td></tr>
+        <tr><td><code>metrics</code> (23키)</td><td><strong><code>api4</code>의 <code>metrics_snapshot</code>과 필드가 완전히 같다</strong>(검증 결과 차이 0)</td><td>—  <span>스키마 대조용</span></td></tr>
+        <tr><td><code>diagnosis</code> (10키)</td><td>등급·확신도·근거·약점·위험·강사 조치·피드백 초안·분석 시각·<code>model_meta</code>(5키)</td><td>—  <span><code>api3</code> 최상위와 키가 같다</span></td></tr>
+        <tr><td><code>weakness</code> (5키)</td><td><code>top_errors</code> · <code>avg_retry_gap_min</code> · <code>stalled_risk</code> LOW · <code>recommended_focus_areas</code></td><td>—  <span><code>metrics</code>·<code>diagnosis</code>의 복사본</span></td></tr>
+        <tr><td><code>risk</code> (4키)</td><td><code>risk_score</code> 5.0 · <code>status</code> completed_waiting · <strong><code>status_label</code> 정상 훈련</strong></td><td>—  <span>라벨이 코드와 안 맞는다</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>3.4 <code>api1-weekly-past-W34.json</code></h3>
+  <p><strong>과거 주차 — 축약 응답의 증거</strong> · 1,601 bytes</p>
+  <pre><code>curl -X GET "$B/reports/weekly/$U?format=json&week=2026-W34" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <p>최상위 키는 기본형과 같은데 <code>metrics</code>가 <strong>23 → 7필드</strong>로 줄고, 다른 블록도 값이 비어 온다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:44%"><col style="width:32%"></colgroup>
+      <thead><tr><th>블록</th><th>무엇이 달라지나</th><th>화면 항목</th></tr></thead>
+      <tbody>
+        <tr><td><code>metrics</code></td><td><strong>7필드만.</strong> 힌트·재시도·정체·미접속·에러 유형·신원이 전부 없다</td><td>—</td></tr>
+        <tr><td><code>weakness.top_errors</code></td><td><code>[]</code> 빈 배열</td><td>—</td></tr>
+        <tr><td><code>weakness.avg_retry_gap_min</code></td><td><code>0.0</code> — <strong>0분이 아니라 결측</strong>이다</td><td>—</td></tr>
+        <tr><td><code>diagnosis.risk_flags</code></td><td><code>[]</code> 빈 배열</td><td>—</td></tr>
+        <tr><td><code>diagnosis</code> 서술</td><td><code>grade_rationale</code> 47자로 짧아진다(완전 주차는 326자)</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">이 파일이 <strong>화면의 한 상태를 만든다.</strong> 같은 축약이 <code>api4</code>의 W33·W34에도 있어, 화면이 <em>"이 주차는 일부 지표가 수집되지 않아 0으로 표시됩니다"</em> 안내를 띄운다.</div>
+  <h3>3.5 <code>api1-weekly-refresh.json</code></h3>
+  <p><strong>재분석본 — 값도 스키마도 달라진다</strong> · 6,104 bytes</p>
+  <pre><code>curl -X GET "$B/reports/weekly/$U?format=json&refresh=true" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <p>같은 주차(W36)인데 <strong>값이 흔들리고 블록 구조까지 바뀐다.</strong> 캐시본을 전제로 화면을 짜면 안 된다는 근거다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:26%"><col style="width:26%"><col style="width:26%"></colgroup>
+      <thead><tr><th>항목</th><th>캐시본</th><th>재분석본</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td><code>cached</code></td><td><code>true</code></td><td><code>false</code></td><td>재분석 여부</td></tr>
+        <tr><td><code>total_runs</code></td><td><code>4946</code></td><td><code>5781</code></td><td>그 사이 활동이 더 쌓였다</td></tr>
+        <tr><td><code>hint_requests_count</code></td><td><code>286</code></td><td><code>329</code></td><td>같은 주차인데 값이 다르다</td></tr>
+        <tr><td><code>hint_per_active_day</code></td><td><code>40.86</code></td><td><code>47.0</code></td><td>파생 지표도 따라 움직인다</td></tr>
+        <tr><td><code>weakness</code> 키</td><td><code>top_errors</code> · <code>stalled_risk</code> · <code>recommended_focus_areas</code></td><td><code>primary_error_types</code> · <code>coding_test_weakness</code> · <code>analysis_summary</code></td><td><strong>키 자체가 다르다</strong></td></tr>
+        <tr><td><code>risk</code> 키</td><td><code>status_label</code> 포함 4키</td><td><code>contributing_signals</code> · <code>action_priority</code> · <code>recommended_action</code> 포함 6키</td><td><strong>키 자체가 다르다</strong></td></tr>
+        <tr><td><code>model_meta</code></td><td>5키 (<code>cached</code>·<code>week_label</code> 포함)</td><td>3키 (<code>prompt_version</code> 포함)</td><td>모양이 다르다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>같은 엔드포인트가 두 가지 응답을 준다.</strong> 파라미터 하나로 <code>weakness</code>·<code>risk</code>의 키가 통째로 바뀐다. 어댑터가 둘 다 흡수하는지 확인하려면 원본 두 벌이 있어야 해서 파일을 나눠 뒀다.</div>
+  <h3>3.6 <code>api3-diagnose.json</code></h3>
+  <p><strong>온디맨드 진단 — 부를 때마다 새로 분석한다</strong> · 3,624 bytes</p>
+  <pre><code>curl -X POST "$B/analysis/diagnose/$U" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <p>최상위 10키가 평탄하게 온다. <code>api1</code>의 <code>diagnosis</code> 블록과 <strong>키가 완전히 같은데 값이 다르다.</strong></p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:26%"><col style="width:24%"><col style="width:24%"><col style="width:26%"></colgroup>
+      <thead><tr><th>필드</th><th>api3</th><th>api1·api4</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td><code>confidence</code></td><td><code>0.85</code></td><td><code>0.8</code></td><td><strong>같은 학생·같은 시점인데 어긋난다</strong></td></tr>
+        <tr><td><code>grade_rationale</code></td><td>471자</td><td>326자</td><td>매번 새로 생성된다</td></tr>
+        <tr><td><code>suggested_feedback_draft</code></td><td>667자</td><td>417자</td><td>매번 새로 생성된다</td></tr>
+        <tr><td><code>weak_patterns</code></td><td>3건</td><td>2건</td><td>건수도 달라진다</td></tr>
+        <tr><td><code>model_meta</code></td><td>3키 (<code>prompt_version v0.2</code>)</td><td>5키</td><td>모양이 다르다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">화면은 이 호출을 쓰지 않는다. <strong>어느 값을 원본으로 볼지 정해두지 않으면</strong> 등급이 같아도 확신도가 갈릴 때 판단할 근거가 없다는 것을 남겨두는 자료다.</div>
+  <h3>3.7 <code>api5-approve.json</code></h3>
+  <p><strong>강사 피드백 승인 — 요청과 응답 한 쌍</strong> · 387 bytes</p>
+  <pre><code>curl -X POST "$B/feedback/approve" -H "X-DE-API-KEY: $DE_API_KEY" \
+     -H "Content-Type: application/json" --data-binary @payload.json</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:30%"><col style="width:48%"></colgroup>
+      <thead><tr><th>필드</th><th>값</th><th>무엇인가 · 화면 항목</th></tr></thead>
+      <tbody>
+        <tr><td><code>request.studentUuid</code></td><td><code>100051503818</code></td><td>승인 대상 수강생</td></tr>
+        <tr><td><code>request.approved_by</code></td><td><code>강사 이정훈</code></td><td>승인한 사람</td></tr>
+        <tr><td><code>request.feedback_text</code></td><td>수정된 최종 문안</td><td>수강생에게 나갈 본문</td></tr>
+        <tr><td><code>request.status</code></td><td><code>APPROVED</code></td><td>요청하는 승인 상태</td></tr>
+        <tr><td><code>response.status</code></td><td><code>SUCCESS</code></td><td><strong>강사 피드백</strong> 게이트를 여는 신호 — 실연동 시</td></tr>
+        <tr><td><code>response.log_id</code></td><td><code>fb_20260902093622_100051503818</code></td><td>승인 로그 식별자. <strong>시각만 KST</strong></td></tr>
+        <tr><td><code>response.approved_by</code></td><td><code>강사 이정훈</code></td><td>서버가 기록한 승인자</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>응답 형태는 실호출로 확인했고 값은 데모용이다.</strong> 검증 호출에는 <code>approved_by</code>에 <code>[TEST] 필드 확인</code>을 넣어 나중에 골라낼 수 있게 했다. 승인 로그가 누적되고 삭제 API가 없어 재호출하지 않았다. 지금 화면은 이 파일을 읽지 않고 <em>마지막 주차만 미승인</em>이라는 임시 규칙을 쓴다 — <strong>주차별 승인 상태를 주는 필드가 어디에도 없기 때문</strong>이다.</div>
+</section>

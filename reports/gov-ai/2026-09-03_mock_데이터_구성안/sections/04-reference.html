@@ -1,0 +1,33 @@
+<section id="reference">
+  <h2>4. 참고 문서와 기록</h2>
+  <p class="lead">mock 7종에 들어가지 않는 두 파일이다. <code>index.ts</code>가 import하지 않으므로 화면도 테스트도 읽지 않는다.</p>
+  <h3>4.1 <code>api1-weekly.md</code> <span>— 참고 문서</span></h3>
+  <p><strong>Markdown 응답 — mock이 아니라 참고 문서</strong> · 4,671 bytes</p>
+  <pre><code>curl -X GET "$B/reports/weekly/$U" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <p><code>format</code>을 빼면 JSON 대신 문서가 온다. 네 절로 렌더된다.</p>
+  <pre><code>1. 종합 진단 결과 Summary
+2. 결정적 정량 지표 (Deterministic Metrics)
+3. 루브릭 기반 근거 및 취약점 분석 — 3.1 등급 판정 사유 · 3.2 주요 취약 패턴 · 3.3 복수 신호 이탈 경보
+4. 강사/매니저 권장 조치 및 피드백 초안 — 4.1 권장 조치 · 4.2 훈련생 전달 피드백 초안</code></pre>
+  <p><strong>JSON에 없는 항목은 없다.</strong> 같은 값을 사람이 읽는 형태로 배치한 것이다. <code>index.ts</code>가 import하지 않으므로 <strong>mock 7종에 들어가지 않는다.</strong></p>
+  <h3>4.2 <code>_manifest.json</code> <span>— 기록</span></h3>
+  <p><strong>데이터가 아니라 데이터의 출처</strong> · 6,040 bytes</p>
+  <pre><code>(호출 없음 — fixture에 대한 기록)</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+      <thead><tr><th>키</th><th>무엇을 기록하나</th></tr></thead>
+      <tbody>
+        <tr><td><code>producer</code> · <code>apiVersion</code> · <code>collectedAt</code></td><td>어디서 · 어느 버전으로 · 언제 받았나. <strong>응답이 캐시본이라 시점이 없으면 나중에 대조가 안 된다</strong></td></tr>
+        <tr><td><code>scope</code></td><td>수집 범위 — 명세서 5개 API. 문서 밖 엔드포인트는 계약이 아니라 제외</td></tr>
+        <tr><td><code>purpose</code></td><td>용도 — 수강생 주간 진단 리포트 화면 렌더링</td></tr>
+        <tr><td><code>demoStudent</code></td><td>데모 수강생 식별자. <code>userId</code>가 조회 키이며 <code>demoAccounts.ts</code>와 같아야 리포트가 뜬다</td></tr>
+        <tr><td><code>sourceStudent</code></td><td>원본은 29기 정승. 무엇을 무엇으로 치환했는지</td></tr>
+        <tr><td><code>files</code></td><td>파일 8건의 호출과 특이사항</td></tr>
+        <tr><td><code>transforms</code></td><td>손댄 내역 4건 — <code>markdown_content</code> 제거, 식별자 치환, 문서 밖 응답 제거, <code>group</code> 제거</td></tr>
+        <tr><td><code>provenance</code></td><td><strong>값의 출처.</strong> 전 필드가 실응답이고 값을 지어내지 않았다는 것, 축약 주차를 채우지 않는다는 것</td></tr>
+        <tr><td><code>knownQuirks</code></td><td>알려진 함정 10건 — 다음에 만지는 사람이 같은 곳을 밟지 않게</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>

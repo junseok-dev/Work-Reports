@@ -110,7 +110,7 @@ W36       0.1    478 ÷ 4946 = 0.09664   0.10   일치</code></pre>
       <colgroup><col style="width:24%"><col style="width:24%"><col style="width:52%"></colgroup>
       <thead><tr><th>방식</th><th>예</th><th>어떻게 다뤄야 하나</th></tr></thead>
       <tbody>
-        <tr><td><strong>키가 아예 없다</strong></td><td>축약 주차의 <code>top_error_types</code></td><td>W33·W34의 <code>metrics_snapshot</code>은 7필드다(W36은 24필드). <code>null</code>이 아니라 <strong>키 자체가 없다.</strong> <code>null</code> 검사로는 못 걸러내고 <strong>키 존재 여부</strong>를 봐야 한다</td></tr>
+        <tr><td><strong>키가 아예 없다</strong></td><td>축약 주차의 <code>top_error_types</code></td><td>W33·W34의 <code>metrics_snapshot</code>은 7필드다(W36은 23필드). <code>null</code>이 아니라 <strong>키 자체가 없다.</strong> <code>null</code> 검사로는 못 걸러내고 <strong>키 존재 여부</strong>를 봐야 한다</td></tr>
         <tr><td><strong>빈 배열</strong></td><td><code>missing_fields: []</code></td><td>결측 항목이 없다는 뜻. 반대로 <code>["assignments"]</code>면 그 항목을 못 받았다는 <strong>서버의 선언</strong>이다</td></tr>
         <tr><td><strong>0이 들어온다</strong></td><td><code>avg_score_pct: 0.0</code><br><code>assignments_completed: 0</code></td><td><strong>가장 위험한 형태.</strong> 값이 0인지 모르는 것인지 구분되지 않는다. 퀴즈 평균 <code>0.0</code>은 미채점이고, 과제 <code>0</code>은 미수집이다 — 둘 다 0점·0건이 아니다</td></tr>
       </tbody>

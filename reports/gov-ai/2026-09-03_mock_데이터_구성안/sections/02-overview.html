@@ -1,0 +1,82 @@
+<section id="overview">
+  <h2>2. mock 7종 한눈에</h2>
+  <p class="lead">폴더에는 파일이 아홉 개지만 <strong>mock으로 쓰이는 것은 JSON 7종</strong>이다. 나머지 둘은 성격이 다르다 — 하나는 참고 문서, 하나는 기록이다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:18%"><col style="width:12%"><col style="width:70%"></colgroup>
+      <thead><tr><th>갈래</th><th>개수</th><th>무엇인가</th></tr></thead>
+      <tbody>
+        <tr><td><strong>mock 데이터</strong></td><td><strong>7종</strong></td><td><code>index.ts</code>가 import하는 JSON. 화면과 테스트가 실제로 읽는다</td></tr>
+        <tr><td>참고 문서</td><td>1건</td><td><code>api1-weekly.md</code>. Markdown이라 import할 수 없다</td></tr>
+        <tr><td>기록</td><td>1건</td><td><code>_manifest.json</code>. 데이터가 아니라 <strong>데이터의 출처</strong>다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>2.1 무엇을 넣을지 — 세 가지를 다 통과해야 한다</h3>
+  <p>응답이라고 다 넣지 않는다. 셋 중 하나라도 걸리면 mock에 들어가지 않는다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:8%"><col style="width:22%"><col style="width:34%"><col style="width:36%"></colgroup>
+      <thead><tr><th></th><th>기준</th><th>왜 그런가</th><th>여기서 걸러진 것</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>명세서의 다섯 API여야 한다</strong></td><td>문서에 없는 엔드포인트는 계약이 아니다. 언제 사라져도 이상하지 않은 것에 화면을 의존시킬 수 없다</td><td><code>/sync/students</code> — 출결·과제·퀴즈·학습 시간이 여기 있었지만 뺐다</td></tr>
+        <tr><td>2</td><td><strong>import할 수 있어야 한다</strong></td><td><code>index.ts</code>가 읽어 핸들러에 넘겨야 mock으로 동작한다. 형식이 다르면 화면도 테스트도 못 쓴다</td><td><code>api1-weekly.md</code> — 내용은 같지만 Markdown이라 <strong>참고 문서</strong>로 분류</td></tr>
+        <tr><td>3</td><td><strong>실제로 호출해 받은 값이어야 한다</strong></td><td>지어낸 값을 섞으면 실연동으로 바꾸는 날 무엇이 달라졌는지 가릴 수 없다</td><td>채워 넣었던 W33·W34의 지표 — 되돌리고 축약된 채로 뒀다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>2.2 어떻게 나눌지 — 재현 단위와 스키마</h3>
+  <p>통과한 응답을 파일로 자르는 기준이다. <strong>한 파일이 한 번의 호출로 재현되어야</strong> 하고, <strong>어댑터가 다르게 처리해야 하는 응답은 갈라야</strong> 한다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:8%"><col style="width:26%"><col style="width:30%"><col style="width:36%"></colgroup>
+      <thead><tr><th></th><th>규칙</th><th>이유</th><th>적용 결과</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td><strong>엔드포인트가 다르면 나눈다</strong></td><td>파일 이름이 곧 재현 명령이 된다. 어느 호출에서 온 값인지 잃지 않는다</td><td>5개 호출 → 최소 5개 파일</td></tr>
+        <tr><td>B</td><td><strong>스키마가 갈리면 또 나눈다</strong></td><td>키가 달라지면 어댑터가 다르게 처리해야 한다. 둘 다 흡수하는지 확인하려면 원본 두 벌이 필요하다</td><td>API 1이 <code>?format=json</code> · <code>&amp;week=</code> · <code>&amp;refresh=true</code>로 <strong>세 벌</strong></td></tr>
+        <tr><td>C</td><td><strong>값만 다르면 나누지 않는다</strong></td><td>같은 모양을 여러 벌 두면 어느 것이 기준인지 흐려진다</td><td>주차별 파일을 따로 두지 않았다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <pre><code>API 1  /reports/weekly      → JSON 3종   B에 걸려 셋으로
+                                 + Markdown 1건 (기준 2에 걸려 참고 문서)
+API 2  /certificate        → 1종
+API 3  /analysis/diagnose  → 1종
+API 4  /reports/history    → 1종    ← 화면이 쓰는 유일한 파일
+API 5  /feedback/approve   → 1종
+                             ──────
+                             JSON 7종</code></pre>
+  <h4>나누지 않은 것들 — 규칙 C가 걸러낸 경우</h4>
+  <p>나눌 뻔했지만 두지 않은 것들이다. 왜 하나로 충분한지가 기준을 뒤집어 보여준다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:26%"><col style="width:74%"></colgroup>
+      <thead><tr><th>나눌 뻔한 것</th><th>왜 하나로 충분한가</th></tr></thead>
+      <tbody>
+        <tr><td>주차별 <code>history</code> 4개</td><td><code>/reports/history</code>가 <strong>4주를 배열 하나로</strong> 준다. 한 번의 호출이므로 파일도 하나다. 주차를 넘길 때 추가 호출이 없다는 사실까지 파일이 증명한다</td></tr>
+        <tr><td>W33의 축약 응답</td><td><code>api1-weekly-past-W34.json</code>과 <strong>스키마가 같다</strong>(둘 다 <code>metrics</code> 7필드). 축약형은 대표 하나면 어댑터 검증에 충분하다</td></tr>
+        <tr><td><code>certificate</code>·<code>diagnose</code>의 변형</td><td>파라미터로 응답이 갈리는 것이 <strong>관측되지 않았다.</strong> 나중에 갈리는 것이 확인되면 규칙 B에 따라 그때 나눈다</td></tr>
+        <tr><td>승인 실패 응답</td><td>실패 케이스를 만들려면 <strong>일부러 잘못된 요청을 보내야</strong> 하는데, 승인 로그가 누적되고 삭제 API가 없어 시도하지 않았다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">규칙은 <strong>파일 수를 줄이는 쪽</strong>이 아니라 <strong>재현 가능성과 검증 가능성</strong>을 기준으로 세웠다. A·B는 늘리는 규칙이고 C는 줄이는 규칙이며, 셋이 맞물려 일곱이 나왔다.</div>
+  <h3>2.3 어느 파일이 화면 어디에 닿나</h3>
+  <p>7종 중 <strong>화면에 값을 그리는 것은 둘</strong>이고, 하나는 화면의 특정 <em>상태</em>를 만들며, 나머지 넷은 렌더에 직접 닿지 않는다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:12%"><col style="width:28%"><col style="width:36%"></colgroup>
+      <thead><tr><th>파일</th><th>크기</th><th>화면 항목</th><th>역할</th></tr></thead>
+      <tbody>
+        <tr><td><code>api4-history.json</code></td><td>12,114</td><td><strong>거의 전부</strong><br>헤더·수준·지표 8칸·서술 4섹션·피드백·생성 표기</td><td><strong>화면 재료.</strong> 이것만 mock 핸들러가 소비한다</td></tr>
+        <tr><td><code>api2-certificate.json</code></td><td>3,629</td><td>지표 · <strong>진행 단계의 분모</strong></td><td><code>summary.total_steps</code>. 지금은 상수 <code>10</code>이라 대기 상태</td></tr>
+        <tr><td><code>api1-weekly-past-W34.json</code></td><td>1,601</td><td><strong>축약 주차 안내 문구</strong></td><td>7필드 응답을 재현해 <code>partialMetrics</code> 경로를 검증한다</td></tr>
+        <tr><td><code>api5-approve.json</code></td><td>387</td><td><strong>승인 게이트</strong></td><td>실연동에서 게이트를 여는 신호의 형태</td></tr>
+        <tr><td><code>api1-weekly-cached.json</code></td><td>5,452</td><td>—</td><td>스키마 기준. <code>metrics</code>가 <code>api4</code> 스냅샷과 같은 모양인지 대조</td></tr>
+        <tr><td><code>api1-weekly-refresh.json</code></td><td>6,104</td><td>—</td><td>재분석 시 값과 <strong>키가</strong> 바뀐다는 사실을 잠가둔다</td></tr>
+        <tr><td><code>api3-diagnose.json</code></td><td>3,624</td><td>—</td><td>등급·확신도가 <code>api4</code>와 어긋나는지 대조</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>파일 하나가 비면 화면이 통째로 빈다.</strong> <code>api4-history.json</code>이 없거나 <code>userId</code> 키가 어긋나면 빈 배열이 돌아와 리포트가 하나도 뜨지 않는다. 나머지 여섯은 없어도 화면은 그려진다 — 대신 스키마가 바뀌었을 때 알아챌 수단이 사라진다.</div>
+</section>

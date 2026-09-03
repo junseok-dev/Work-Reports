@@ -1,21 +1,74 @@
 <section id="principle">
-  <h2>1. 나누는 기준 — 호출 하나가 파일 하나</h2>
+  <h2>1. 무엇을 담고 무엇을 담지 않나</h2>
   <p class="lead">mock의 재료는 <strong>명세서의 다섯 API를 실제로 호출해서 받은 응답</strong>뿐이다. 그래야 mock으로 만든 화면이 실연동에서도 같게 동작한다.</p>
-  <div class="callout"><strong>값을 지어내지 않는다.</strong> 응답이 비어 있거나 필드가 없으면 비어 있는 채로 둔다. 화면이 허전하다고 그럴듯한 숫자를 채우면, 실연동으로 바꾸는 날 화면이 전혀 다른 모습이 되고 그때는 무엇이 달라졌는지 가릴 수 없다. 식별자·이름·기수만 데모 계정에 맞춰 치환했고 지표와 서술은 원본 그대로다.</div>
-  <h3>형식은 JSON이다</h3>
-  <p>API가 JSON을 준다. 받은 것을 그대로 저장하면 <strong>응답과 mock이 1:1로 대응</strong>하고, 나중에 실연동으로 바꿀 때 파일을 지우고 fetch로 갈아 끼우면 끝난다.</p>
+  <div class="callout"><strong>값을 지어내지 않는다.</strong> 응답이 비어 있거나 필드가 없으면 비어 있는 채로 둔다. 화면이 허전하다고 그럴듯한 숫자를 채우면, 실연동으로 바꾸는 날 화면이 전혀 다른 모습이 되고 그때는 무엇이 달라졌는지 가릴 수 없다.</div>
+  <h3>1.1 형식은 JSON, 자르는 단위는 호출</h3>
+  <p>API가 JSON을 준다. 받은 것을 그대로 저장하면 <strong>응답과 mock이 1:1로 대응</strong>하고, 실연동으로 바꿀 때 파일을 지우고 fetch로 갈아 끼우면 끝난다. 화면 기준으로 자르면 "이 값이 어느 호출에서 왔는지"를 잃는다.</p>
+  <pre><code>api4-history.json  ←  curl -X GET "$B/reports/history/$U?limit=30" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:16%"><col style="width:42%"><col style="width:42%"></colgroup>
+      <colgroup><col style="width:16%"><col style="width:38%"><col style="width:46%"></colgroup>
       <thead><tr><th>형식</th><th>장점</th><th>이 건에 맞지 않는 이유</th></tr></thead>
       <tbody>
-        <tr><td><strong>JSON</strong></td><td>응답 원문을 변형 없이 보존한다. 중첩 구조(<code>metrics</code>·<code>diagnosis</code> 블록, <code>top_error_types</code> 배열)가 그대로 남는다</td><td>—</td></tr>
+        <tr><td><strong>JSON</strong></td><td>응답 원문을 변형 없이 보존한다. 중첩 구조가 그대로 남는다</td><td>—</td></tr>
         <tr><td>CSV</td><td>표로 열어 보기 쉽다</td><td>중첩을 평탄화해야 한다. <code>top_error_types</code>의 유형·횟수 3쌍과 <code>weak_patterns</code> 배열이 한 칸에 뭉개져 원본 대조가 불가능해진다</td></tr>
         <tr><td>TS 리터럴</td><td>타입 검사가 붙는다</td><td>손으로 고치기 쉬워 원본이 오염된다. 어디까지가 실응답인지 구분이 사라진다</td></tr>
       </tbody>
     </table>
   </div>
-  <h3>자르는 기준은 화면이 아니라 호출이다</h3>
-  <p>화면 기준으로 자르면 "이 값이 어느 호출에서 왔는지"를 잃는다. 호출 기준으로 자르면 <strong>파일 이름이 곧 재현 명령</strong>이 된다.</p>
-  <pre><code>api4-history.json  ←  curl -X GET "$B/reports/history/$U?limit=30" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <h3>1.2 손댄 것은 식별자와 두 필드뿐</h3>
+  <p>원본은 명세서 예시와 같은 <strong>29기 정승</strong>(<code>100030029410</code>)이다. LMS-FE 데모 로그인 계정과 맞추려고 <strong>식별자와 이름만</strong> 34기 황수빈으로 바꿨다. 지표와 서술은 한 자리도 건드리지 않았다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup>
+      <thead><tr><th>항목</th><th>원본</th><th>mock</th></tr></thead>
+      <tbody>
+        <tr><td><code>studentUuid</code></td><td><code>100030029410</code></td><td><code>100051503818</code></td></tr>
+        <tr><td><code>userId</code></td><td><code>fd0ba10e-d94e-43c2-…</code></td><td><code>f074a93b-5ad7-4234-…</code></td></tr>
+        <tr><td><code>cohortId</code></td><td><code>0baacbd9-02d4-4f42-…</code></td><td><code>f34c88f3-7cd2-4543-…</code></td></tr>
+        <tr><td><code>name</code></td><td>정승</td><td>황수빈</td></tr>
+        <tr><td><code>cohort</code></td><td>29기</td><td>34기</td></tr>
+        <tr><td><strong>그 외 전부</strong></td><td>—</td><td><strong>원본 값 그대로</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>치환은 편의가 아니라 동작 조건이다.</strong> mock 핸들러가 <code>DATALAKE_HISTORY[userId]</code>로 이력을 찾는데, 이 키가 로그인 계정의 <code>user.id</code>와 다르면 빈 배열이 돌아와 <strong>진단 리포트 탭이 빈 화면</strong>이 된다.</div>
+  <h4>뺀 것 둘</h4>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+      <thead><tr><th>필드</th><th>왜 뺐나</th></tr></thead>
+      <tbody>
+        <tr><td><code>group</code> (반)</td><td>화면에도 등급 판정에도 쓰이지 않는다</td></tr>
+        <tr><td><code>markdown_content</code></td><td>주차당 약 2,900자이고 <code>api4-history.json</code>이 4주치라 그대로 두면 파일이 세 배가 되는데, 화면은 읽지 않는다. 문서 형태가 필요하면 <code>api1-weekly.md</code>가 같은 내용을 담고 있다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>1.3 결측을 0으로 채우지 않는다</h3>
+  <p>이 mock에서 가장 중요한 규칙이다. 응답의 <code>0</code>은 "0이다"와 "모른다" 두 가지를 뜻하는데, 구분하지 않고 채우면 화면이 <strong>사실이 아닌 것을 사실처럼</strong> 보여준다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:26%"><col style="width:24%"><col style="width:50%"></colgroup>
+      <thead><tr><th>값</th><th>잘못된 해석</th><th>실제 뜻과 mock에서의 처리</th></tr></thead>
+      <tbody>
+        <tr><td><code>assignments_completed: 0</code></td><td>과제를 0건 제출했다</td><td><strong>미수집이다.</strong> 같은 응답의 <code>missing_fields: ["assignments"]</code>가 알려준다. mock은 이 선언을 함께 보존해 화면이 구분할 수 있게 한다</td></tr>
+        <tr><td><code>attendance_rate: 100.0</code></td><td>출석률이 100%다</td><td><strong>집계가 안 된 값이다.</strong> 학생 5명·주차 4개가 전부 같은 값이라 구별력이 없다. 원본 그대로 두되 매니페스트에 특이사항으로 기록했다</td></tr>
+        <tr><td><code>avg_retry_gap_min: 0.0</code></td><td>재시도까지 0분 걸렸다</td><td><strong>축약 주차의 결측이다.</strong> <code>api1-weekly-past-W34.json</code>에서 관측된다</td></tr>
+        <tr><td>W33·W34의 사라진 필드</td><td>힌트를 한 번도 안 썼다</td><td><strong>수집 자체가 없다.</strong> <code>metrics_snapshot</code>이 7필드로 축약된다. mock은 <strong>없는 키를 만들어 넣지 않고</strong> 그대로 비운다</td></tr>
+        <tr><td><code>top_error_types</code> 3건</td><td>이게 에러의 전부다</td><td><strong>상위 3개만 온다.</strong> 실측에서 세 건의 합이 <code>total_errors</code>의 63.6%였다. 나머지 36.4%는 어디에도 없고 '기타' 항목도 없다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>매니페스트에 남긴 특이사항</h4>
+  <p><code>_manifest.json</code>의 <code>knownQuirks</code>에 열 건을 적어 두었다. mock을 다시 만들거나 실연동으로 바꿀 때 확인해야 할 목록이다.</p>
+  <pre><code>attendance_rate는 학생 5명·주차 4개·API 3종 전부 100.0 — 구별력이 없어 쓸 수 없음
+assignments_completed는 항상 0이고 missing_fields:['assignments'] — 미수집이지 0건 제출이 아님
+퀴즈는 5개 API와 명세서 필드 사전 모두에 필드가 없음
+risk.status_label이 status를 반영하지 않음 (completed_waiting인데 '정상 훈련')
+weakness 블록은 stalled_risk 외 전부 metrics·diagnosis 복사본
+과거 주차(W33·W34)는 metrics 7필드. 결측을 0으로 채우지 말 것 (키 자체가 없음)
+weekly의 language가 학생을 가리지 않고 python — 값 범위가 명세에 없음
+비율·평균은 소수 2자리로 반올림돼 옴. 재계산하면 응답값과 어긋남 (478÷4946=0.0966 → 0.1)
+top_error_types는 상위 3종만. W36 기준 합계가 total_errors의 63.6%이고 '기타' 항목이 없음
+타임스탬프에 타임존 표기가 없고 log_id만 KST</code></pre>
 </section>
