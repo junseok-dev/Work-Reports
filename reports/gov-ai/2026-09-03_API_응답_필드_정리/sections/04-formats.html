@@ -1,0 +1,140 @@
+<section id="formats">
+  <h2>4. 값의 형태와 해석</h2>
+  <p class="lead">3장이 <strong>어떤 필드가 오는가</strong>였다면 여기는 <strong>그 값이 어떤 모양으로 오는가</strong>다. 같은 뜻이라도 형식에 따라 읽는 법이 달라지고, 잘못 읽으면 화면에 틀린 값이 뜬다. 모든 예시는 데모 계정 황수빈(<code>100051503818</code>)의 실응답이다.</p>
+  <h3>4.1 사람을 가리키는 값</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:16%"><col style="width:24%"><col style="width:10%"><col style="width:50%"></colgroup>
+      <thead><tr><th>필드</th><th>실제 값</th><th>형식</th><th>이렇게 읽는다</th></tr></thead>
+      <tbody>
+        <tr><td><code>name</code></td><td><code>황수빈</code></td><td>문자열 3자</td><td><strong>수강생 이름이 그대로 온다.</strong> 성과 이름이 분리돼 있지 않고 공백도 없다. LMS에 입력된 원문이 그대로 넘어온 것이라, 외국인 수강생이면 로마자나 다른 길이로 올 수 있다. 화면에 그대로 쓰되 <strong>성·이름을 잘라 쓰지 않는다</strong></td></tr>
+        <tr><td><code>studentUuid</code></td><td><code>"100051503818"</code></td><td>문자열 12자</td><td><strong>숫자처럼 보이지만 문자열이다.</strong> 따옴표가 붙어 있다. 학번은 연산 대상이 아니고 앞자리에 <code>0</code>이 올 수 있어서다. 숫자로 바꿔 다루면 앞의 <code>0</code>이 사라지거나 자릿수가 어긋난다</td></tr>
+        <tr><td><code>userId</code></td><td><code>f074a93b-5ad7-…</code></td><td>UUID 36자</td><td>소문자 16진수에 하이픈이 <code>8-4-4-4-12</code>로 들어간다. LMS <code>user.id</code>와 같은 값이라 <strong>대소문자를 바꾸거나 하이픈을 빼면 매칭이 깨진다</strong></td></tr>
+        <tr><td><code>cohort</code></td><td><code>34기</code></td><td>문자열 3자</td><td><strong>숫자에 한글 접미사가 붙은 표시명이다.</strong> 기수 번호가 따로 오지 않으므로 정렬하려면 파싱해야 한다. 문자열로 정렬하면 <code>34기</code>가 <code>9기</code>보다 앞에 온다</td></tr>
+        <tr><td><code>cohortId</code></td><td><code>f34c88f3-7cd2-…</code></td><td>UUID 36자</td><td>기수의 기계용 식별자. 정렬·비교는 이쪽을 쓴다</td></tr>
+        <tr><td><code>group</code></td><td><code>A</code></td><td>문자 1자</td><td>반. 값 범위가 명세에 없어 <code>A</code> 외에 무엇이 오는지 알 수 없다</td></tr>
+        <tr><td><code>language</code></td><td><code>python</code></td><td>소문자 문자열</td><td><strong>이 값을 화면에 쓰면 안 된다.</strong> 주간 리포트는 전원을 <code>python</code>으로 준다. 황수빈의 실제 언어는 <code>/sync/students</code>의 <code>typescript</code>다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>4.2 주차를 가리키는 값 — 네 가지가 한꺼번에 온다</h3>
+  <p>같은 주차를 네 형식으로 준다. 쓰임이 달라서다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:18%"><col style="width:26%"><col style="width:16%"><col style="width:40%"></colgroup>
+      <thead><tr><th>필드</th><th>실제 값</th><th>형식</th><th>쓰임</th></tr></thead>
+      <tbody>
+        <tr><td><code>year_week</code></td><td><code>2026-W36</code></td><td>ISO 8601 주 표기</td><td>연도가 붙은 <strong>고유 키</strong>. 해를 넘겨도 겹치지 않는다</td></tr>
+        <tr><td><code>week_no</code></td><td><code>36</code></td><td>정수</td><td><strong>정렬용.</strong> 화면이 주차를 오름차순으로 놓을 때 쓴다</td></tr>
+        <tr><td><code>week_label</code></td><td><code>2026-W36 [08/31~09/06]</code></td><td>사람용 문자열</td><td>그대로 찍으면 되는 표시 문자열</td></tr>
+        <tr><td><code>week_range</code></td><td><code>08/31~09/06</code></td><td>MM/DD~MM/DD</td><td>기간만. <strong>연도가 없다</strong> — 12/29~01/04 같은 주차는 어느 해인지 이 값만으로 알 수 없다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><strong>ISO 주차는 기수 주차가 아니다.</strong> <code>week_no 36</code>은 그 해의 36번째 주라는 뜻이지 수강 36주차가 아니다. 화면의 "14주차"는 기수 시작일에서 우리가 계산한 값이다. 두 숫자를 섞으면 안 된다.</div>
+  <h3>4.3 시각 — 세 가지 형식이 섞여 있다</h3>
+  <p>한 서비스 안에서 타임스탬프 직렬화가 세 갈래다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:26%"><col style="width:30%"><col style="width:44%"></colgroup>
+      <thead><tr><th>형식</th><th>쓰는 필드</th><th>해석</th></tr></thead>
+      <tbody>
+        <tr><td><code>2026-09-02T00:35:46.781122</code><br><span>ISO 8601 + 마이크로초 6자리</span></td><td><code>analyzed_at</code> · <code>data_freshness</code> · <code>created_at</code> · <code>issue_timestamp</code> · <code>approved_at</code></td><td><strong>타임존 표기가 없다.</strong> <code>Z</code>도 <code>+09:00</code>도 붙지 않는다. 파이썬 <code>datetime.isoformat()</code>의 기본 출력 모양이다. UTC로 가정하고 읽되, 확정된 바 없어 요청 항목에 넣었다</td></tr>
+        <tr><td><code>2026-09-02 05:00:13</code><br><span>공백 구분 · 초 단위</span></td><td><code>last_synced_at</code></td><td><code>T</code>가 없고 마이크로초도 없다. 같은 서비스인데 <strong>직렬화 경로가 다르다.</strong> <code>05:00</code>이라는 시각은 일 배치로 보인다</td></tr>
+        <tr><td><code>fb_20260902093622_…</code><br><span>압축 숫자 14자리</span></td><td><code>log_id</code> 안</td><td><code>YYYYMMDDHHMMSS</code>. <strong>이것만 KST</strong>다. 나머지가 UTC라면 9시간 차이가 난다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>4.4 여러 값을 이어 붙인 식별자</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:18%"><col style="width:32%"><col style="width:50%"></colgroup>
+      <thead><tr><th>필드</th><th>실제 값과 구성</th><th>왜 중요한가</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code><br><span>API 4</span></td><td><code>rep_2026-W36_100051503818</code><br><code>접두사_연주차_학번</code></td><td><strong>주차와 학생이 키에 박혀 있다.</strong> 같은 주차를 재분석하면 같은 <code>id</code>가 나오므로 <strong>이전 내용이 덮어써진다.</strong> 승인된 피드백 문안을 보존할 자리가 없다</td></tr>
+        <tr><td><code>log_id</code><br><span>API 5</span></td><td><code>fb_20260902093622_100051503818</code><br><code>접두사_시각_학번</code></td><td>시각이 들어가 매번 새로 생긴다. 그래서 승인 로그가 <strong>누적만 되고 삭제 API가 없다</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>4.5 코드값과 표시명이 섞여 있다</h3>
+  <p>어떤 필드는 기계용 코드로, 어떤 필드는 사람이 읽는 한글로 온다. 규칙이 하나가 아니다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:24%"><col style="width:54%"></colgroup>
+      <thead><tr><th>필드</th><th>실제 값</th><th>해석</th></tr></thead>
+      <tbody>
+        <tr><td><code>grade</code></td><td><code>해결사</code></td><td><strong>한글 표시명이 그대로 온다.</strong> <code>SOLVER</code> 같은 코드값이 아니다. 화면에 바로 쓸 수 있지만, 등급 순서(입문·초급·중급·해결사)를 응답으로는 알 수 없어 <strong>코드에 순서를 박아둬야</strong> 한다</td></tr>
+        <tr><td><code>risk_status</code></td><td><code>completed_waiting</code></td><td>이쪽은 snake_case 코드값이다. 화면에 그대로 쓸 수 없어 우리가 한글을 붙인다</td></tr>
+        <tr><td><code>status_label</code></td><td><code>정상 훈련</code></td><td><strong>같은 응답의 <code>status</code>와 맞지 않는다.</strong> <code>completed_waiting</code>(완료 대기)인데 라벨은 <code>정상 훈련</code>이다. 라벨을 믿지 말고 <strong>코드값으로 판단</strong>해야 한다</td></tr>
+        <tr><td><code>human_in_the_loop.status</code></td><td><code>APPROVED</code></td><td>여기는 대문자다. 세 번째 표기 방식</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>4.6 숫자는 이미 반올림돼 온다</h3>
+  <p>비율과 평균은 서버가 <strong>소수 두 자리로 반올림</strong>해 보낸다. 원본 나눗셈과 값이 다르다.</p>
+  <pre><code>주차       응답값   원본 나눗셈        2자리 반올림
+W33       0.45    36 ÷ 80  = 0.45000    0.45   일치
+W34       0.22    31 ÷ 140 = 0.22143    0.22   일치
+W35       0.1     27 ÷ 264 = 0.10227    0.10   일치
+W36       0.1    478 ÷ 4946 = 0.09664   0.10   일치</code></pre>
+  <p>W36의 <code>0.1</code>은 <strong>0.10의 뒤 0을 JSON이 떨어뜨린 것</strong>이지 소수 한 자리가 아니다. 그리고 원본은 <code>0.0966</code>이므로, 우리가 <code>total_errors ÷ total_runs</code>로 다시 계산하면 응답값과 어긋난다. <strong>화면에는 응답값을 그대로 쓴다.</strong></p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:26%"><col style="width:20%"><col style="width:54%"></colgroup>
+      <thead><tr><th>구분</th><th>예</th><th>형식</th></tr></thead>
+      <tbody>
+        <tr><td>건수·일수</td><td><code>4946</code> · <code>478</code> · <code>10</code></td><td>정수(<code>int</code>)로 온다</td></tr>
+        <tr><td>비율·평균·시간</td><td><code>0.1</code> · <code>40.86</code> · <code>0.2</code></td><td>실수(<code>float</code>). 소수 두 자리 반올림</td></tr>
+        <tr><td>정수인데 실수</td><td><code>23.0</code> · <code>100.0</code> · <code>5.0</code></td><td><code>max_retry_gap_min</code>·<code>attendance_rate</code>·<code>risk_score</code>는 값이 딱 떨어져도 <strong><code>.0</code>이 붙어 온다.</strong> 타입이 실수로 고정돼 있다는 뜻이다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>4.7 에러 유형은 긴 문자열 하나로 온다</h3>
+  <p>형식은 <code>[언어] 정규화된예외경로: 메시지</code>다. 셋 다 같은 틀인데 길이가 제각각이다.</p>
+  <pre><code>66자  [PYTHON] requests.exceptions.ConnectionError: Max retries exceeded
+40자  [PYTHON] asyncio.exceptions.TimeoutError                        ← 메시지 없음
+86자  [PYTHON] sqlalchemy.exc.IntegrityError: duplicate key value violates unique constraint</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:20%"><col style="width:80%"></colgroup>
+      <thead><tr><th>부분</th><th>해석</th></tr></thead>
+      <tbody>
+        <tr><td><code>[PYTHON]</code></td><td>언어 접두사. 대괄호 안 대문자. 실습 언어가 여럿이면 다른 값이 올 것으로 보이나 관측된 것은 이것뿐이다</td></tr>
+        <tr><td><code>sqlalchemy.exc.IntegrityError</code></td><td>정규화된 예외 경로. <strong>마지막 마디가 예외 클래스명</strong>이라 여기만 남기면 <code>IntegrityError</code>가 된다</td></tr>
+        <tr><td><code>: duplicate key …</code></td><td><strong>있을 때도 없을 때도 있다.</strong> <code>TimeoutError</code>에는 메시지가 없다. 콜론으로 자를 때 뒷부분이 비어 있을 수 있다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>그대로 쓰면 화면에 안 들어간다.</strong> 셋을 이으면 200자가 넘는다. 화면은 접두사·모듈 경로·메시지를 떼고 예외 클래스명만 남긴다 — <code>ConnectionError×105, TimeoutError×104, IntegrityError×95</code>. 원본 값은 건드리지 않고 표시할 때만 줄인다.</div>
+  <h3>4.8 "없다"가 세 가지 방식으로 표현된다</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:24%"><col style="width:52%"></colgroup>
+      <thead><tr><th>방식</th><th>예</th><th>어떻게 다뤄야 하나</th></tr></thead>
+      <tbody>
+        <tr><td><strong>키가 아예 없다</strong></td><td>축약 주차의 <code>top_error_types</code></td><td>W33·W34의 <code>metrics_snapshot</code>은 7필드다(W36은 24필드). <code>null</code>이 아니라 <strong>키 자체가 없다.</strong> <code>null</code> 검사로는 못 걸러내고 <strong>키 존재 여부</strong>를 봐야 한다</td></tr>
+        <tr><td><strong>빈 배열</strong></td><td><code>missing_fields: []</code></td><td>결측 항목이 없다는 뜻. 반대로 <code>["assignments"]</code>면 그 항목을 못 받았다는 <strong>서버의 선언</strong>이다</td></tr>
+        <tr><td><strong>0이 들어온다</strong></td><td><code>avg_score_pct: 0.0</code><br><code>assignments_completed: 0</code></td><td><strong>가장 위험한 형태.</strong> 값이 0인지 모르는 것인지 구분되지 않는다. 퀴즈 평균 <code>0.0</code>은 미채점이고, 과제 <code>0</code>은 미수집이다 — 둘 다 0점·0건이 아니다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>4.9 <code>/sync/students</code>는 주제별로 묶어서 준다</h3>
+  <p>주간 리포트가 <code>metrics</code> 아래 평평하게 24개를 주는 것과 달리, 여기는 주제별 객체로 나뉜다.</p>
+  <pre><code>attendance   {"present": 36, "late": 11, "early_leave": 2, "absent": 3, "excused": 2}
+assignments  {"total": 10, "submitted": 9, "not_submitted": 1}
+quizzes      {"total": 7, "attempted": 6, "avg_score_pct": 91.0}
+atmux        {"total_duration_sec": 103487.8, "total_duration_hours": 28.7, …}</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+      <thead><tr><th>블록</th><th>읽는 법</th></tr></thead>
+      <tbody>
+        <tr><td><code>attendance</code></td><td><strong>일수만 온다. 비율은 없다.</strong> 다섯 값을 더해야 전체 일수(54일)가 나오고, 출석률은 우리가 계산한다</td></tr>
+        <tr><td><code>assignments</code></td><td><code>total = submitted + not_submitted</code>가 성립한다(<code>10 = 9 + 1</code>). 재제출·반려 상태는 오지 않는다</td></tr>
+        <tr><td><code>quizzes</code></td><td><code>avg_score_pct</code>만 비율이고 나머지는 건수다. <code>attempted</code>가 0이면 평균이 <code>0.0</code>으로 온다</td></tr>
+        <tr><td><code>atmux</code></td><td><strong>같은 값을 두 단위로 준다.</strong> <code>103487.8</code>초와 <code>28.7</code>시간이다(<code>103487.8 ÷ 3600 = 28.746</code>, 소수 한 자리 반올림). 시간 쪽을 쓰면 나눌 필요가 없다</td></tr>
+        <tr><td><code>training_status</code></td><td><code>훈련중</code> — 한글 표시명이다. 코드값이 따로 오지 않는다</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>

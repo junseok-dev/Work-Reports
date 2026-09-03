@@ -1,0 +1,18 @@
+<section id="reject">
+  <h2>4. 안 넣는다 — 6종</h2>
+  <p>만들 수는 있다. 넣지 않기로 한 이유가 각각 있다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:16%"><col style="width:62%"></colgroup>
+      <thead><tr><th>항목</th><th>사유</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td>활동 밀도 (<code>7 ÷ 7</code>)</td><td>중복</td><td>지표에 <strong>활동일 7일</strong>이 이미 있다. 같은 값을 비율로 한 번 더 보여줄 이유가 없다</td></tr>
+        <tr><td>에러 집중도 (<code>63.6%</code>)</td><td>해석 불가</td><td>분모가 <code>top_error_types</code> 상위 3종이라 "상위 3종이 전체의 63.6%"라는 뜻이다. 나머지 36.4%가 몇 종인지 모르는 채로 수강생이 읽을 수 있는 숫자가 아니다</td></tr>
+        <tr><td>최다 에러 비중 (<code>22.0%</code>)</td><td>중복</td><td>지표의 <strong>주요 에러</strong> 칸에 이미 유형과 횟수가 나온다</td></tr>
+        <tr><td>확신도 추세</td><td>혼란</td><td>확신도는 <strong>AI 판정의 확실성</strong>이지 학습 상태가 아니다. 추세로 보여주면 "내 실력이 떨어졌나"로 읽힌다. 이번 주 값만 등급 옆에 두는 지금이 맞다</td></tr>
+        <tr><td>실습 서버 CPU (<code>29.5%</code>)</td><td>의미 없음</td><td>수강생이 보고 할 수 있는 일이 없다</td></tr>
+        <tr><td>텔레메트리 수집량 (<code>7,238</code>건)</td><td>의미 없음</td><td>내부 수집 지표다. 다만 접속 시간과 교차 검증하는 <strong>내부 용도</strong>로는 쓸 수 있다</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>

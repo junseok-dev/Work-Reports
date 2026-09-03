@@ -6,12 +6,12 @@
       <colgroup><col style="width:20%"><col style="width:30%"><col style="width:50%"></colgroup>
       <thead><tr><th>분석</th><th>쓰는 지표</th><th>어떻게 서술되나</th></tr></thead>
       <tbody>
-        <tr><td><strong>문제 해결 방식</strong></td><td><code>hint_per_active_day</code> × <code>avg_retry_gap_min</code></td><td>힌트를 많이 보면서 재시도까지 빠르면 <em>의존·즉시 시도형</em>, 힌트가 적고 간격이 길면 <em>자력·숙고형</em>이다. 황수빈은 하루 40.9회 · 0.2분으로 <strong>전형적인 의존·즉시 시도형</strong>이다</td></tr>
-        <tr><td><strong>학습 리듬</strong></td><td><code>active_days_count</code> · <code>days_since_last_activity</code></td><td>활동일이 늘고 미접속이 0이면 리듬이 잡힌 것이다. W33의 3일에서 W36의 7일로 올라왔다</td></tr>
-        <tr><td><strong>막힌 영역</strong></td><td><code>top_error_types</code>의 예외 클래스명</td><td><code>ConnectionError</code>·<code>TimeoutError</code>는 네트워크·비동기, <code>IntegrityError</code>는 DB 제약이다. 예외 이름만으로 <strong>어느 영역에서 막혔는지</strong> 분류된다</td></tr>
+        <tr><td><strong>문제 해결 방식</strong></td><td><code>hint_per_active_day</code> — 활동일당 힌트 요청<br><code>avg_retry_gap_min</code> — 에러 후 재시도까지 평균 분</td><td>힌트를 많이 보면서 재시도까지 빠르면 <em>의존·즉시 시도형</em>, 힌트가 적고 간격이 길면 <em>자력·숙고형</em>이다. 황수빈은 하루 40.9회 · 0.2분으로 <strong>전형적인 의존·즉시 시도형</strong>이다</td></tr>
+        <tr><td><strong>학습 리듬</strong></td><td><code>active_days_count</code> — 학습 활동이 있던 날 수<br><code>days_since_last_activity</code> — 마지막 활동 이후 지난 일수</td><td>활동일이 늘고 미접속이 0이면 리듬이 잡힌 것이다. W33의 3일에서 W36의 7일로 올라왔다</td></tr>
+        <tr><td><strong>막힌 영역</strong></td><td><code>top_error_types</code> — 가장 잦은 에러 상위 3종<br><span>그중 <code>type</code>의 예외 클래스명만 본다</span></td><td><code>ConnectionError</code>·<code>TimeoutError</code>는 네트워크·비동기, <code>IntegrityError</code>는 DB 제약이다. 예외 이름만으로 <strong>어느 영역에서 막혔는지</strong> 분류된다</td></tr>
         <tr><td><strong>시행착오의 양</strong></td><td>단계당 실행 횟수</td><td>W33의 80회에서 W36의 494.6회로 늘었다. 진도가 빨라진 만큼 시도도 늘었다는 뜻이지, 나빠진 것이 아니다</td></tr>
-        <tr><td><strong>판정의 확실성</strong></td><td><code>grade</code> × <code>confidence</code></td><td>확신도가 <code>0.75</code>로 떨어진 W35는 등급만 보고 단정하기 어려운 주차다. 등급 옆에 확신도를 함께 싣는 근거</td></tr>
-        <tr><td><strong>개선 폭</strong></td><td><code>error_per_run</code> 추세</td><td><code>0.45 → 0.10</code>은 78% 감소다. 수강생에게 가장 설득력 있는 한 문장이 된다</td></tr>
+        <tr><td><strong>판정의 확실성</strong></td><td><code>grade</code> — 수준 등급 (입문·초급·중급·해결사)<br><code>confidence</code> — 판정 확신도 0~1</td><td>확신도가 <code>0.75</code>로 떨어진 W35는 등급만 보고 단정하기 어려운 주차다. 등급 옆에 확신도를 함께 싣는 근거</td></tr>
+        <tr><td><strong>개선 폭</strong></td><td><code>error_per_run</code> — 실행당 에러<br><span>주차별 추세로 본다</span></td><td><code>0.45 → 0.10</code>은 78% 감소다. 수강생에게 가장 설득력 있는 한 문장이 된다</td></tr>
       </tbody>
     </table>
   </div>

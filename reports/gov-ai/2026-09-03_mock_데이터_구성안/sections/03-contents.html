@@ -1,6 +1,7 @@
 <section id="contents">
   <h2>3. 안에 무엇을 넣는가 — 식별자만 바꾸고 지표는 그대로</h2>
   <p>원본은 명세서 예시와 같은 <strong>29기 정승</strong>(<code>100030029410</code>)이다. LMS-FE 데모 로그인 계정과 맞추려고 <strong>식별자와 이름만</strong> 34기 황수빈으로 바꿨다. 지표는 한 자리도 건드리지 않았다.</p>
+  <div class="callout"><strong>치환은 편의가 아니라 동작 조건이다.</strong> mock 핸들러가 <code>DATALAKE_HISTORY[userId]</code>로 이력을 찾는데, 이 키가 로그인 계정의 <code>user.id</code>와 다르면 빈 배열이 돌아와 <strong>진단 리포트 탭이 빈 화면</strong>이 된다. 이름·기수를 함께 바꾼 것도 같은 이유다 — 증명서·로스터 등 다른 화면이 황수빈으로 뜨는데 진단 원천만 정승이면 한 데모 안에서 두 사람이 된다.</div>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup>
