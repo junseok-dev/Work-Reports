@@ -14,7 +14,7 @@
       </tbody>
     </table>
   </div>
-  <p>둘 다 사실이지만 <strong>가리키는 엔드포인트가 달랐다.</strong> 어느 쪽을 말하는지 붙이지 않아 모순처럼 들렸다. 이 문서에서 <code>/sync/students</code>를 <strong>S</strong>로 따로 표기하고 fixture 파일명에 <code>ext-</code> 접두사를 붙인 이유가 이것이다.</p>
+  <p>둘 다 사실이지만 <strong>가리키는 엔드포인트가 달랐다.</strong> 어느 쪽을 말하는지 붙이지 않아 모순처럼 들렸다. 이 문서에서 표의 출처를 API 번호로 적고 <code>/sync/students</code>만 경로 그대로 표기하는 이유, fixture 파일명에 <code>ext-</code> 접두사를 붙인 이유가 이것이다.</p>
 
   <h3>층위 2 — 필드가 있는가, 값이 쓸모 있는가</h3>
   <p>출결·과제는 <strong>필드가 실제로 온다.</strong> 그래서 "온다"는 말이 맞다. 그러나 값이 상수라 화면에 쓸 수 없다. "쓸 수 있나"로 물으면 답이 뒤집힌다.</p>
@@ -33,7 +33,7 @@
   </div>
 
   <h3>층위 3 — 주차별인가, 누적인가</h3>
-  <p><strong>S</strong>의 상세값은 실제 데이터다. 문제는 <code>last_synced_at</code> 시점의 <strong>누적 현재값</strong>이라는 점이다. 주차를 바꿔가며 봐도 같은 값이 나온다.</p>
+  <p><code>/sync/students</code>의 상세값은 실제 데이터다. 문제는 <code>last_synced_at</code> 시점의 <strong>누적 현재값</strong>이라는 점이다. 주차를 바꿔가며 봐도 같은 값이 나온다.</p>
   <pre><code>11주차(W33)를 봐도  → attendance {present 101, late 5, absent 4}
 14주차(W36)를 봐도  → attendance {present 101, late 5, absent 4}   동일</code></pre>
   <p>그래서 "지난주 대비 출석률" 같은 문장을 만들 수 없다. 비교할 이전 주 값이 존재하지 않는다.</p>
@@ -52,7 +52,7 @@
   </div>
 
   <h3>이 값들의 원천은 LMS다</h3>
-  <p><strong>S</strong>의 출결·과제·퀴즈는 GOV-AI가 수집한 것이 아니라 <strong>LMS가 넘긴 데이터</strong>다. <code>LMS-DOCS/10_데이터/외부_AI_코칭_API.md</code>가 정의한 <code>data-ingest-api</code>가 원천이며, 양쪽이 같은 <code>X-DE-API-KEY</code> 헤더를 쓴다.</p>
+  <p><code>/sync/students</code>의 출결·과제·퀴즈는 GOV-AI가 수집한 것이 아니라 <strong>LMS가 넘긴 데이터</strong>다. <code>LMS-DOCS/10_데이터/외부_AI_코칭_API.md</code>가 정의한 <code>data-ingest-api</code>가 원천이며, 양쪽이 같은 <code>X-DE-API-KEY</code> 헤더를 쓴다.</p>
   <pre><code>LMS data-ingest-api ──X-DE-API-KEY──▶ GOV-AI 수집 ──▶ /sync/students
   GET /ingest/v1/courses?include=activities</code></pre>
   <div class="table-wrap">

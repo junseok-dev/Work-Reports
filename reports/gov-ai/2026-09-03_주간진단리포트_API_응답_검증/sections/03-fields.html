@@ -1,11 +1,27 @@
 <section id="fields">
   <h2>3. 필드 정리</h2>
-  <p class="lead">출처 기호는 <strong>W</strong>=API 1 weekly, <strong>C</strong>=API 2 certificate, <strong>D</strong>=API 3 diagnose, <strong>H</strong>=API 4 history, <strong>A</strong>=API 5 approve다. <strong>S</strong>=<code>/sync/students</code>는 문서 밖 엔드포인트라 전체 필드 목록에서는 빼고, 출결·과제·퀴즈 대조에만 참고로 남긴다.</p>
+  <p class="lead">이 장은 5개 API가 실제로 돌려준 필드를 정리한다. 표의 <strong>출처</strong>는 아래 호출을 가리킨다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:12%"><col style="width:52%"><col style="width:36%"></colgroup>
+      <thead><tr><th>출처</th><th>호출</th><th>무엇을 부른 것인가</th></tr></thead>
+      <tbody>
+        <tr><td><strong>API 1</strong></td><td><code>GET /reports/weekly/$U?format=json</code></td><td>주간 AI 학습 맞춤 진단 리포트</td></tr>
+        <tr><td><strong>API 2</strong></td><td><code>GET /certificate/$U</code></td><td>LMS 연동용 역량 증명서</td></tr>
+        <tr><td><strong>API 3</strong></td><td><code>POST /analysis/diagnose/$U</code></td><td>온디맨드 수준 진단</td></tr>
+        <tr><td><strong>API 4</strong></td><td><code>GET /reports/history/$U?limit=5</code></td><td>주차별 리포트 이력</td></tr>
+        <tr><td><strong>API 5</strong></td><td><code>POST /feedback/approve</code></td><td>강사 피드백 승인</td></tr>
+        <tr><td><code>/sync/students</code></td><td><code>GET /sync/students?limit=200</code></td><td>학생 마스터 동기화 — <strong>명세서 밖</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><code>$B</code>는 <code>https://datalake.isitsoft.kr/api/v1</code>, <code>$U</code>는 수강생 학번이다. 명령 전문과 응답은 <a href="#api-calls">2장</a>에 있다.</p>
 
   <h3>API 1~5 전체 필드</h3>
-  <p>명세서에 정의된 <strong>API 1~5만</strong> 다룬다. <code>/sync/students</code>(S)는 문서 밖 엔드포인트라 제외했다(호출되는 이유는 <a href="#api-calls">2장</a>에 적었다). 값은 34기 황수빈(<code>100051503818</code>) 기준 실측이다.</p>
-  <div class="callout"><strong>쓰임</strong> 열의 <code>●</code>는 현재 수강생 진단 리포트 화면이 실제로 읽는 필드다. 화면은 <strong>H(history) 하나만</strong> 소비하므로 W·C·D·A는 전부 <code>·</code>가 된다. 같은 지표가 W에도 있지만 경로와 필드명이 달라 그대로 바꿔 끼울 수 없다.</div>
-  <h4>W — API 1 <code>/weekly-analysis/{uuid}</code></h4>
+  <p>명세서에 정의된 <strong>API 1~5</strong>가 주는 필드를 전부 편다. 문서 밖 엔드포인트 <code>/sync/students</code>는 제외했다(호출되는 이유는 <a href="#api-calls">2장</a>에 적었다). 값은 34기 황수빈(<code>100051503818</code>) 기준 실측이다.</p>
+  <div class="callout"><strong>쓰임</strong> 열의 <code>●</code>는 현재 수강생 진단 리포트 화면이 실제로 읽는 필드다. 화면은 <strong>API 4(주차별 리포트 이력)</strong> 하나만 호출하므로 API 1·2·3·5는 전부 <code>·</code>가 된다. 같은 지표가 API 1에도 있지만 경로와 필드명이 달라 그대로 바꿔 끼울 수 없다.</div>
+  <h4>API 1 · 주간 AI 학습 맞춤 진단 리포트</h4>
+  <pre><code>curl -X GET &quot;$B/reports/weekly/$U?format=json&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
   <p>최상위 6필드 + <code>metrics</code>·<code>diagnosis</code>·<code>weakness</code>·<code>risk</code> 4블록.</p>
   <div class="table-wrap">
     <table class="index-table">
@@ -73,7 +89,8 @@
       </tbody>
     </table>
   </div>
-  <h4>C — API 2 <code>/certificate/{uuid}</code></h4>
+  <h4>API 2 · LMS 연동용 역량 증명서</h4>
+  <pre><code>curl -X GET &quot;$B/certificate/$U&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:24%"><col style="width:25%"><col style="width:7%"><col style="width:15%"><col style="width:5%"><col style="width:24%"></colgroup>
@@ -122,7 +139,8 @@
       </tbody>
     </table>
   </div>
-  <h4>D — API 3 <code>/diagnose/{uuid}</code></h4>
+  <h4>API 3 · 온디맨드 수준 진단</h4>
+  <pre><code>curl -X POST &quot;$B/analysis/diagnose/$U&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:24%"><col style="width:25%"><col style="width:7%"><col style="width:15%"><col style="width:5%"><col style="width:24%"></colgroup>
@@ -144,7 +162,8 @@
       </tbody>
     </table>
   </div>
-  <h4>H — API 4 <code>/reports/history</code></h4>
+  <h4>API 4 · 주차별 리포트 이력</h4>
+  <pre><code>curl -X GET &quot;$B/reports/history/$U?limit=5&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
   <p>배열 응답이라 행 하나(<code>2026-W36</code>)를 펼쳤다. 4주 모두 최상위 20키는 같고, <code>metrics_snapshot</code>만 주차에 따라 달라진다.</p>
   <div class="table-wrap">
     <table class="index-table">
@@ -198,7 +217,10 @@
       </tbody>
     </table>
   </div>
-  <h4>A — API 5 <code>/feedback/approve</code></h4>
+  <h4>API 5 · 강사 피드백 승인</h4>
+  <pre><code>curl -X POST &quot;$B/feedback/approve&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot; \
+     -H &quot;Content-Type: application/json&quot; --data-binary @payload.json</code></pre>
+  <p>요청 본문과 응답 본문을 함께 폈다.</p>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:24%"><col style="width:25%"><col style="width:7%"><col style="width:15%"><col style="width:5%"><col style="width:24%"></colgroup>
@@ -222,11 +244,11 @@
       <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
       <thead><tr><th>관찰</th><th>내용</th></tr></thead>
       <tbody>
-        <tr><td>같은 값이 세 곳에</td><td>등급·확신도·근거·약점·피드백 초안은 <strong>W·D·H 세 곳 모두</strong>에 있다. W의 <code>diagnosis</code> 블록은 D의 최상위와 키가 100% 일치한다. 어느 쪽을 원본으로 볼지 정해두지 않으면 값이 갈렸을 때 판단할 근거가 없다.</td></tr>
+        <tr><td>같은 값이 세 곳에</td><td>등급·확신도·근거·약점·피드백 초안은 <strong>API 1·3·4 모두</strong>에 있다. API 1의 <code>diagnosis</code> 블록은 API 3의 최상위와 키가 100% 일치한다. 어느 쪽을 원본으로 볼지 정해두지 않으면 값이 갈렸을 때 판단할 근거가 없다.</td></tr>
         <tr><td>같은 뜻, 다른 이름</td><td><code>studentUuid</code>↔<code>student_uuid</code>, <code>suggested_feedback_draft</code>↔<code>feedback_draft</code>, <code>recommendations_for_instructor</code>↔<code>recommendations</code>, <code>assignments_completed</code>↔<code>completed_assignments</code>. 표기법(camel/snake)과 어순이 API마다 다르다.</td></tr>
-        <tr><td>같은 이름, 다른 모양</td><td><code>model_meta</code>가 W·C는 5키, D는 3키다. <code>prompt_version</code>은 D에만, <code>cached</code>·<code>week_label</code>은 W·C에만 있다.</td></tr>
-        <tr><td>확신도가 어긋난다</td><td>같은 학생·같은 시점인데 W는 <code>0.8</code>, D는 <code>0.85</code>다. D는 호출할 때마다 새로 분석하므로 캐시본인 W와 값이 벌어진다.</td></tr>
-        <tr><td>총 단계 수는 C에만</td><td><code>total_steps</code>는 C의 <code>summary</code>에만 있다. 화면이 쓰는 H에는 없어 FE가 상수 <code>10</code>을 들고 있다.</td></tr>
+        <tr><td>같은 이름, 다른 모양</td><td><code>model_meta</code>가 API 1·2는 5키, API 3은 3키다. <code>prompt_version</code>은 API 3에만, <code>cached</code>·<code>week_label</code>은 API 1·2에만 있다.</td></tr>
+        <tr><td>확신도가 어긋난다</td><td>같은 학생·같은 시점인데 API 1은 <code>0.8</code>, API 3은 <code>0.85</code>다. API 3은 <code>POST</code>로 호출할 때마다 새로 분석하므로 캐시본인 API 1과 값이 벌어진다.</td></tr>
+        <tr><td>총 단계 수는 API 2에만</td><td><code>total_steps</code>는 API 2의 <code>summary</code>에만 있다. 화면이 쓰는 API 4에는 없어 FE가 상수 <code>10</code>을 들고 있다.</td></tr>
         <tr><td>고정값이 섞여 있다</td><td><code>attendance_rate 100.0</code>, <code>collaboration_score 85.0</code>, <code>error_resolution_rate 0.95</code>, <code>human_in_the_loop.status APPROVED</code>는 학생과 주차를 바꿔도 움직이지 않았다. 필드가 온다는 것과 값이 쓸 만하다는 것은 별개다.</td></tr>
       </tbody>
     </table>
@@ -235,13 +257,13 @@
   <h3>출결</h3>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:6%"><col style="width:38%"><col style="width:26%"><col style="width:30%"></colgroup>
+      <colgroup><col style="width:14%"><col style="width:32%"><col style="width:24%"><col style="width:30%"></colgroup>
       <thead><tr><th>출처</th><th>필드 경로</th><th>실측값</th><th>비고</th></tr></thead>
       <tbody>
-        <tr><td><strong>W</strong></td><td><code>metrics.attendance_rate</code></td><td><code>100.0</code></td><td>—</td></tr>
-        <tr><td><strong>C</strong></td><td><code>project_and_portfolio.attendance_rate</code></td><td><code>100.0</code></td><td>—</td></tr>
-        <tr><td><strong>H</strong></td><td><code>metrics_snapshot.attendance_rate</code></td><td><code>100.0</code> (W33~W36 <strong>4주 전부</strong>)</td><td>7필드 축약 주차에도 살아 있음</td></tr>
-        <tr><td><strong>S</strong></td><td><code>attendance {present, late, early_leave, absent, excused}</code></td><td><code>{101, 5, 5, 4, 4}</code></td><td>누적. 비율 필드는 <strong>없음</strong></td></tr>
+        <tr><td><strong>API 1</strong></td><td><code>metrics.attendance_rate</code></td><td><code>100.0</code></td><td>—</td></tr>
+        <tr><td><strong>API 2</strong></td><td><code>project_and_portfolio.attendance_rate</code></td><td><code>100.0</code></td><td>—</td></tr>
+        <tr><td><strong>API 4</strong></td><td><code>metrics_snapshot.attendance_rate</code></td><td><code>100.0</code> (W33~W36 <strong>4주 전부</strong>)</td><td>7필드 축약 주차에도 살아 있음</td></tr>
+        <tr><td><code>/sync/students</code></td><td><code>attendance {present, late, early_leave, absent, excused}</code></td><td><code>{101, 5, 5, 4, 4}</code></td><td>누적. 비율 필드는 <strong>없음</strong></td></tr>
       </tbody>
     </table>
   </div>
@@ -257,14 +279,14 @@
   <h3>과제</h3>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:6%"><col style="width:38%"><col style="width:26%"><col style="width:30%"></colgroup>
+      <colgroup><col style="width:14%"><col style="width:32%"><col style="width:24%"><col style="width:30%"></colgroup>
       <thead><tr><th>출처</th><th>필드 경로</th><th>실측값</th><th>비고</th></tr></thead>
       <tbody>
-        <tr><td><strong>W</strong></td><td><code>metrics.assignments_completed</code></td><td><code>0</code></td><td>—</td></tr>
-        <tr><td><strong>W</strong></td><td><code>metrics.missing_fields</code></td><td><code>["assignments"]</code></td><td><strong>서버가 미수집을 선언</strong></td></tr>
-        <tr><td><strong>C</strong></td><td><code>project_and_portfolio.completed_assignments</code></td><td><code>0</code></td><td>필드명이 W와 반대 순서</td></tr>
-        <tr><td><strong>H</strong></td><td><code>metrics_snapshot.assignments_completed</code></td><td>W35·W36만 <code>0</code><br>W33·W34는 <strong>필드 자체가 없음</strong></td><td>축약 주차에서 소멸</td></tr>
-        <tr><td><strong>S</strong></td><td><code>assignments {total, submitted, not_submitted}</code></td><td><code>{0, 0, 0}</code></td><td>누적</td></tr>
+        <tr><td><strong>API 1</strong></td><td><code>metrics.assignments_completed</code></td><td><code>0</code></td><td>—</td></tr>
+        <tr><td><strong>API 1</strong></td><td><code>metrics.missing_fields</code></td><td><code>["assignments"]</code></td><td><strong>서버가 미수집을 선언</strong></td></tr>
+        <tr><td><strong>API 2</strong></td><td><code>project_and_portfolio.completed_assignments</code></td><td><code>0</code></td><td>필드명이 W와 반대 순서</td></tr>
+        <tr><td><strong>API 4</strong></td><td><code>metrics_snapshot.assignments_completed</code></td><td>W35·W36만 <code>0</code><br>W33·W34는 <strong>필드 자체가 없음</strong></td><td>축약 주차에서 소멸</td></tr>
+        <tr><td><code>/sync/students</code></td><td><code>assignments {total, submitted, not_submitted}</code></td><td><code>{0, 0, 0}</code></td><td>누적</td></tr>
       </tbody>
     </table>
   </div>
@@ -273,11 +295,11 @@
   <h3>퀴즈</h3>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:6%"><col style="width:38%"><col style="width:26%"><col style="width:30%"></colgroup>
+      <colgroup><col style="width:14%"><col style="width:32%"><col style="width:24%"><col style="width:30%"></colgroup>
       <thead><tr><th>출처</th><th>필드 경로</th><th>실측값</th><th>비고</th></tr></thead>
       <tbody>
-        <tr><td>W · C · D · H · A</td><td>—</td><td>—</td><td><strong>필드 없음.</strong> 명세서 §4 필드 사전에도 없음</td></tr>
-        <tr><td><strong>S</strong></td><td><code>quizzes {total, attempted, avg_score_pct}</code></td><td><code>{0, 0, 0.0}</code></td><td>누적. 문서 밖 엔드포인트</td></tr>
+        <tr><td>API 1~5</td><td>—</td><td>—</td><td><strong>필드 없음.</strong> 명세서 §4 필드 사전에도 없음</td></tr>
+        <tr><td><code>/sync/students</code></td><td><code>quizzes {total, attempted, avg_score_pct}</code></td><td><code>{0, 0, 0.0}</code></td><td>누적. 문서 밖 엔드포인트</td></tr>
       </tbody>
     </table>
   </div>
@@ -296,15 +318,16 @@
   </div>
 
   <h3>지금 화면이 실제로 쓰는 데이터</h3>
-  <p>API 1~5가 주는 164필드 중 수강생 진단 리포트 화면에 닿는 것은 <strong>H의 25개</strong>다. 어느 화면 요소가 어느 필드를 읽는지 정리한다.</p>
+  <p>API 1~5가 주는 164필드 중 수강생 진단 리포트 화면에 닿는 것은 <strong>API 4의 25개</strong>다. 화면은 아래 한 번의 호출만 쓴다.</p>
+  <pre><code>curl -X GET "$B/reports/history/$U?limit=5" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:22%"><col style="width:42%"><col style="width:36%"></colgroup>
-      <thead><tr><th>화면 요소</th><th>읽는 필드 (H 기준)</th><th>가공</th></tr></thead>
+      <thead><tr><th>화면 요소</th><th>읽는 필드 (API 4 응답)</th><th>가공</th></tr></thead>
       <tbody>
         <tr><td>헤더 · 주차</td><td><code>week_no</code> · <code>week_range</code></td><td>ISO 주차 → 기수 경과 주차로 환산 (W33~36 → 11~14주차)</td></tr>
         <tr><td>이번 주 나의 수준</td><td><code>grade</code> · <code>confidence</code></td><td>확신도 <code>0.8</code> → <strong>높음·중간·낮음</strong> 3단계 라벨</td></tr>
-        <tr><td>지표 · 진행 단계</td><td><code>steps_completed</code> · <code>current_step</code></td><td>분모 <code>total_steps</code>가 H에 없어 <strong>상수 10</strong></td></tr>
+        <tr><td>지표 · 진행 단계</td><td><code>steps_completed</code> · <code>current_step</code></td><td>분모 <code>total_steps</code>가 API 4에 없어 <strong>상수 10</strong></td></tr>
         <tr><td>지표 · 활동일</td><td><code>active_days_count</code></td><td>그대로</td></tr>
         <tr><td>지표 · 현 단계 정체</td><td><code>stalled_days_on_current_step</code></td><td>그대로</td></tr>
         <tr><td>지표 · 최근 미접속</td><td><code>days_since_last_activity</code></td><td>그대로</td></tr>
@@ -323,27 +346,27 @@
     </table>
   </div>
   <h4>원천이 주지 않아 FE가 만드는 것</h4>
-  <p>화면의 서술 섹션 네 개 중 <strong>세 개가 FE 생성물</strong>이다. datalake가 학생별로 주는 서술은 <code>weak_patterns</code> 하나뿐이다.</p>
+  <p>화면의 서술 섹션 네 개 중 <strong>세 개가 FE 생성물</strong>이다. API 4가 학생별로 주는 서술은 <code>weak_patterns</code> 하나뿐이다.</p>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:26%"><col style="width:16%"><col style="width:58%"></colgroup>
       <thead><tr><th>항목</th><th>출처</th><th>내용</th></tr></thead>
       <tbody>
-        <tr><td>보완하면 좋은 점</td><td><strong>원천</strong></td><td><code>weak_patterns</code>를 그대로 싣는다. 유일하게 GOV-AI가 준 서술이다.</td></tr>
+        <tr><td>보완하면 좋은 점</td><td><strong>API 4</strong></td><td><code>weak_patterns</code>를 그대로 싣는다. 유일하게 GOV-AI가 준 서술이다.</td></tr>
         <tr><td>지난주 대비 변화</td><td>계산</td><td>전주 행과 <code>steps_completed</code>·<code>error_per_run</code>·<code>total_runs</code>를 비교한다. 값 자체는 실측이라 추정이 섞이지 않는다.</td></tr>
         <tr><td>잘하고 있는 점</td><td>FE 생성</td><td>지표가 기준을 넘긴 항목만 문장으로 만든다. 근거 없는 격려 문구는 넣지 않는다.</td></tr>
         <tr><td>이번 주 학습 제안</td><td>FE 생성</td><td>임계값(힌트 20회/일, 에러율 0.3, 재시도 0.5분)에 걸린 항목만 제안한다. 임계값은 실측 분포에서 잡았다.</td></tr>
-        <tr><td>총 단계 수</td><td>상수</td><td><code>total_steps</code>가 C에만 있어 <code>10</code>을 코드에 두고 있다. C를 함께 호출하거나 H에 필드가 추가돼야 없앨 수 있다.</td></tr>
+        <tr><td>총 단계 수</td><td>상수</td><td><code>total_steps</code>가 API 2에만 있어 <code>10</code>을 코드에 두고 있다. API 2를 함께 호출하거나 API 4에 필드가 추가돼야 없앨 수 있다.</td></tr>
         <tr><td>확신도 라벨</td><td>변환</td><td><code>0~1</code> 숫자를 <code>0.85↑ 높음 / 0.7↑ 중간 / 낮음</code>으로 나눈다. 구간은 우리가 정한 것이라 GOV-AI 기준과 다를 수 있다.</td></tr>
         <tr><td>기수 경과 주차</td><td>변환</td><td>ISO 주차만 오므로 기수 시작일에서 경과 주차를 계산한다.</td></tr>
       </tbody>
     </table>
   </div>
-  <h4>H가 주는데 화면이 안 쓰는 것</h4>
+  <h4>API 4가 주는데 화면이 안 쓰는 것</h4>
   <pre><code>신원     student_uuid · cohort_label · metrics_snapshot의 이름·기수·반·언어·UUID 7필드
          → 이미 로그인한 본인 화면이라 다시 받을 이유가 없다
 집계     assignments_completed · attendance_rate · missing_fields
-         → 값이 고정이거나 미수집이라 쓸 수 없다 (3.2~3.4)
+         → 값이 고정이거나 미수집이라 쓸 수 없다
 운영     id · week_label · risk_score · created_at · data_freshness
          → 레코드 관리용
 강사용   recommendations
