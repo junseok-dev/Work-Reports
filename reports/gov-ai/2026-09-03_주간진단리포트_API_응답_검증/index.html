@@ -145,7 +145,7 @@ atmux       {total_duration_sec, total_duration_hours, weekly_daily_avg_hours, a
 playlang    {current_step, course, language, total_events, runs_count, errors_count, hints_count, error_rate_pct}
 last_synced_at</code></pre>
   <p>학생 마스터라 123명 전원이 오고, <strong>주차 개념이 없다.</strong> <code>last_synced_at</code> 시점의 누적 현재값이다. 출결 상세·퀴즈 점수·과제 제출 건수는 <strong>여기에만</strong> 있다.</p>
-  <pre><code>attendance  {"present": 101, "late": 5, "early_leave": 5, "absent": 4, "excused": 4}
+  <pre><code>attendance  {"present": 100, "late": 5, "early_leave": 5, "absent": 4, "excused": 4}
 quizzes     {"total": 0, "attempted": 0, "avg_score_pct": 0.0}
 assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
 
@@ -188,8 +188,7 @@ assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
     </table>
   </div>
   <p><code>$B</code>는 <code>https://datalake.isitsoft.kr/api/v1</code>, <code>$U</code>는 수강생 학번이다. 명령 전문과 응답은 <a href="#api-calls">2장</a>에 있다.</p>
-
-  <h3>API 1~5 전체 필드</h3>
+  <h3>3.1 API가 돌려준 전체 필드</h3>
   <p>명세서에 정의된 <strong>API 1~5</strong>가 주는 필드를 전부 편다. 문서 밖 엔드포인트 <code>/sync/students</code>는 제외했다(호출되는 이유는 <a href="#api-calls">2장</a>에 적었다). 값은 34기 황수빈(<code>100051503818</code>) 기준 실측이다.</p>
   <div class="callout"><strong>쓰임</strong> 열의 <code>●</code>는 현재 수강생 진단 리포트 화면이 실제로 읽는 필드다. 화면은 <strong>API 4(주차별 리포트 이력)</strong> 하나만 호출하므로 API 1·2·3·5는 전부 <code>·</code>가 된다. 같은 지표가 API 1에도 있지만 경로와 필드명이 달라 그대로 바꿔 끼울 수 없다.</div>
   <h4>API 1 · 주간 AI 학습 맞춤 진단 리포트</h4>
@@ -425,71 +424,7 @@ assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
       </tbody>
     </table>
   </div>
-
-  <h3>출결</h3>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:14%"><col style="width:32%"><col style="width:24%"><col style="width:30%"></colgroup>
-      <thead><tr><th>출처</th><th>필드 경로</th><th>실측값</th><th>비고</th></tr></thead>
-      <tbody>
-        <tr><td><strong>API 1</strong></td><td><code>metrics.attendance_rate</code></td><td><code>100.0</code></td><td>—</td></tr>
-        <tr><td><strong>API 2</strong></td><td><code>project_and_portfolio.attendance_rate</code></td><td><code>100.0</code></td><td>—</td></tr>
-        <tr><td><strong>API 4</strong></td><td><code>metrics_snapshot.attendance_rate</code></td><td><code>100.0</code> (W33~W36 <strong>4주 전부</strong>)</td><td>7필드 축약 주차에도 살아 있음</td></tr>
-        <tr><td><code>/sync/students</code></td><td><code>attendance {present, late, early_leave, absent, excused}</code></td><td><code>{101, 5, 5, 4, 4}</code></td><td>누적. 비율 필드는 <strong>없음</strong></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="callout"><strong>값이 상수다.</strong> 학생 5명을 대조한 결과 결석 일수와 무관하게 전원 <code>100.0</code>이었다. <code>missing_fields</code>에 <code>attendance</code>가 <strong>없으므로</strong> 서버는 출결을 "받았다"고 본다. 원천은 있는데 집계가 동작하지 않는 상태다.</div>
-  <pre><code>이름     S의 출결 상세 (present/late/early/absent/excused)   합계    W의 attendance_rate
-정승     100/5/5/4/4                                      118    100.0
-박상희   61/3/8/11/2                                        85    100.0
-장규원   92/2/1/5/4                                       104    100.0
-윤승혁   112/1/0/1/4                                      118    100.0
-정예린   47/1/0/4/2                                        54    100.0</code></pre>
-  <p>결석 11일인 학생도 <code>100.0</code>이다. <code>present/합계</code>는 84.7%, <code>(present+late+early)/합계</code>는 93.2%로 어느 계산으로도 100이 나오지 않는다.</p>
-
-  <h3>과제</h3>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:14%"><col style="width:32%"><col style="width:24%"><col style="width:30%"></colgroup>
-      <thead><tr><th>출처</th><th>필드 경로</th><th>실측값</th><th>비고</th></tr></thead>
-      <tbody>
-        <tr><td><strong>API 1</strong></td><td><code>metrics.assignments_completed</code></td><td><code>0</code></td><td>—</td></tr>
-        <tr><td><strong>API 1</strong></td><td><code>metrics.missing_fields</code></td><td><code>["assignments"]</code></td><td><strong>서버가 미수집을 선언</strong></td></tr>
-        <tr><td><strong>API 2</strong></td><td><code>project_and_portfolio.completed_assignments</code></td><td><code>0</code></td><td>필드명이 W와 반대 순서</td></tr>
-        <tr><td><strong>API 4</strong></td><td><code>metrics_snapshot.assignments_completed</code></td><td>W35·W36만 <code>0</code><br>W33·W34는 <strong>필드 자체가 없음</strong></td><td>축약 주차에서 소멸</td></tr>
-        <tr><td><code>/sync/students</code></td><td><code>assignments {total, submitted, not_submitted}</code></td><td><code>{0, 0, 0}</code></td><td>누적</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="callout"><strong>출결과 원인이 다르다.</strong> 과제는 <code>missing_fields</code>에 잡혀 있다. 값 <code>0</code>은 미수집의 기본값이지 "0건 제출"이 아니다. 화면에 "과제 0건 제출"로 표시하면 거짓이 된다.</div>
-
-  <h3>퀴즈</h3>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:14%"><col style="width:32%"><col style="width:24%"><col style="width:30%"></colgroup>
-      <thead><tr><th>출처</th><th>필드 경로</th><th>실측값</th><th>비고</th></tr></thead>
-      <tbody>
-        <tr><td>API 1~5</td><td>—</td><td>—</td><td><strong>필드 없음.</strong> 명세서 §4 필드 사전에도 없음</td></tr>
-        <tr><td><code>/sync/students</code></td><td><code>quizzes {total, attempted, avg_score_pct}</code></td><td><code>{0, 0, 0.0}</code></td><td>누적. 문서 밖 엔드포인트</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h3>주간 리포트에 쓸 수 있는가</h3>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:12%"><col style="width:26%"><col style="width:26%"><col style="width:36%"></colgroup>
-      <thead><tr><th>항목</th><th>주차별 필드</th><th>값 상태</th><th>판정</th></tr></thead>
-      <tbody>
-        <tr><td><strong>출결</strong></td><td>있음 — H에 4주 전부</td><td><code>100.0</code> 상수</td><td>필드가 실재하므로 <strong>값이 채워지면 바로 쓸 수 있다</strong></td></tr>
-        <tr><td><strong>과제</strong></td><td>W35·W36만</td><td><code>0</code> + <code>missing_fields</code></td><td>서버가 미수집을 선언 — 값을 채우면 그 선언과 모순</td></tr>
-        <tr><td><strong>퀴즈</strong></td><td><strong>없음</strong></td><td>—</td><td><strong>불가.</strong> 계약에 없는 필드를 만들어야 함</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h3>지금 화면이 실제로 쓰는 데이터</h3>
+  <h3>3.2 주간 진단 리포트에 들어가는 데이터</h3>
   <p>API 1~5가 주는 164필드 중 수강생 진단 리포트 화면에 닿는 것은 <strong>API 4의 25개</strong>다. 화면은 아래 한 번의 호출만 쓴다.</p>
   <pre><code>curl -X GET "$B/reports/history/$U?limit=5" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
   <div class="table-wrap">
@@ -544,6 +479,115 @@ assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
 강사용   recommendations
          → 수강생 화면에 노출하지 않는다</code></pre>
   <div class="note"><code>top_error_types</code>는 상위 3개만 온다. 실측에서 세 건의 합이 <code>total_errors</code>의 62.6%였다. 나머지 37.4%는 어느 응답에도 나타나지 않으며 "기타" 항목도 없다. 화면에 막대그래프를 그리면 합이 전체와 맞지 않는다.</div>
+  <h3>3.3 출결·과제·퀴즈 — 어떤 통계가 되고 무엇이 안 되는가</h3>
+  <p>3.2에서 보듯 이 셋은 현재 리포트에 들어가지 않는다. 그런데 호출하면 값이 오기 때문에 "있다"와 "없다"가 계속 엇갈렸다. 어느 호출에서 무엇이 오는지, 그 값으로 무엇을 낼 수 있고 무엇을 낼 수 없는지 근거와 함께 정리한다.</p>
+  <h4>어느 호출에서 무엇이 오는가</h4>
+  <p>실측값은 데모 시드 계정 <strong>정승</strong>(<code>100030029410</code>) 기준이다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:8%"><col style="width:16%"><col style="width:30%"><col style="width:22%"><col style="width:24%"></colgroup>
+      <thead><tr><th>항목</th><th>출처</th><th>필드</th><th>정승 실측값</th><th>성격</th></tr></thead>
+      <tbody>
+        <tr><td><strong>출결</strong></td><td>API 1</td><td><code>metrics.attendance_rate</code></td><td><code>100.0</code></td><td>비율 1개</td></tr>
+        <tr><td></td><td>API 2</td><td><code>project_and_portfolio.attendance_rate</code></td><td><code>100.0</code></td><td>비율 1개</td></tr>
+        <tr><td></td><td>API 4</td><td><code>metrics_snapshot.attendance_rate</code></td><td><code>100.0</code> (W33~36 <strong>4주 전부</strong>)</td><td>주차별 비율</td></tr>
+        <tr><td></td><td><code>/sync/students</code></td><td><code>attendance{present, late, early_leave, absent, excused}</code></td><td><code>100 / 5 / 5 / 4 / 4</code></td><td><strong>일수 5종, 누적</strong></td></tr>
+        <tr><td><strong>과제</strong></td><td>API 1</td><td><code>metrics.assignments_completed</code><br><code>metrics.missing_fields</code></td><td><code>0</code><br><code>["assignments"]</code></td><td>건수 1개 + <strong>미수집 선언</strong></td></tr>
+        <tr><td></td><td>API 2</td><td><code>project_and_portfolio.completed_assignments</code></td><td><code>0</code></td><td>건수 1개</td></tr>
+        <tr><td></td><td>API 4</td><td><code>metrics_snapshot.assignments_completed</code></td><td>W35·W36만 <code>0</code><br>W33·W34는 <strong>필드 없음</strong></td><td>주차별 건수</td></tr>
+        <tr><td></td><td><code>/sync/students</code></td><td><code>assignments{total, submitted, not_submitted}</code></td><td><code>0 / 0 / 0</code></td><td><strong>제출 상세, 누적</strong></td></tr>
+        <tr><td><strong>퀴즈</strong></td><td>API 1~5</td><td>—</td><td>—</td><td><strong>필드 없음.</strong> 명세서 §4 필드 사전에도 없다</td></tr>
+        <tr><td></td><td><code>/sync/students</code></td><td><code>quizzes{total, attempted, avg_score_pct}</code></td><td><code>0 / 0 / 0.0</code></td><td><strong>응시·점수, 누적</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">정승은 과제·퀴즈가 전부 <code>0</code>이라 "값이 안 온다"고 보기 쉽다. <strong>학생을 바꾸면 값이 있다.</strong> 아래는 같은 <code>/sync/students</code> 한 번의 응답에서 뽑은 세 명이다.</div>
+  <pre><code>curl -X GET &quot;$B/sync/students?limit=200&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:16%"><col style="width:12%"><col style="width:24%"><col style="width:24%"><col style="width:24%"></colgroup>
+      <thead><tr><th>학생</th><th>기수</th><th>과제 total/제출/미제출</th><th>퀴즈 total/응시/평균</th><th>읽는 법</th></tr></thead>
+      <tbody>
+        <tr><td>정승</td><td>29기</td><td><code>0 / 0 / 0</code></td><td><code>0 / 0 / 0.0</code></td><td>부여된 과제·퀴즈가 없음</td></tr>
+        <tr><td>박상희</td><td>32기</td><td><code>6 / 0 / 6</code></td><td><code>8 / 0 / 0.0</code></td><td>부여됐으나 <strong>전부 미제출·미응시</strong></td></tr>
+        <tr><td>황수빈</td><td>34기</td><td><code>10 / 9 / 1</code></td><td><code>7 / 6 / 91.0</code></td><td><strong>제출 90% · 응시 85.7% · 평균 91.0점</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><code>avg_score_pct: 0.0</code>은 <strong>0점이 아니라 미채점</strong>이다. 박상희는 8문항이 열렸지만 응시가 0이라 평균이 <code>0.0</code>으로 온다. 이 값을 점수로 그리면 0점을 받은 것처럼 보인다.</div>
+  <h4>그래서 어떤 통계가 되는가</h4>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:30%"><col style="width:10%"><col style="width:24%"><col style="width:36%"></colgroup>
+      <thead><tr><th>통계</th><th>가능</th><th>근거 호출</th><th>근거 값과 계산</th></tr></thead>
+      <tbody>
+        <tr><td>누적 출결 구성 (출석·지각·조퇴·결석·공결 일수)</td><td><strong>가능</strong></td><td><code>/sync/students</code></td><td>정승 <code>100/5/5/4/4</code> — 5종이 전부 온다</td></tr>
+        <tr><td>누적 출석률</td><td><strong>가능</strong></td><td><code>/sync/students</code></td><td>직접 계산. 정승 <code>100÷118 = 84.7%</code></td></tr>
+        <tr><td>누적 과제 제출률</td><td><strong>가능</strong></td><td><code>/sync/students</code></td><td>황수빈 <code>9÷10 = 90.0%</code></td></tr>
+        <tr><td>누적 퀴즈 응시율</td><td><strong>가능</strong></td><td><code>/sync/students</code></td><td>황수빈 <code>6÷7 = 85.7%</code></td></tr>
+        <tr><td>퀴즈 평균 점수</td><td>조건부</td><td><code>/sync/students</code></td><td>황수빈 <code>91.0</code>. 응시 0이면 <code>0.0</code>이 와서 미채점과 구분해야 한다</td></tr>
+        <tr><td>반·기수 평균 대비 비교</td><td>조건부</td><td><code>/sync/students?limit=200</code></td><td>전원(123명)이 한 번에 오므로 집계는 가능. 다만 누적 기준</td></tr>
+        <tr><td><strong>주차별</strong> 출석률</td><td><strong>불가</strong></td><td>—</td><td>API 1·2·4의 값이 상수. <code>/sync/students</code>는 주차가 없다</td></tr>
+        <tr><td><strong>지난주 대비</strong> 출결 변화</td><td><strong>불가</strong></td><td>—</td><td>위와 같은 이유. 비교할 두 시점을 만들 수 없다</td></tr>
+        <tr><td><strong>주차별</strong> 과제 제출</td><td><strong>불가</strong></td><td>—</td><td>API 4의 값이 <code>0</code>이고 <code>missing_fields</code>가 미수집을 선언</td></tr>
+        <tr><td><strong>주차별</strong> 퀴즈 점수 추이</td><td><strong>불가</strong></td><td>—</td><td>5개 API에 필드 자체가 없다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>호출되는데 왜 통계가 안 되는가 — 원인은 네 가지다</h4>
+  <p>"호출하면 값이 온다"와 "그 값으로 통계를 낼 수 있다"는 다르다. 막히는 지점이 항목마다 다르고, 이것이 계속 헷갈린 이유다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:6%"><col style="width:22%"><col style="width:18%"><col style="width:54%"></colgroup>
+      <thead><tr><th></th><th>원인</th><th>해당 항목</th><th>근거</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>집계가 동작하지 않는다</strong></td><td>출결</td><td><code>attendance_rate</code>가 학생과 무관하게 전부 <code>100.0</code>이다. <code>missing_fields</code>에 <code>attendance</code>가 <strong>없으므로</strong> 서버는 출결을 받았다고 본다. 원천은 있는데 계산 단계가 비어 있다.</td></tr>
+        <tr><td>2</td><td><strong>수집하지 않는다고 서버가 선언한다</strong></td><td>과제</td><td><code>missing_fields: ["assignments"]</code>. 여기서 <code>0</code>은 <strong>0건 제출이 아니라 안 받음</strong>이다. 황수빈은 <code>/sync/students</code>에서 9건 제출인데 API 1은 <code>0</code>을 준다.</td></tr>
+        <tr><td>3</td><td><strong>필드가 아예 없다</strong></td><td>퀴즈</td><td>API 1~5 응답 어디에도 없고 명세서 §4 필드 사전에도 없다. <code>/sync/students</code>에만 있다.</td></tr>
+        <tr><td>4</td><td><strong>주차로 나눌 수 없다</strong></td><td>출결·과제·퀴즈</td><td><code>/sync/students</code>는 <code>last_synced_at</code> 시점의 <strong>누적 현재값</strong>이다. 주차 파라미터가 없어 "이번 주"를 만들 수 없다.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>근거 1 — 출결이 전원 100.0이다</h4>
+  <p><code>/sync/students</code>의 출결 상세와 API 1의 <code>attendance_rate</code>를 학생 5명에 대해 나란히 놓았다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:14%"><col style="width:30%"><col style="width:10%"><col style="width:20%"><col style="width:26%"></colgroup>
+      <thead><tr><th>학생</th><th>출결 상세 (출석/지각/조퇴/결석/공결)</th><th>합계</th><th>직접 계산한 출석률</th><th>API 1의 <code>attendance_rate</code></th></tr></thead>
+      <tbody>
+        <tr><td>정승</td><td><code>100 / 5 / 5 / 4 / 4</code></td><td>118</td><td><code>84.7%</code></td><td><code>100.0</code></td></tr>
+        <tr><td>박상희</td><td><code>61 / 3 / 8 / 11 / 2</code></td><td>85</td><td><code>71.8%</code></td><td><code>100.0</code></td></tr>
+        <tr><td>장규원</td><td><code>92 / 2 / 1 / 5 / 4</code></td><td>104</td><td><code>88.5%</code></td><td><code>100.0</code></td></tr>
+        <tr><td>윤승혁</td><td><code>112 / 1 / 0 / 1 / 4</code></td><td>118</td><td><code>94.9%</code></td><td><code>100.0</code></td></tr>
+        <tr><td>정예린</td><td><code>47 / 1 / 0 / 4 / 2</code></td><td>54</td><td><code>87.0%</code></td><td><code>100.0</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>결석 11일인 박상희도 <code>100.0</code>이다.</strong> 출석만 세도(<code>71.8%</code>), 지각·조퇴를 출석으로 쳐도(<code>84.7%</code>) 100이 나오는 계산은 없다. 상수라고 볼 수밖에 없다.</p>
+  <h4>근거 2 — 과제는 같은 학생인데 값이 다르다</h4>
+  <p>황수빈 한 명을 두 호출로 확인하면 어긋남이 그대로 드러난다.</p>
+  <pre><code>curl -X GET &quot;$B/reports/weekly/$U?format=json&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;
+  → metrics.assignments_completed : 0
+     metrics.missing_fields       : ["assignments"]
+
+curl -X GET &quot;$B/sync/students?limit=200&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;
+  → assignments {"total": 10, "submitted": 9, "not_submitted": 1}</code></pre>
+  <p>같은 학생이 한쪽에서는 <code>0</code>건, 다른 쪽에서는 <code>9</code>건 제출이다. <code>missing_fields</code>가 앞의 <code>0</code>을 <strong>미수집</strong>이라고 알려주므로 뒤가 맞다. 이 선언을 보지 않고 <code>0</code>을 쓰면 제출한 학생을 미제출로 표시하게 된다.</p>
+  <h4>지금 넣는다면 이렇게 된다</h4>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup>
+      <thead><tr><th>넣을 것</th><th>표기</th><th>붙여야 할 조건</th></tr></thead>
+      <tbody>
+        <tr><td>누적 출결 구성</td><td>출석 100 · 지각 5 · 조퇴 5 · 결석 4 · 공결 4</td><td>"이번 주"가 아니라 <strong>"지금까지"</strong>로 쓴다</td></tr>
+        <tr><td>누적 출석률</td><td>84.7% (출석 100일 / 전체 118일)</td><td>우리가 계산한 값임을 밝힌다. API의 <code>attendance_rate</code>는 쓰지 않는다</td></tr>
+        <tr><td>누적 과제 제출률</td><td>10건 중 9건 제출</td><td><code>/sync/students</code> 기준. API 1·2·4의 <code>0</code>은 쓰지 않는다</td></tr>
+        <tr><td>누적 퀴즈</td><td>7문항 중 6응시 · 평균 91.0점</td><td><code>total</code>이 0이면 감추고, <code>attempted</code>가 0이면 평균을 표시하지 않는다</td></tr>
+        <tr><td>기준 시각</td><td><code>last_synced_at</code></td><td>주차가 아니라 동기화 시각이므로 함께 적는다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>주차별로 만들려면 GOV-AI 쪽 변경이 필요하다.</strong> ① <code>attendance_rate</code> 집계 수정 ② <code>assignments</code> 수집 시작(<code>missing_fields</code>에서 제거) ③ <code>quizzes</code>를 <code>/reports/weekly</code>·<code>/reports/history</code>에 편입 ④ <code>/sync/students</code>에 주차 파라미터 추가. 요청 항목은 <a href="#confusion">4장</a>에 정리했다.</div>
 </section>
 
 <section id="confusion">
@@ -582,8 +626,8 @@ assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
 
   <h3>층위 3 — 주차별인가, 누적인가</h3>
   <p><code>/sync/students</code>의 상세값은 실제 데이터다. 문제는 <code>last_synced_at</code> 시점의 <strong>누적 현재값</strong>이라는 점이다. 주차를 바꿔가며 봐도 같은 값이 나온다.</p>
-  <pre><code>11주차(W33)를 봐도  → attendance {present 101, late 5, absent 4}
-14주차(W36)를 봐도  → attendance {present 101, late 5, absent 4}   동일</code></pre>
+  <pre><code>11주차(W33)를 봐도  → attendance {present 100, late 5, absent 4}
+14주차(W36)를 봐도  → attendance {present 100, late 5, absent 4}   동일</code></pre>
   <p>그래서 "지난주 대비 출석률" 같은 문장을 만들 수 없다. 비교할 이전 주 값이 존재하지 않는다.</p>
 
   <h3>정리하면</h3>

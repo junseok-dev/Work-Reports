@@ -34,8 +34,8 @@
 
   <h3>층위 3 — 주차별인가, 누적인가</h3>
   <p><code>/sync/students</code>의 상세값은 실제 데이터다. 문제는 <code>last_synced_at</code> 시점의 <strong>누적 현재값</strong>이라는 점이다. 주차를 바꿔가며 봐도 같은 값이 나온다.</p>
-  <pre><code>11주차(W33)를 봐도  → attendance {present 101, late 5, absent 4}
-14주차(W36)를 봐도  → attendance {present 101, late 5, absent 4}   동일</code></pre>
+  <pre><code>11주차(W33)를 봐도  → attendance {present 100, late 5, absent 4}
+14주차(W36)를 봐도  → attendance {present 100, late 5, absent 4}   동일</code></pre>
   <p>그래서 "지난주 대비 출석률" 같은 문장을 만들 수 없다. 비교할 이전 주 값이 존재하지 않는다.</p>
 
   <h3>정리하면</h3>
