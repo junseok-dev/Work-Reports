@@ -97,4 +97,24 @@ last_synced_at</code></pre>
   <pre><code>attendance  {"present": 101, "late": 5, "early_leave": 5, "absent": 4, "excused": 4}
 quizzes     {"total": 0, "attempted": 0, "avg_score_pct": 0.0}
 assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
+
+  <h4>왜 호출되는가</h4>
+  <p>문서에 없는데 응답이 오는 이유는 <strong>인증이 하나이기 때문</strong>이다. 5개 API와 같은 <code>X-DE-API-KEY</code>를 쓰고 엔드포인트별 권한 구분이 없다. 문서에 안 적혔을 뿐 막혀 있지 않다.</p>
+  <p>그렇다면 이 엔드포인트는 무엇을 위한 것인가. 응답에서 관측되는 것은 다음과 같다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
+      <thead><tr><th>관측</th><th>무엇을 말해주나</th></tr></thead>
+      <tbody>
+        <tr><td>이름이 <code>sync</code>다</td><td>분석(<code>analysis</code>)·진단(<code>diagnose</code>)·리포트(<code>reports</code>)와 이름 계열이 다르다.</td></tr>
+        <tr><td><code>last_synced_at</code>을 담는다</td><td>주차가 아니라 <strong>마지막 동기화 시각</strong>을 기준으로 한다. 분석 산출물이라면 필요 없는 필드다.</td></tr>
+        <tr><td>주차 개념이 없다</td><td>123명 전원의 <strong>현재 누적값</strong>만 온다. 주차를 바꿔 호출할 수단이 없다.</td></tr>
+        <tr><td>필드 모양이 LMS와 같다</td><td>LMS <code>data-ingest-api</code>가 주는 구조를 거의 그대로 따르고 <code>camelCase → snake_case</code>만 바뀌었다.</td></tr>
+        <tr><td><code>education_title</code>·<code>training_status</code>가 있다</td><td>분석에 쓰이지 않는 <strong>행정 정보</strong>다. 5개 API 어디에도 없다.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>종합하면 이 엔드포인트는 분석 결과를 내주는 곳이 아니라 <strong>LMS가 넘긴 원천이 제대로 적재됐는지 확인하는 동기화 점검용</strong>으로 보인다. 출결·퀴즈·과제 상세가 여기에만 있는 것도 같은 이유다 — 우리가 보낸 값이 그대로 남아 있는 것이지, GOV-AI가 분석해 만든 값이 아니다. 적재 경로는 <a href="#confusion">4장</a>에 정리했다.</p>
+  <div class="callout">다만 이는 <strong>관측에 근거한 해석</strong>이다. 명세서에 설명이 없어 확정할 수 없으므로, 이 엔드포인트를 우리가 계속 호출해도 되는지와 값의 갱신 주기를 GOV-AI에 확인해야 한다(4장 요청 항목).</div>
+  <p><strong>진단 리포트에 쓸 수 있는가.</strong> 주차가 없어 주간 리포트의 시계열에는 그대로 넣을 수 없다. 누적 현재값이므로 "이번 주 출석률"이 아니라 "지금까지의 출결"만 말할 수 있다.</p>
 </section>

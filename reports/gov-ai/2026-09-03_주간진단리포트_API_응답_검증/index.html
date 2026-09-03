@@ -148,6 +148,26 @@ last_synced_at</code></pre>
   <pre><code>attendance  {"present": 101, "late": 5, "early_leave": 5, "absent": 4, "excused": 4}
 quizzes     {"total": 0, "attempted": 0, "avg_score_pct": 0.0}
 assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
+
+  <h4>왜 호출되는가</h4>
+  <p>문서에 없는데 응답이 오는 이유는 <strong>인증이 하나이기 때문</strong>이다. 5개 API와 같은 <code>X-DE-API-KEY</code>를 쓰고 엔드포인트별 권한 구분이 없다. 문서에 안 적혔을 뿐 막혀 있지 않다.</p>
+  <p>그렇다면 이 엔드포인트는 무엇을 위한 것인가. 응답에서 관측되는 것은 다음과 같다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
+      <thead><tr><th>관측</th><th>무엇을 말해주나</th></tr></thead>
+      <tbody>
+        <tr><td>이름이 <code>sync</code>다</td><td>분석(<code>analysis</code>)·진단(<code>diagnose</code>)·리포트(<code>reports</code>)와 이름 계열이 다르다.</td></tr>
+        <tr><td><code>last_synced_at</code>을 담는다</td><td>주차가 아니라 <strong>마지막 동기화 시각</strong>을 기준으로 한다. 분석 산출물이라면 필요 없는 필드다.</td></tr>
+        <tr><td>주차 개념이 없다</td><td>123명 전원의 <strong>현재 누적값</strong>만 온다. 주차를 바꿔 호출할 수단이 없다.</td></tr>
+        <tr><td>필드 모양이 LMS와 같다</td><td>LMS <code>data-ingest-api</code>가 주는 구조를 거의 그대로 따르고 <code>camelCase → snake_case</code>만 바뀌었다.</td></tr>
+        <tr><td><code>education_title</code>·<code>training_status</code>가 있다</td><td>분석에 쓰이지 않는 <strong>행정 정보</strong>다. 5개 API 어디에도 없다.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>종합하면 이 엔드포인트는 분석 결과를 내주는 곳이 아니라 <strong>LMS가 넘긴 원천이 제대로 적재됐는지 확인하는 동기화 점검용</strong>으로 보인다. 출결·퀴즈·과제 상세가 여기에만 있는 것도 같은 이유다 — 우리가 보낸 값이 그대로 남아 있는 것이지, GOV-AI가 분석해 만든 값이 아니다. 적재 경로는 <a href="#confusion">4장</a>에 정리했다.</p>
+  <div class="callout">다만 이는 <strong>관측에 근거한 해석</strong>이다. 명세서에 설명이 없어 확정할 수 없으므로, 이 엔드포인트를 우리가 계속 호출해도 되는지와 값의 갱신 주기를 GOV-AI에 확인해야 한다(4장 요청 항목).</div>
+  <p><strong>진단 리포트에 쓸 수 있는가.</strong> 주차가 없어 주간 리포트의 시계열에는 그대로 넣을 수 없다. 누적 현재값이므로 "이번 주 출석률"이 아니라 "지금까지의 출결"만 말할 수 있다.</p>
 </section>
 
 <section id="fields">
@@ -155,144 +175,144 @@ assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
   <p class="lead">출처 기호는 <strong>W</strong>=API 1 weekly, <strong>C</strong>=API 2 certificate, <strong>D</strong>=API 3 diagnose, <strong>H</strong>=API 4 history, <strong>A</strong>=API 5 approve다. <strong>S</strong>=<code>/sync/students</code>는 문서 밖 엔드포인트라 전체 필드 목록에서는 빼고, 출결·과제·퀴즈 대조에만 참고로 남긴다.</p>
 
   <h3>API 1~5 전체 필드</h3>
-  <p>여기서는 명세서에 정의된 <strong>API 1~5만</strong> 다룬다. <code>/sync/students</code>(S)는 문서 밖 엔드포인트라 제외했다. 값은 34기 황수빈(<code>100051503818</code>) 기준 실측이다.</p>
+  <p>명세서에 정의된 <strong>API 1~5만</strong> 다룬다. <code>/sync/students</code>(S)는 문서 밖 엔드포인트라 제외했다(호출되는 이유는 <a href="#api-calls">2장</a>에 적었다). 값은 34기 황수빈(<code>100051503818</code>) 기준 실측이다.</p>
   <div class="callout"><strong>쓰임</strong> 열의 <code>●</code>는 현재 수강생 진단 리포트 화면이 실제로 읽는 필드다. 화면은 <strong>H(history) 하나만</strong> 소비하므로 W·C·D·A는 전부 <code>·</code>가 된다. 같은 지표가 W에도 있지만 경로와 필드명이 달라 그대로 바꿔 끼울 수 없다.</div>
   <h4>W — API 1 <code>/weekly-analysis/{uuid}</code></h4>
   <p>최상위 6필드 + <code>metrics</code>·<code>diagnosis</code>·<code>weakness</code>·<code>risk</code> 4블록.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:32%"><col style="width:9%"><col style="width:21%"><col style="width:7%"><col style="width:31%"></colgroup>
-      <thead><tr><th>필드 경로</th><th>타입</th><th>실측값</th><th>쓰임</th><th>비고</th></tr></thead>
+      <colgroup><col style="width:24%"><col style="width:25%"><col style="width:7%"><col style="width:15%"><col style="width:5%"><col style="width:24%"></colgroup>
+      <thead><tr><th>필드 경로</th><th>의미</th><th>타입</th><th>실측값</th><th>쓰임</th><th>비고</th></tr></thead>
       <tbody>
-        <tr><td><code>studentUuid</code></td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>year_week</code></td><td>string</td><td><code>2026-W36</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>week_no</code></td><td>int</td><td><code>36</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>week_label</code></td><td>string</td><td><code>2026-W36 [08/31~09/06]</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>week_range</code></td><td>string</td><td><code>08/31~09/06</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>cached</code></td><td>bool</td><td><code>true</code></td><td>·</td><td>응답이 캐시본인지. <code>false</code>면 재분석해 21개 필드 값이 바뀐다</td></tr>
-        <tr><td><code>metrics</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.studentUuid</code></td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.userId</code></td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.name</code></td><td>string</td><td><code>황수빈</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.cohortId</code></td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.cohort</code></td><td>string</td><td><code>34기</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.group</code></td><td>string</td><td><code>A</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.language</code></td><td>string</td><td><code>python</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.steps_completed</code></td><td>int</td><td><code>10</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.current_step</code></td><td>int</td><td><code>10</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.stalled_days_on_current_step</code></td><td>int</td><td><code>0</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.days_since_last_activity</code></td><td>int</td><td><code>0</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.active_days_count</code></td><td>int</td><td><code>7</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.total_runs</code></td><td>int</td><td><code>4946</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.total_errors</code></td><td>int</td><td><code>478</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.error_per_run</code></td><td>float</td><td><code>0.1</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.hint_requests_count</code></td><td>int</td><td><code>286</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.hint_per_active_day</code></td><td>float</td><td><code>40.86</code></td><td>·</td><td>등급 판정의 핵심 지표. 관측 4.5~50.9</td></tr>
-        <tr><td><code>metrics.avg_retry_gap_min</code></td><td>float</td><td><code>0.2</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.max_retry_gap_min</code></td><td>float</td><td><code>23.0</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics.top_error_types</code></td><td>obj[]</td><td>객체 3건</td><td>·</td><td>진단 리포트 <em>주요 에러</em> 3건의 원천</td></tr>
-        <tr><td><code>metrics.assignments_completed</code></td><td>int</td><td><code>0</code></td><td>·</td><td><code>missing_fields</code>가 미수집을 선언</td></tr>
-        <tr><td><code>metrics.attendance_rate</code></td><td>float</td><td><code>100.0</code></td><td>·</td><td><strong>상수</strong>. 학생 5명 전원 <code>100.0</code></td></tr>
-        <tr><td><code>metrics.data_freshness</code></td><td>string</td><td><code>2026-09-02T00:35:29.926371</code></td><td>·</td><td>집계 시각. 주차 종료 시각이 아니다</td></tr>
-        <tr><td><code>metrics.missing_fields</code></td><td>string[]</td><td><code>[&quot;assignments&quot;]</code></td><td>·</td><td>서버가 <strong>미수집을 스스로 알려주는</strong> 유일한 필드</td></tr>
-        <tr><td><code>diagnosis</code></td><td>object</td><td>객체</td><td>·</td><td>블록 전체가 <strong>D의 최상위와 키 100% 동일</strong></td></tr>
-        <tr><td><code>diagnosis.studentUuid</code></td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.grade</code></td><td>string</td><td><code>해결사</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.confidence</code></td><td>float</td><td><code>0.8</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.grade_rationale</code></td><td>string</td><td>서술형 (326자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.weak_patterns</code></td><td>string[]</td><td>문자열 2건</td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.risk_flags</code></td><td>string[]</td><td>문자열 2건</td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.recommendations_for_instructor</code></td><td>string</td><td>서술형 (227자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.suggested_feedback_draft</code></td><td>string</td><td>서술형 (417자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.analyzed_at</code></td><td>string</td><td><code>2026-09-02T00:35:46.781122</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.model_meta</code></td><td>object</td><td>객체</td><td>·</td><td>5키(<code>cached·year_week·week_label</code> 포함) — D는 3키</td></tr>
-        <tr><td><code>diagnosis.model_meta.provider</code></td><td>string</td><td><code>google</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.model_meta.model</code></td><td>string</td><td><code>gemini-3.5-flash</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.model_meta.cached</code></td><td>bool</td><td><code>true</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.model_meta.year_week</code></td><td>string</td><td><code>2026-W36</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>diagnosis.model_meta.week_label</code></td><td>string</td><td><code>2026-W36 [08/31~09/06]</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>weakness</code></td><td>object</td><td>객체</td><td>·</td><td><code>metrics</code>·<code>diagnosis</code> 값을 재배열한 <strong>파생 블록</strong></td></tr>
-        <tr><td><code>weakness.studentUuid</code></td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>weakness.top_errors</code></td><td>obj[]</td><td>객체 3건</td><td>·</td><td>—</td></tr>
-        <tr><td><code>weakness.avg_retry_gap_min</code></td><td>float</td><td><code>0.2</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>weakness.stalled_risk</code></td><td>string</td><td><code>LOW</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>weakness.recommended_focus_areas</code></td><td>string[]</td><td>문자열 2건</td><td>·</td><td>—</td></tr>
-        <tr><td><code>risk</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>risk.studentUuid</code></td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>risk.risk_score</code></td><td>float</td><td><code>5.0</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>risk.status</code></td><td>string</td><td><code>completed_waiting</code></td><td>·</td><td><code>normal·completed_waiting·stalled_learning·at_risk</code></td></tr>
-        <tr><td><code>risk.status_label</code></td><td>string</td><td><code>정상 훈련</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>studentUuid</code></td><td>수강생 식별자 — LMS 학번 12자리</td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>year_week</code></td><td>ISO 연-주차 (예: 2026-W36)</td><td>string</td><td><code>2026-W36</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>week_no</code></td><td>ISO 주차 번호 (1~53)</td><td>int</td><td><code>36</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>week_label</code></td><td>주차 표시 문자열</td><td>string</td><td><code>2026-W36 [08/31~09/06]</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>week_range</code></td><td>그 주차의 기간 (월/일~월/일)</td><td>string</td><td><code>08/31~09/06</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>cached</code></td><td>이 응답이 캐시본인지</td><td>bool</td><td><code>true</code></td><td>·</td><td><code>false</code>면 재분석해 21개 필드 값이 바뀐다</td></tr>
+        <tr><td><code>metrics</code></td><td>정량 지표 블록</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.studentUuid</code></td><td>수강생 식별자 — LMS 학번 12자리</td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.userId</code></td><td>LMS <code>user.id</code>(UUID). 계약 ①의 기준 식별자</td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.name</code></td><td><strong>수강생 이름</strong></td><td>string</td><td><code>황수빈</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.cohortId</code></td><td>기수 UUID</td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.cohort</code></td><td>기수 표시명 (예: 34기)</td><td>string</td><td><code>34기</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.group</code></td><td>반 (A·B…)</td><td>string</td><td><code>A</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.language</code></td><td>실습에 쓰는 프로그래밍 언어</td><td>string</td><td><code>python</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.steps_completed</code></td><td>완료한 실습 단계 수</td><td>int</td><td><code>10</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.current_step</code></td><td>현재 진행 중인 단계 번호</td><td>int</td><td><code>10</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.stalled_days_on_current_step</code></td><td>현재 단계에 머물러 있는 일수</td><td>int</td><td><code>0</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.days_since_last_activity</code></td><td>마지막 활동 이후 지난 일수</td><td>int</td><td><code>0</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.active_days_count</code></td><td>학습 활동이 있었던 날 수</td><td>int</td><td><code>7</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.total_runs</code></td><td>코드 실행 횟수</td><td>int</td><td><code>4946</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.total_errors</code></td><td>에러가 난 실행 횟수</td><td>int</td><td><code>478</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.error_per_run</code></td><td>실행당 에러 = 에러/실행</td><td>float</td><td><code>0.1</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.hint_requests_count</code></td><td>AI 조교에게 힌트를 요청한 횟수</td><td>int</td><td><code>286</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.hint_per_active_day</code></td><td>활동일당 힌트 요청 수</td><td>float</td><td><code>40.86</code></td><td>·</td><td>등급 판정의 핵심 지표. 관측 4.5~50.9</td></tr>
+        <tr><td><code>metrics.avg_retry_gap_min</code></td><td>에러 후 다시 실행하기까지 걸린 평균 분</td><td>float</td><td><code>0.2</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.max_retry_gap_min</code></td><td>재시도 간격의 최댓값(분)</td><td>float</td><td><code>23.0</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.top_error_types</code></td><td>가장 잦은 에러 상위 3종 — 유형과 횟수</td><td>obj[]</td><td>객체 3건</td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics.assignments_completed</code></td><td>완료한 과제 수</td><td>int</td><td><code>0</code></td><td>·</td><td><code>missing_fields</code>가 미수집을 선언</td></tr>
+        <tr><td><code>metrics.attendance_rate</code></td><td>출석률(%)</td><td>float</td><td><code>100.0</code></td><td>·</td><td><strong>상수</strong>. 학생 5명 전원 <code>100.0</code></td></tr>
+        <tr><td><code>metrics.data_freshness</code></td><td>지표를 집계한 시각</td><td>string</td><td><code>2026-09-02T00:35:29.926371</code></td><td>·</td><td>주차 종료 시각이 아니다</td></tr>
+        <tr><td><code>metrics.missing_fields</code></td><td>수집하지 못한 항목의 이름</td><td>string[]</td><td><code>[&quot;assignments&quot;]</code></td><td>·</td><td>서버가 <strong>미수집을 스스로 알려주는</strong> 유일한 필드</td></tr>
+        <tr><td><code>diagnosis</code></td><td>LLM 진단 블록</td><td>object</td><td>객체</td><td>·</td><td>블록 전체가 <strong>D의 최상위와 키 100% 동일</strong></td></tr>
+        <tr><td><code>diagnosis.studentUuid</code></td><td>수강생 식별자 — LMS 학번 12자리</td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.grade</code></td><td>수준 등급 — 입문·초급·중급·해결사</td><td>string</td><td><code>해결사</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.confidence</code></td><td>등급 판정 확신도 (0~1)</td><td>float</td><td><code>0.8</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.grade_rationale</code></td><td>그 등급을 매긴 근거 서술</td><td>string</td><td>서술형 (326자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.weak_patterns</code></td><td>약점으로 관찰된 학습 패턴</td><td>string[]</td><td>문자열 2건</td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.risk_flags</code></td><td>이탈·부진 위험 신호</td><td>string[]</td><td>문자열 2건</td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.recommendations_for_instructor</code></td><td>강사에게 주는 권장 조치</td><td>string</td><td>서술형 (227자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.suggested_feedback_draft</code></td><td>수강생에게 전달할 피드백 초안</td><td>string</td><td>서술형 (417자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.analyzed_at</code></td><td>LLM이 분석한 시각</td><td>string</td><td><code>2026-09-02T00:35:46.781122</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.model_meta</code></td><td>생성에 쓰인 모델 정보</td><td>object</td><td>객체</td><td>·</td><td>5키 — D는 3키</td></tr>
+        <tr><td><code>diagnosis.model_meta.provider</code></td><td>LLM 제공자</td><td>string</td><td><code>google</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.model_meta.model</code></td><td>모델명</td><td>string</td><td><code>gemini-3.5-flash</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.model_meta.cached</code></td><td>이 응답이 캐시본인지</td><td>bool</td><td><code>true</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.model_meta.year_week</code></td><td>ISO 연-주차 (예: 2026-W36)</td><td>string</td><td><code>2026-W36</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>diagnosis.model_meta.week_label</code></td><td>주차 표시 문자열</td><td>string</td><td><code>2026-W36 [08/31~09/06]</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>weakness</code></td><td>약점 요약 블록</td><td>object</td><td>객체</td><td>·</td><td><code>metrics</code>·<code>diagnosis</code>를 재배열한 <strong>파생 블록</strong></td></tr>
+        <tr><td><code>weakness.studentUuid</code></td><td>수강생 식별자 — LMS 학번 12자리</td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>weakness.top_errors</code></td><td>가장 잦은 에러 상위 3종</td><td>obj[]</td><td>객체 3건</td><td>·</td><td>—</td></tr>
+        <tr><td><code>weakness.avg_retry_gap_min</code></td><td>에러 후 다시 실행하기까지 걸린 평균 분</td><td>float</td><td><code>0.2</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>weakness.stalled_risk</code></td><td>정체 위험도 — LOW·MID·HIGH</td><td>string</td><td><code>LOW</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>weakness.recommended_focus_areas</code></td><td>집중해야 할 학습 영역</td><td>string[]</td><td>문자열 2건</td><td>·</td><td>—</td></tr>
+        <tr><td><code>risk</code></td><td>위험도 블록</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>risk.studentUuid</code></td><td>수강생 식별자 — LMS 학번 12자리</td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>risk.risk_score</code></td><td>위험 점수 (0~100, 높을수록 위험)</td><td>float</td><td><code>5.0</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>risk.status</code></td><td>위험 상태 코드</td><td>string</td><td><code>completed_waiting</code></td><td>·</td><td><code>normal·completed_waiting·stalled_learning·at_risk</code></td></tr>
+        <tr><td><code>risk.status_label</code></td><td>위험 상태의 한글 표시</td><td>string</td><td><code>정상 훈련</code></td><td>·</td><td>—</td></tr>
       </tbody>
     </table>
   </div>
   <h4>C — API 2 <code>/certificate/{uuid}</code></h4>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:32%"><col style="width:9%"><col style="width:21%"><col style="width:7%"><col style="width:31%"></colgroup>
-      <thead><tr><th>필드 경로</th><th>타입</th><th>실측값</th><th>쓰임</th><th>비고</th></tr></thead>
+      <colgroup><col style="width:24%"><col style="width:25%"><col style="width:7%"><col style="width:15%"><col style="width:5%"><col style="width:24%"></colgroup>
+      <thead><tr><th>필드 경로</th><th>의미</th><th>타입</th><th>실측값</th><th>쓰임</th><th>비고</th></tr></thead>
       <tbody>
-        <tr><td><code>version</code></td><td>string</td><td><code>1.0</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>issue_timestamp</code></td><td>string</td><td><code>2026-09-02T06:18:40.494651</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>student</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>student.studentUuid</code></td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>student.userId</code></td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>student.name</code></td><td>string</td><td><code>황수빈</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>student.cohortId</code></td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>student.cohort</code></td><td>string</td><td><code>34기</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>student.group</code></td><td>string</td><td><code>A</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>summary</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>summary.overall_grade</code></td><td>string</td><td><code>해결사</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>summary.confidence</code></td><td>float</td><td><code>0.8</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>summary.completed_steps</code></td><td>int</td><td><code>10</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>summary.total_steps</code></td><td>int</td><td><code>10</code></td><td>·</td><td><strong>5개 API 중 총 단계 수를 주는 유일한 곳</strong>. H에 없어 FE는 상수 10 사용</td></tr>
-        <tr><td><code>summary.total_active_days</code></td><td>int</td><td><code>7</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>summary.data_freshness</code></td><td>string</td><td><code>2026-09-02T06:18:30.799617</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>technical_proof</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>technical_proof.tech_stack</code></td><td>string[]</td><td><code>[&quot;Python&quot;, &quot;FastAPI&quot;, &quot;Data Lake&quot;]</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>technical_proof.error_resolution_rate</code></td><td>float</td><td><code>0.95</code></td><td>·</td><td><code>0.95</code> 고정</td></tr>
-        <tr><td><code>technical_proof.avg_retry_gap_min</code></td><td>float</td><td><code>0.2</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>technical_proof.frequent_errors</code></td><td>string[]</td><td>문자열 3건</td><td>·</td><td>—</td></tr>
-        <tr><td><code>technical_proof.weakness_patterns</code></td><td>string[]</td><td>문자열 2건</td><td>·</td><td>—</td></tr>
-        <tr><td><code>project_and_portfolio</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>project_and_portfolio.completed_assignments</code></td><td>int</td><td><code>0</code></td><td>·</td><td>W는 <code>assignments_completed</code> — <strong>어순이 반대</strong></td></tr>
-        <tr><td><code>project_and_portfolio.attendance_rate</code></td><td>float</td><td><code>100.0</code></td><td>·</td><td>W와 같은 상수 <code>100.0</code></td></tr>
-        <tr><td><code>project_and_portfolio.collaboration_score</code></td><td>float</td><td><code>85.0</code></td><td>·</td><td><code>85.0</code> 고정. 산출 근거가 응답에 없다</td></tr>
-        <tr><td><code>ai_analysis_narrative</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>ai_analysis_narrative.grade_rationale</code></td><td>string</td><td>서술형 (326자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>ai_analysis_narrative.strength_keywords</code></td><td>string[]</td><td><code>[&quot;자기주도 학습&quot;, &quot;힌트 활용능력&quot;, &quot;지속적인 문제해결&quot;]</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>ai_analysis_narrative.suggested_feedback_draft</code></td><td>string</td><td>서술형 (417자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>ai_analysis_narrative.model_meta</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>ai_analysis_narrative.model_meta.provider</code></td><td>string</td><td><code>google</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>ai_analysis_narrative.model_meta.model</code></td><td>string</td><td><code>gemini-3.5-flash</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>ai_analysis_narrative.model_meta.cached</code></td><td>bool</td><td><code>true</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>ai_analysis_narrative.model_meta.year_week</code></td><td>string</td><td><code>2026-W36</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>ai_analysis_narrative.model_meta.week_label</code></td><td>string</td><td><code>2026-W36 [08/31~09/06]</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>human_in_the_loop</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>human_in_the_loop.approved_by</code></td><td>string</td><td><code>강사 이정훈</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>human_in_the_loop.approved_at</code></td><td>string</td><td><code>2026-09-02T06:18:40.494662</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>human_in_the_loop.status</code></td><td>string</td><td><code>APPROVED</code></td><td>·</td><td><code>APPROVED</code> 고정. 미승인 상태를 관측하지 못했다</td></tr>
+        <tr><td><code>version</code></td><td>증명서 스키마 버전</td><td>string</td><td><code>1.0</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>issue_timestamp</code></td><td>증명서를 발급한 시각</td><td>string</td><td><code>2026-09-02T06:18:40.494651</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>student</code></td><td>수강생 신원 블록</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>student.studentUuid</code></td><td>수강생 식별자 — LMS 학번 12자리</td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>student.userId</code></td><td>LMS <code>user.id</code>(UUID). 계약 ①의 기준 식별자</td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>student.name</code></td><td><strong>수강생 이름</strong></td><td>string</td><td><code>황수빈</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>student.cohortId</code></td><td>기수 UUID</td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>student.cohort</code></td><td>기수 표시명 (예: 34기)</td><td>string</td><td><code>34기</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>student.group</code></td><td>반 (A·B…)</td><td>string</td><td><code>A</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>summary</code></td><td>요약 블록</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>summary.overall_grade</code></td><td>종합 수준 등급</td><td>string</td><td><code>해결사</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>summary.confidence</code></td><td>등급 판정 확신도 (0~1)</td><td>float</td><td><code>0.8</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>summary.completed_steps</code></td><td>완료한 실습 단계 수</td><td>int</td><td><code>10</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>summary.total_steps</code></td><td>전체 단계 수 (진도의 분모)</td><td>int</td><td><code>10</code></td><td>·</td><td><strong>5개 API 중 여기에만 있다.</strong> H에 없어 FE는 상수 10 사용</td></tr>
+        <tr><td><code>summary.total_active_days</code></td><td>총 활동일 수 (누적)</td><td>int</td><td><code>7</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>summary.data_freshness</code></td><td>지표를 집계한 시각</td><td>string</td><td><code>2026-09-02T06:18:30.799617</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>technical_proof</code></td><td>기술 역량 근거 블록</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>technical_proof.tech_stack</code></td><td>다룬 기술 스택</td><td>string[]</td><td><code>[&quot;Python&quot;, &quot;FastAPI&quot;, &quot;Data Lake&quot;]</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>technical_proof.error_resolution_rate</code></td><td>에러 해결률</td><td>float</td><td><code>0.95</code></td><td>·</td><td><code>0.95</code> 고정</td></tr>
+        <tr><td><code>technical_proof.avg_retry_gap_min</code></td><td>에러 후 다시 실행하기까지 걸린 평균 분</td><td>float</td><td><code>0.2</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>technical_proof.frequent_errors</code></td><td>자주 만난 에러 유형</td><td>string[]</td><td>문자열 3건</td><td>·</td><td>—</td></tr>
+        <tr><td><code>technical_proof.weakness_patterns</code></td><td>약점으로 관찰된 학습 패턴</td><td>string[]</td><td>문자열 2건</td><td>·</td><td>—</td></tr>
+        <tr><td><code>project_and_portfolio</code></td><td>프로젝트·포트폴리오 블록</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>project_and_portfolio.completed_assignments</code></td><td>완료한 과제 수</td><td>int</td><td><code>0</code></td><td>·</td><td>W는 <code>assignments_completed</code> — <strong>어순 반대</strong></td></tr>
+        <tr><td><code>project_and_portfolio.attendance_rate</code></td><td>출석률(%)</td><td>float</td><td><code>100.0</code></td><td>·</td><td>W와 같은 상수 <code>100.0</code></td></tr>
+        <tr><td><code>project_and_portfolio.collaboration_score</code></td><td>협업 점수</td><td>float</td><td><code>85.0</code></td><td>·</td><td><code>85.0</code> 고정. 산출 근거가 응답에 없다</td></tr>
+        <tr><td><code>ai_analysis_narrative</code></td><td>AI 서술 블록</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>ai_analysis_narrative.grade_rationale</code></td><td>그 등급을 매긴 근거 서술</td><td>string</td><td>서술형 (326자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>ai_analysis_narrative.strength_keywords</code></td><td>강점 키워드</td><td>string[]</td><td><code>[&quot;자기주도 학습&quot;, &quot;힌트 활용능력&quot;, &quot;지속적인 문제해결&quot;]</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>ai_analysis_narrative.suggested_feedback_draft</code></td><td>수강생에게 전달할 피드백 초안</td><td>string</td><td>서술형 (417자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>ai_analysis_narrative.model_meta</code></td><td>생성에 쓰인 모델 정보</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>ai_analysis_narrative.model_meta.provider</code></td><td>LLM 제공자</td><td>string</td><td><code>google</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>ai_analysis_narrative.model_meta.model</code></td><td>모델명</td><td>string</td><td><code>gemini-3.5-flash</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>ai_analysis_narrative.model_meta.cached</code></td><td>이 응답이 캐시본인지</td><td>bool</td><td><code>true</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>ai_analysis_narrative.model_meta.year_week</code></td><td>ISO 연-주차 (예: 2026-W36)</td><td>string</td><td><code>2026-W36</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>ai_analysis_narrative.model_meta.week_label</code></td><td>주차 표시 문자열</td><td>string</td><td><code>2026-W36 [08/31~09/06]</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>human_in_the_loop</code></td><td>사람이 검토했는지를 담는 블록</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>human_in_the_loop.approved_by</code></td><td>승인한 사람</td><td>string</td><td><code>강사 이정훈</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>human_in_the_loop.approved_at</code></td><td>승인한 시각</td><td>string</td><td><code>2026-09-02T06:18:40.494662</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>human_in_the_loop.status</code></td><td>승인 상태</td><td>string</td><td><code>APPROVED</code></td><td>·</td><td><code>APPROVED</code> 고정. 미승인 상태를 관측하지 못했다</td></tr>
       </tbody>
     </table>
   </div>
   <h4>D — API 3 <code>/diagnose/{uuid}</code></h4>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:32%"><col style="width:9%"><col style="width:21%"><col style="width:7%"><col style="width:31%"></colgroup>
-      <thead><tr><th>필드 경로</th><th>타입</th><th>실측값</th><th>쓰임</th><th>비고</th></tr></thead>
+      <colgroup><col style="width:24%"><col style="width:25%"><col style="width:7%"><col style="width:15%"><col style="width:5%"><col style="width:24%"></colgroup>
+      <thead><tr><th>필드 경로</th><th>의미</th><th>타입</th><th>실측값</th><th>쓰임</th><th>비고</th></tr></thead>
       <tbody>
-        <tr><td><code>studentUuid</code></td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>grade</code></td><td>string</td><td><code>해결사</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>confidence</code></td><td>float</td><td><code>0.85</code></td><td>·</td><td><code>0.85</code> — 같은 학생·같은 시점인데 W는 <code>0.8</code></td></tr>
-        <tr><td><code>grade_rationale</code></td><td>string</td><td>서술형 (471자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>weak_patterns</code></td><td>string[]</td><td>문자열 3건</td><td>·</td><td>—</td></tr>
-        <tr><td><code>risk_flags</code></td><td>string[]</td><td>문자열 1건</td><td>·</td><td>—</td></tr>
-        <tr><td><code>recommendations_for_instructor</code></td><td>string</td><td>서술형 (232자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>suggested_feedback_draft</code></td><td>string</td><td>서술형 (667자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>analyzed_at</code></td><td>string</td><td><code>2026-09-02T06:18:57.697806</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>model_meta</code></td><td>object</td><td>객체</td><td>·</td><td>3키. <code>prompt_version</code>이 여기에만 있다</td></tr>
-        <tr><td><code>model_meta.provider</code></td><td>string</td><td><code>google</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>model_meta.model</code></td><td>string</td><td><code>gemini-3.5-flash</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>model_meta.prompt_version</code></td><td>string</td><td><code>v0.2</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>studentUuid</code></td><td>수강생 식별자 — LMS 학번 12자리</td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>grade</code></td><td>수준 등급 — 입문·초급·중급·해결사</td><td>string</td><td><code>해결사</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>confidence</code></td><td>등급 판정 확신도 (0~1)</td><td>float</td><td><code>0.85</code></td><td>·</td><td>같은 시점인데 W는 <code>0.8</code></td></tr>
+        <tr><td><code>grade_rationale</code></td><td>그 등급을 매긴 근거 서술</td><td>string</td><td>서술형 (471자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>weak_patterns</code></td><td>약점으로 관찰된 학습 패턴</td><td>string[]</td><td>문자열 3건</td><td>·</td><td>—</td></tr>
+        <tr><td><code>risk_flags</code></td><td>이탈·부진 위험 신호</td><td>string[]</td><td>문자열 1건</td><td>·</td><td>—</td></tr>
+        <tr><td><code>recommendations_for_instructor</code></td><td>강사에게 주는 권장 조치</td><td>string</td><td>서술형 (232자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>suggested_feedback_draft</code></td><td>수강생에게 전달할 피드백 초안</td><td>string</td><td>서술형 (667자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>analyzed_at</code></td><td>LLM이 분석한 시각</td><td>string</td><td><code>2026-09-02T06:18:57.697806</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>model_meta</code></td><td>생성에 쓰인 모델 정보</td><td>object</td><td>객체</td><td>·</td><td>3키. <code>prompt_version</code>이 여기에만</td></tr>
+        <tr><td><code>model_meta.provider</code></td><td>LLM 제공자</td><td>string</td><td><code>google</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>model_meta.model</code></td><td>모델명</td><td>string</td><td><code>gemini-3.5-flash</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>model_meta.prompt_version</code></td><td>프롬프트 버전</td><td>string</td><td><code>v0.2</code></td><td>·</td><td>—</td></tr>
       </tbody>
     </table>
   </div>
@@ -300,71 +320,71 @@ assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
   <p>배열 응답이라 행 하나(<code>2026-W36</code>)를 펼쳤다. 4주 모두 최상위 20키는 같고, <code>metrics_snapshot</code>만 주차에 따라 달라진다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:32%"><col style="width:9%"><col style="width:21%"><col style="width:7%"><col style="width:31%"></colgroup>
-      <thead><tr><th>필드 경로</th><th>타입</th><th>실측값</th><th>쓰임</th><th>비고</th></tr></thead>
+      <colgroup><col style="width:24%"><col style="width:25%"><col style="width:7%"><col style="width:15%"><col style="width:5%"><col style="width:24%"></colgroup>
+      <thead><tr><th>필드 경로</th><th>의미</th><th>타입</th><th>실측값</th><th>쓰임</th><th>비고</th></tr></thead>
       <tbody>
-        <tr><td><code>id</code></td><td>string</td><td><code>rep_2026-W36_100051503818</code></td><td>·</td><td><code>rep_{연주차}_{학생}</code> — <strong>PK라 재분석 시 덮어쓰인다</strong></td></tr>
-        <tr><td><code>student_uuid</code></td><td>string</td><td><code>100051503818</code></td><td>·</td><td>W는 <code>studentUuid</code> — <strong>표기법이 다르다</strong></td></tr>
-        <tr><td><code>cohort_label</code></td><td>string</td><td><code>34기</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>year_week</code></td><td>string</td><td><code>2026-W36</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>week_no</code></td><td>int</td><td><code>36</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>week_label</code></td><td>string</td><td><code>2026-W36 [08/31~09/06]</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>week_range</code></td><td>string</td><td><code>08/31~09/06</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>grade</code></td><td>string</td><td><code>해결사</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>confidence</code></td><td>float</td><td><code>0.8</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>risk_score</code></td><td>float</td><td><code>5.0</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>risk_status</code></td><td>string</td><td><code>completed_waiting</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>grade_rationale</code></td><td>string</td><td>서술형 (326자)</td><td>●</td><td>—</td></tr>
-        <tr><td><code>weak_patterns</code></td><td>string[]</td><td>문자열 2건</td><td>●</td><td>—</td></tr>
-        <tr><td><code>risk_flags</code></td><td>string[]</td><td>문자열 2건</td><td>●</td><td>—</td></tr>
-        <tr><td><code>recommendations</code></td><td>string</td><td>서술형 (227자)</td><td>·</td><td>W는 <code>recommendations_for_instructor</code></td></tr>
-        <tr><td><code>feedback_draft</code></td><td>string</td><td>서술형 (417자)</td><td>●</td><td>W는 <code>suggested_feedback_draft</code></td></tr>
-        <tr><td><code>metrics_snapshot</code></td><td>object</td><td>객체</td><td>·</td><td>W의 <code>metrics</code>와 같은 모양. <strong>주차에 따라 24 → 7필드로 축약</strong></td></tr>
-        <tr><td><code>metrics_snapshot.studentUuid</code></td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.userId</code></td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.name</code></td><td>string</td><td><code>황수빈</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.cohortId</code></td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.cohort</code></td><td>string</td><td><code>34기</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.group</code></td><td>string</td><td><code>A</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.language</code></td><td>string</td><td><code>python</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.steps_completed</code></td><td>int</td><td><code>10</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.current_step</code></td><td>int</td><td><code>10</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.stalled_days_on_current_step</code></td><td>int</td><td><code>0</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.days_since_last_activity</code></td><td>int</td><td><code>0</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.active_days_count</code></td><td>int</td><td><code>7</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.total_runs</code></td><td>int</td><td><code>4946</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.total_errors</code></td><td>int</td><td><code>478</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.error_per_run</code></td><td>float</td><td><code>0.1</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.hint_requests_count</code></td><td>int</td><td><code>286</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.hint_per_active_day</code></td><td>float</td><td><code>40.86</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.avg_retry_gap_min</code></td><td>float</td><td><code>0.2</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.max_retry_gap_min</code></td><td>float</td><td><code>23.0</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.top_error_types</code></td><td>obj[]</td><td>객체 3건</td><td>●</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.assignments_completed</code></td><td>int</td><td><code>0</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.attendance_rate</code></td><td>float</td><td><code>100.0</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.data_freshness</code></td><td>string</td><td><code>2026-09-02T00:35:29.926371</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>metrics_snapshot.missing_fields</code></td><td>string[]</td><td><code>[&quot;assignments&quot;]</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>llm_provider</code></td><td>string</td><td><code>google</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>llm_model</code></td><td>string</td><td><code>gemini-3.5-flash</code></td><td>●</td><td>—</td></tr>
-        <tr><td><code>created_at</code></td><td>string</td><td><code>2026-09-02T00:35:46.781122</code></td><td>·</td><td>생성 시각. 승인 시점 스냅샷은 <strong>보관되지 않는다</strong></td></tr>
+        <tr><td><code>id</code></td><td>리포트 레코드 식별자</td><td>string</td><td><code>rep_2026-W36_100051503818</code></td><td>·</td><td><code>rep_{연주차}_{학생}</code> — <strong>PK라 재분석 시 덮어쓰인다</strong></td></tr>
+        <tr><td><code>student_uuid</code></td><td>수강생 식별자 — LMS 학번 12자리</td><td>string</td><td><code>100051503818</code></td><td>·</td><td>W는 <code>studentUuid</code> — <strong>표기법이 다르다</strong></td></tr>
+        <tr><td><code>cohort_label</code></td><td>기수 표시명 (예: 34기)</td><td>string</td><td><code>34기</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>year_week</code></td><td>ISO 연-주차 (예: 2026-W36)</td><td>string</td><td><code>2026-W36</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>week_no</code></td><td>ISO 주차 번호 (1~53)</td><td>int</td><td><code>36</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>week_label</code></td><td>주차 표시 문자열</td><td>string</td><td><code>2026-W36 [08/31~09/06]</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>week_range</code></td><td>그 주차의 기간 (월/일~월/일)</td><td>string</td><td><code>08/31~09/06</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>grade</code></td><td>수준 등급 — 입문·초급·중급·해결사</td><td>string</td><td><code>해결사</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>confidence</code></td><td>등급 판정 확신도 (0~1)</td><td>float</td><td><code>0.8</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>risk_score</code></td><td>위험 점수 (0~100, 높을수록 위험)</td><td>float</td><td><code>5.0</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>risk_status</code></td><td>위험 상태 코드</td><td>string</td><td><code>completed_waiting</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>grade_rationale</code></td><td>그 등급을 매긴 근거 서술</td><td>string</td><td>서술형 (326자)</td><td>●</td><td>—</td></tr>
+        <tr><td><code>weak_patterns</code></td><td>약점으로 관찰된 학습 패턴</td><td>string[]</td><td>문자열 2건</td><td>●</td><td>—</td></tr>
+        <tr><td><code>risk_flags</code></td><td>이탈·부진 위험 신호</td><td>string[]</td><td>문자열 2건</td><td>●</td><td>—</td></tr>
+        <tr><td><code>recommendations</code></td><td>강사에게 주는 권장 조치</td><td>string</td><td>서술형 (227자)</td><td>·</td><td>W는 <code>recommendations_for_instructor</code></td></tr>
+        <tr><td><code>feedback_draft</code></td><td>수강생에게 전달할 피드백 초안</td><td>string</td><td>서술형 (417자)</td><td>●</td><td>W는 <code>suggested_feedback_draft</code></td></tr>
+        <tr><td><code>metrics_snapshot</code></td><td>그 주차 시점의 지표 스냅샷</td><td>object</td><td>객체</td><td>·</td><td><strong>주차에 따라 24 → 7필드로 축약</strong></td></tr>
+        <tr><td><code>metrics_snapshot.studentUuid</code></td><td>수강생 식별자 — LMS 학번 12자리</td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.userId</code></td><td>LMS <code>user.id</code>(UUID). 계약 ①의 기준 식별자</td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.name</code></td><td><strong>수강생 이름</strong></td><td>string</td><td><code>황수빈</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.cohortId</code></td><td>기수 UUID</td><td>string</td><td>서술형 (36자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.cohort</code></td><td>기수 표시명 (예: 34기)</td><td>string</td><td><code>34기</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.group</code></td><td>반 (A·B…)</td><td>string</td><td><code>A</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.language</code></td><td>실습에 쓰는 프로그래밍 언어</td><td>string</td><td><code>python</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.steps_completed</code></td><td>완료한 실습 단계 수</td><td>int</td><td><code>10</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.current_step</code></td><td>현재 진행 중인 단계 번호</td><td>int</td><td><code>10</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.stalled_days_on_current_step</code></td><td>현재 단계에 머물러 있는 일수</td><td>int</td><td><code>0</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.days_since_last_activity</code></td><td>마지막 활동 이후 지난 일수</td><td>int</td><td><code>0</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.active_days_count</code></td><td>학습 활동이 있었던 날 수</td><td>int</td><td><code>7</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.total_runs</code></td><td>코드 실행 횟수</td><td>int</td><td><code>4946</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.total_errors</code></td><td>에러가 난 실행 횟수</td><td>int</td><td><code>478</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.error_per_run</code></td><td>실행당 에러 = 에러/실행</td><td>float</td><td><code>0.1</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.hint_requests_count</code></td><td>AI 조교에게 힌트를 요청한 횟수</td><td>int</td><td><code>286</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.hint_per_active_day</code></td><td>활동일당 힌트 요청 수</td><td>float</td><td><code>40.86</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.avg_retry_gap_min</code></td><td>에러 후 다시 실행하기까지 걸린 평균 분</td><td>float</td><td><code>0.2</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.max_retry_gap_min</code></td><td>재시도 간격의 최댓값(분)</td><td>float</td><td><code>23.0</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.top_error_types</code></td><td>가장 잦은 에러 상위 3종 — 유형과 횟수</td><td>obj[]</td><td>객체 3건</td><td>●</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.assignments_completed</code></td><td>완료한 과제 수</td><td>int</td><td><code>0</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.attendance_rate</code></td><td>출석률(%)</td><td>float</td><td><code>100.0</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.data_freshness</code></td><td>지표를 집계한 시각</td><td>string</td><td><code>2026-09-02T00:35:29.926371</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>metrics_snapshot.missing_fields</code></td><td>수집하지 못한 항목의 이름</td><td>string[]</td><td><code>[&quot;assignments&quot;]</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>llm_provider</code></td><td>LLM 제공자</td><td>string</td><td><code>google</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>llm_model</code></td><td>모델명</td><td>string</td><td><code>gemini-3.5-flash</code></td><td>●</td><td>—</td></tr>
+        <tr><td><code>created_at</code></td><td>레코드가 만들어진 시각</td><td>string</td><td><code>2026-09-02T00:35:46.781122</code></td><td>·</td><td>승인 시점 스냅샷은 <strong>보관되지 않는다</strong></td></tr>
       </tbody>
     </table>
   </div>
   <h4>A — API 5 <code>/feedback/approve</code></h4>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:32%"><col style="width:9%"><col style="width:21%"><col style="width:7%"><col style="width:31%"></colgroup>
-      <thead><tr><th>필드 경로</th><th>타입</th><th>실측값</th><th>쓰임</th><th>비고</th></tr></thead>
+      <colgroup><col style="width:24%"><col style="width:25%"><col style="width:7%"><col style="width:15%"><col style="width:5%"><col style="width:24%"></colgroup>
+      <thead><tr><th>필드 경로</th><th>의미</th><th>타입</th><th>실측값</th><th>쓰임</th><th>비고</th></tr></thead>
       <tbody>
-        <tr><td><code>request</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>request.studentUuid</code></td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>request.approved_by</code></td><td>string</td><td><code>강사 이정훈</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>request.feedback_text</code></td><td>string</td><td>서술형 (45자)</td><td>·</td><td>강사가 수정한 최종 문안</td></tr>
-        <tr><td><code>request.status</code></td><td>string</td><td><code>APPROVED</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>response</code></td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
-        <tr><td><code>response.status</code></td><td>string</td><td><code>SUCCESS</code></td><td>·</td><td>—</td></tr>
-        <tr><td><code>response.log_id</code></td><td>string</td><td><code>fb_20260902093622_100051503818</code></td><td>·</td><td><code>fb_{타임스탬프}_{학생}</code></td></tr>
-        <tr><td><code>response.approved_by</code></td><td>string</td><td><code>강사 이정훈</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>request</code></td><td>요청 본문</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>request.studentUuid</code></td><td>수강생 식별자 — LMS 학번 12자리</td><td>string</td><td><code>100051503818</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>request.approved_by</code></td><td>승인한 강사·매니저</td><td>string</td><td><code>강사 이정훈</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>request.feedback_text</code></td><td>승인된 피드백 본문</td><td>string</td><td>서술형 (45자)</td><td>·</td><td>—</td></tr>
+        <tr><td><code>request.status</code></td><td>요청하는 승인 상태</td><td>string</td><td><code>APPROVED</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>response</code></td><td>응답 본문</td><td>object</td><td>객체</td><td>·</td><td>—</td></tr>
+        <tr><td><code>response.status</code></td><td>처리 결과</td><td>string</td><td><code>SUCCESS</code></td><td>·</td><td>—</td></tr>
+        <tr><td><code>response.log_id</code></td><td>승인 로그 식별자</td><td>string</td><td><code>fb_20260902093622_100051503818</code></td><td>·</td><td><code>fb_{타임스탬프}_{학생}</code></td></tr>
+        <tr><td><code>response.approved_by</code></td><td>서버가 기록한 승인자</td><td>string</td><td><code>강사 이정훈</code></td><td>·</td><td>—</td></tr>
       </tbody>
     </table>
   </div>
@@ -378,9 +398,8 @@ assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
         <tr><td>같은 뜻, 다른 이름</td><td><code>studentUuid</code>↔<code>student_uuid</code>, <code>suggested_feedback_draft</code>↔<code>feedback_draft</code>, <code>recommendations_for_instructor</code>↔<code>recommendations</code>, <code>assignments_completed</code>↔<code>completed_assignments</code>. 표기법(camel/snake)과 어순이 API마다 다르다.</td></tr>
         <tr><td>같은 이름, 다른 모양</td><td><code>model_meta</code>가 W·C는 5키, D는 3키다. <code>prompt_version</code>은 D에만, <code>cached</code>·<code>week_label</code>은 W·C에만 있다.</td></tr>
         <tr><td>확신도가 어긋난다</td><td>같은 학생·같은 시점인데 W는 <code>0.8</code>, D는 <code>0.85</code>다. D는 호출할 때마다 새로 분석하므로 캐시본인 W와 값이 벌어진다.</td></tr>
-        <tr><td>총 단계 수는 C에만</td><td><code>total_steps</code>는 C의 <code>summary</code>에만 있다. 화면이 쓰는 H에는 없어 FE가 상수 <code>10</code>을 들고 있다. C를 함께 호출하지 않으면 진도의 분모를 응답에서 얻을 수 없다.</td></tr>
+        <tr><td>총 단계 수는 C에만</td><td><code>total_steps</code>는 C의 <code>summary</code>에만 있다. 화면이 쓰는 H에는 없어 FE가 상수 <code>10</code>을 들고 있다.</td></tr>
         <tr><td>고정값이 섞여 있다</td><td><code>attendance_rate 100.0</code>, <code>collaboration_score 85.0</code>, <code>error_resolution_rate 0.95</code>, <code>human_in_the_loop.status APPROVED</code>는 학생과 주차를 바꿔도 움직이지 않았다. 필드가 온다는 것과 값이 쓸 만하다는 것은 별개다.</td></tr>
-        <tr><td>실제로 쓰는 건 25개</td><td>API 1~5가 주는 필드 중 진단 리포트 화면이 읽는 것은 H의 <strong>25개</strong>(최상위 12 + 스냅샷 13)뿐이다. 나머지는 중복이거나 고정값이거나 강사용이다.</td></tr>
       </tbody>
     </table>
   </div>
@@ -448,14 +467,59 @@ assignments {"total": 0, "submitted": 0, "not_submitted": 0}</code></pre>
     </table>
   </div>
 
-  <h3>진단 리포트가 실제로 쓰는 지표</h3>
-  <p>위 셋을 제외하면 주간 진단 리포트의 원천은 PlayLang 실습 로그다.</p>
-  <pre><code>진도    steps_completed · current_step · (total_steps는 C에만)
-활동    active_days_count · stalled_days_on_current_step · days_since_last_activity
-실행    total_runs · total_errors · error_per_run
-힌트    hint_requests_count · hint_per_active_day
-재시도  avg_retry_gap_min · max_retry_gap_min
-에러    top_error_types[{type, count}]   ← 상위 3개만</code></pre>
+  <h3>지금 화면이 실제로 쓰는 데이터</h3>
+  <p>API 1~5가 주는 164필드 중 수강생 진단 리포트 화면에 닿는 것은 <strong>H의 25개</strong>다. 어느 화면 요소가 어느 필드를 읽는지 정리한다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:42%"><col style="width:36%"></colgroup>
+      <thead><tr><th>화면 요소</th><th>읽는 필드 (H 기준)</th><th>가공</th></tr></thead>
+      <tbody>
+        <tr><td>헤더 · 주차</td><td><code>week_no</code> · <code>week_range</code></td><td>ISO 주차 → 기수 경과 주차로 환산 (W33~36 → 11~14주차)</td></tr>
+        <tr><td>이번 주 나의 수준</td><td><code>grade</code> · <code>confidence</code></td><td>확신도 <code>0.8</code> → <strong>높음·중간·낮음</strong> 3단계 라벨</td></tr>
+        <tr><td>지표 · 진행 단계</td><td><code>steps_completed</code> · <code>current_step</code></td><td>분모 <code>total_steps</code>가 H에 없어 <strong>상수 10</strong></td></tr>
+        <tr><td>지표 · 활동일</td><td><code>active_days_count</code></td><td>그대로</td></tr>
+        <tr><td>지표 · 현 단계 정체</td><td><code>stalled_days_on_current_step</code></td><td>그대로</td></tr>
+        <tr><td>지표 · 최근 미접속</td><td><code>days_since_last_activity</code></td><td>그대로</td></tr>
+        <tr><td>지표 · 실행당 에러</td><td><code>error_per_run</code> · <code>total_errors</code> · <code>total_runs</code></td><td>그대로</td></tr>
+        <tr><td>지표 · 힌트 요청</td><td><code>hint_requests_count</code> · <code>hint_per_active_day</code></td><td>그대로</td></tr>
+        <tr><td>지표 · 재시도 간격</td><td><code>avg_retry_gap_min</code> · <code>max_retry_gap_min</code></td><td>그대로</td></tr>
+        <tr><td>지표 · 주요 에러</td><td><code>top_error_types[{type, count}]</code></td><td>200자 넘는 유형명을 예외 클래스명만 남겨 축약</td></tr>
+        <tr><td>지난주 대비 변화</td><td><code>steps_completed</code> · <code>error_per_run</code> · <code>total_runs</code></td><td><strong>전주 행과의 차이를 계산</strong> — 원천에 대응 서술이 없다</td></tr>
+        <tr><td>잘하고 있는 점</td><td><code>steps_completed</code> · <code>error_per_run</code> · <code>active_days_count</code> · <code>stalled_days_on_current_step</code> · <code>days_since_last_activity</code></td><td><strong>FE가 문장으로 생성</strong> — 원천에 대응 서술이 없다</td></tr>
+        <tr><td>보완하면 좋은 점</td><td><code>weak_patterns</code></td><td>원천 서술 그대로</td></tr>
+        <tr><td>이번 주 학습 제안</td><td><code>days_since_last_activity</code> · <code>stalled_days_on_current_step</code> · <code>hint_per_active_day</code> · <code>avg_retry_gap_min</code> · <code>error_per_run</code> · <code>grade</code></td><td><strong>FE가 임계값으로 생성</strong> — 원천에 대응 서술이 없다</td></tr>
+        <tr><td>강사 피드백</td><td><code>feedback_draft</code></td><td>승인 전이면 감춤 (P0-STU-DIAG-006)</td></tr>
+        <tr><td>생성 표기</td><td><code>llm_provider</code> · <code>llm_model</code></td><td>그대로</td></tr>
+        <tr><td>주차 관리 표시</td><td><code>risk_status</code></td><td><code>stalled_learning</code>·<code>at_risk</code>만 표시. <code>completed_waiting</code>은 제외</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>원천이 주지 않아 FE가 만드는 것</h4>
+  <p>화면의 서술 섹션 네 개 중 <strong>세 개가 FE 생성물</strong>이다. datalake가 학생별로 주는 서술은 <code>weak_patterns</code> 하나뿐이다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:26%"><col style="width:16%"><col style="width:58%"></colgroup>
+      <thead><tr><th>항목</th><th>출처</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td>보완하면 좋은 점</td><td><strong>원천</strong></td><td><code>weak_patterns</code>를 그대로 싣는다. 유일하게 GOV-AI가 준 서술이다.</td></tr>
+        <tr><td>지난주 대비 변화</td><td>계산</td><td>전주 행과 <code>steps_completed</code>·<code>error_per_run</code>·<code>total_runs</code>를 비교한다. 값 자체는 실측이라 추정이 섞이지 않는다.</td></tr>
+        <tr><td>잘하고 있는 점</td><td>FE 생성</td><td>지표가 기준을 넘긴 항목만 문장으로 만든다. 근거 없는 격려 문구는 넣지 않는다.</td></tr>
+        <tr><td>이번 주 학습 제안</td><td>FE 생성</td><td>임계값(힌트 20회/일, 에러율 0.3, 재시도 0.5분)에 걸린 항목만 제안한다. 임계값은 실측 분포에서 잡았다.</td></tr>
+        <tr><td>총 단계 수</td><td>상수</td><td><code>total_steps</code>가 C에만 있어 <code>10</code>을 코드에 두고 있다. C를 함께 호출하거나 H에 필드가 추가돼야 없앨 수 있다.</td></tr>
+        <tr><td>확신도 라벨</td><td>변환</td><td><code>0~1</code> 숫자를 <code>0.85↑ 높음 / 0.7↑ 중간 / 낮음</code>으로 나눈다. 구간은 우리가 정한 것이라 GOV-AI 기준과 다를 수 있다.</td></tr>
+        <tr><td>기수 경과 주차</td><td>변환</td><td>ISO 주차만 오므로 기수 시작일에서 경과 주차를 계산한다.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>H가 주는데 화면이 안 쓰는 것</h4>
+  <pre><code>신원     student_uuid · cohort_label · metrics_snapshot의 이름·기수·반·언어·UUID 7필드
+         → 이미 로그인한 본인 화면이라 다시 받을 이유가 없다
+집계     assignments_completed · attendance_rate · missing_fields
+         → 값이 고정이거나 미수집이라 쓸 수 없다 (3.2~3.4)
+운영     id · week_label · risk_score · created_at · data_freshness
+         → 레코드 관리용
+강사용   recommendations
+         → 수강생 화면에 노출하지 않는다</code></pre>
   <div class="note"><code>top_error_types</code>는 상위 3개만 온다. 실측에서 세 건의 합이 <code>total_errors</code>의 62.6%였다. 나머지 37.4%는 어느 응답에도 나타나지 않으며 "기타" 항목도 없다. 화면에 막대그래프를 그리면 합이 전체와 맞지 않는다.</div>
 </section>
 
