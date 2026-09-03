@@ -17,7 +17,7 @@
     </header>
     <main class="content"><section id="overview">
   <h2>1. 검증 개요</h2>
-  <p class="lead">GOV-AI DataLake 명세서(<code>REPORT-API-CALL.md</code> v1.3)가 정의한 5개 API를 2026-09-03에 직접 호출해 실제 응답을 확인했다. 주간 진단 리포트 화면이 어떤 값을 쓸 수 있고 어떤 값을 쓸 수 없는지를, 호출 명령과 응답 값을 근거로 정리한다.</p>
+  <p class="lead">GOV-AI DataLake 명세서(<code>REPORT-API-CALL.md</code> v1.3)가 정의한 5개 API를 2026-09-03에 직접 호출해 실제 응답을 확인했다. <strong>이 문서는 명세서의 다섯 엔드포인트만 다룬다</strong> — 문서에 없는 엔드포인트는 계약 밖이라 언제 바뀌어도 이상하지 않으므로 근거로 쓰지 않는다. 주간 진단 리포트 화면이 어떤 값을 쓸 수 있고 어떤 값을 쓸 수 없는지를, 호출 명령과 응답 값을 근거로 정리한다.</p>
   <div class="callout"><strong>대상</strong> <code>https://datalake.isitsoft.kr/api/v1</code> · API v1.0.0 · 인증 헤더 <code>X-DE-API-KEY</code>. 검증 수강생은 명세서 예시와 같은 <code>100030029410</code>(정승, 29기 A반)이며, 화면 구성 예시에는 데모 계정 <code>100051503818</code>(황수빈, 34기)을 쓴다.</div>
   <h3>이 문서의 구성</h3>
   <p>호출에서 시작해 필드, 그리고 쓸 수 있는지 판단 순으로 간다.</p>
@@ -26,7 +26,7 @@
       <colgroup><col style="width:14%"><col style="width:34%"><col style="width:52%"></colgroup>
       <thead><tr><th>장</th><th>다루는 것</th><th>여기서 답하는 질문</th></tr></thead>
       <tbody>
-        <tr><td><a href="#api-calls"><strong>2장</strong></a></td><td>다섯 엔드포인트를 어떤 명령으로 불렀고 응답의 최상위 구조가 어떤가</td><td>어떻게 부르는가 · 무엇이 통째로 오는가 · 문서 밖 <code>/sync/students</code>는 왜 응답하는가</td></tr>
+        <tr><td><a href="#api-calls"><strong>2장</strong></a></td><td>다섯 엔드포인트를 어떤 명령으로 불렀고 응답의 최상위 구조가 어떤가</td><td>어떻게 부르는가 · 무엇이 통째로 오는가 · 응답의 최상위가 어떻게 생겼나</td></tr>
         <tr><td><a href="#fields"><strong>3장</strong></a></td><td>응답 필드 전체 사전 — 각 필드의 의미·타입·실측값</td><td>이 필드가 무슨 뜻인가 · 어떤 값이 왔는가 · 호출마다 이름이 왜 다른가</td></tr>
         <tr><td><a href="#formats"><strong>4장</strong></a></td><td>값이 어떤 모양으로 오는가 — 형식·단위·표기</td><td>이름은 어떻게 오는가 · 시각이 왜 세 형식인가 · 숫자가 반올림돼 있나 · "없다"를 어떻게 구분하나</td></tr>
         <tr><td><a href="#source-gaps"><strong>5장</strong></a></td><td>출결·과제·퀴즈 — 어떤 통계가 되고 무엇이 안 되는가</td><td>필드는 오는데 왜 못 쓰는가 · 그래도 낼 수 있는 통계는 무엇인가 · GOV-AI에 무엇을 요청해야 하는가</td></tr>
@@ -49,7 +49,7 @@ export PYTHONIOENCODING=utf-8</code></pre>
 
 <section id="api-calls">
   <h2>2. API 1~5 호출과 응답</h2>
-  <p class="lead">명세서 §2의 다섯 엔드포인트를 순서대로 호출한 결과다. 각 호출의 실제 명령과 응답의 최상위 구조를 기록한다. 필드 하나하나는 <a href="#fields">3장</a>에서 편다.</p>
+  <p class="lead">명세서 §2의 다섯 엔드포인트를 순서대로 호출한 결과다. 각 호출의 실제 명령과 응답의 최상위 구조를 기록한다. 명세서에 정의된 다섯 개가 전부다. 필드 하나하나는 <a href="#fields">3장</a>에서 편다.</p>
 
   <h3>API 1. 주간 AI 학습 맞춤 진단 리포트</h3>
   <pre><code>curl -X GET "$B/reports/weekly/$U?format=json" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
@@ -120,42 +120,11 @@ curl -X POST "$B/feedback/approve" -H "X-DE-API-KEY: $DE_API_KEY"   -H "Content-
   <p>응답은 3필드뿐이다. 승인 로그가 <strong>누적 생성</strong>되고 삭제 API가 없으므로, 검증 호출에는 <code>[TEST]</code> 표기를 붙여 나중에 골라낼 수 있게 했다.</p>
   <div class="note"><code>log_id</code>의 시각 <code>103059</code>는 <strong>KST</strong>다. 같은 순간 다른 응답의 <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 UTC로 온다. 한 서비스 안에서 타임존이 섞여 있다.</p></div>
 
-  <h3>문서 밖 엔드포인트 — <code>/sync/students</code></h3>
-  <p>명세서 5개 API에는 없고 <code>/openapi.json</code>에서 찾은 엔드포인트다.</p>
-  <pre><code>curl -X GET "$B/sync/students?limit=200" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
-  <pre><code>student_uuid · user_id · name · cohort_id · cohort_label · education_title · training_status
-assignments {total, submitted, not_submitted}
-quizzes     {total, attempted, avg_score_pct}
-attendance  {present, late, early_leave, absent, excused}
-atmux       {total_duration_sec, total_duration_hours, weekly_daily_avg_hours, avg_cpu_util, telemetry_count}
-playlang    {current_step, course, language, total_events, runs_count, errors_count, hints_count, error_rate_pct}
-last_synced_at</code></pre>
-  <p>학생 마스터라 123명 전원이 오고, <strong>주차 개념이 없다.</strong> <code>last_synced_at</code> 시점의 누적 현재값이다. 이 블록들의 실측값과 그것으로 무엇을 낼 수 있는지는 <a href="#source-gaps">4장</a>에서 다룬다.</p>
-
-  <h4>왜 호출되는가</h4>
-  <p>문서에 없는데 응답이 오는 이유는 <strong>인증이 하나이기 때문</strong>이다. 5개 API와 같은 <code>X-DE-API-KEY</code>를 쓰고 엔드포인트별 권한 구분이 없다. 문서에 안 적혔을 뿐 막혀 있지 않다.</p>
-  <p>그렇다면 이 엔드포인트는 무엇을 위한 것인가. 응답에서 관측되는 것은 다음과 같다.</p>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
-      <thead><tr><th>관측</th><th>무엇을 말해주나</th></tr></thead>
-      <tbody>
-        <tr><td>이름이 <code>sync</code>다</td><td>분석(<code>analysis</code>)·진단(<code>diagnose</code>)·리포트(<code>reports</code>)와 이름 계열이 다르다.</td></tr>
-        <tr><td><code>last_synced_at</code>을 담는다</td><td>주차가 아니라 <strong>마지막 동기화 시각</strong>을 기준으로 한다. 분석 산출물이라면 필요 없는 필드다.</td></tr>
-        <tr><td>주차 개념이 없다</td><td>123명 전원의 <strong>현재 누적값</strong>만 온다. 주차를 바꿔 호출할 수단이 없다.</td></tr>
-        <tr><td>필드 모양이 LMS와 같다</td><td>LMS <code>data-ingest-api</code>가 주는 구조를 거의 그대로 따르고 <code>camelCase → snake_case</code>만 바뀌었다.</td></tr>
-        <tr><td><code>education_title</code>·<code>training_status</code>가 있다</td><td>분석에 쓰이지 않는 <strong>행정 정보</strong>다. 5개 API 어디에도 없다.</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p>종합하면 이 엔드포인트는 분석 결과를 내주는 곳이 아니라 <strong>LMS가 넘긴 원천이 제대로 적재됐는지 확인하는 동기화 점검용</strong>으로 보인다. LMS가 보낸 값이 그대로 남아 있는 것이지, GOV-AI가 분석해 만든 값이 아니다. 적재 경로는 <a href="#source-gaps">4.5</a>에 정리했다.</p>
-  <div class="callout">다만 이는 <strong>관측에 근거한 해석</strong>이다. 명세서에 설명이 없어 확정할 수 없으므로, 이 엔드포인트를 우리가 계속 호출해도 되는지와 값의 갱신 주기를 GOV-AI에 확인해야 한다(4장 요청 항목).</div>
-  <p>주차가 없어 주간 리포트의 시계열에는 그대로 넣을 수 없다. 무엇을 쓸 수 있고 무엇을 못 쓰는지는 <a href="#source-gaps">4장</a>에서 가른다.</p>
 </section>
 
 <section id="fields">
   <h2>3. 응답 필드 사전</h2>
-  <p class="lead">2장의 호출이 돌려준 필드를 전부 편다. 각 필드가 무엇인지, 어떤 값이 왔는지, 진단 리포트가 쓰는지를 함께 적는다. 표의 <strong>출처</strong>는 아래 호출을 가리킨다.</p>
+  <p class="lead">2장의 다섯 호출이 돌려준 필드를 전부 편다. 각 필드가 무엇인지, 어떤 값이 왔는지, 진단 리포트가 쓰는지를 함께 적는다. 표의 <strong>출처</strong>는 아래 호출을 가리킨다.</p>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:12%"><col style="width:52%"><col style="width:36%"></colgroup>
@@ -166,7 +135,6 @@ last_synced_at</code></pre>
         <tr><td><strong>API 3</strong></td><td><code>POST /analysis/diagnose/$U</code></td><td>온디맨드 수준 진단</td></tr>
         <tr><td><strong>API 4</strong></td><td><code>GET /reports/history/$U?limit=5</code></td><td>주차별 리포트 이력</td></tr>
         <tr><td><strong>API 5</strong></td><td><code>POST /feedback/approve</code></td><td>강사 피드백 승인</td></tr>
-        <tr><td><code>/sync/students</code></td><td><code>GET /sync/students?limit=200</code></td><td>학생 마스터 동기화 — <strong>명세서 밖</strong></td></tr>
       </tbody>
     </table>
   </div>
@@ -435,7 +403,7 @@ last_synced_at</code></pre>
         <tr><td><code>cohort</code></td><td><code>34기</code></td><td>문자열 3자</td><td><strong>숫자에 한글 접미사가 붙은 표시명이다.</strong> 기수 번호가 따로 오지 않으므로 정렬하려면 파싱해야 한다. 문자열로 정렬하면 <code>34기</code>가 <code>9기</code>보다 앞에 온다</td></tr>
         <tr><td><code>cohortId</code></td><td><code>f34c88f3-7cd2-…</code></td><td>UUID 36자</td><td>기수의 기계용 식별자. 정렬·비교는 이쪽을 쓴다</td></tr>
         <tr><td><code>group</code></td><td><code>A</code></td><td>문자 1자</td><td>반. 값 범위가 명세에 없어 <code>A</code> 외에 무엇이 오는지 알 수 없다</td></tr>
-        <tr><td><code>language</code></td><td><code>python</code></td><td>소문자 문자열</td><td><strong>이 값을 화면에 쓰면 안 된다.</strong> 주간 리포트는 전원을 <code>python</code>으로 준다. 황수빈의 실제 언어는 <code>/sync/students</code>의 <code>typescript</code>다</td></tr>
+        <tr><td><code>language</code></td><td><code>python</code></td><td>소문자 문자열</td><td><strong>이 값은 확인이 필요하다.</strong> 주간 리포트가 학생을 가리지 않고 <code>python</code>을 준다. 값 범위가 명세에 없어 실제 실습 언어를 반영한 것인지 알 수 없다</td></tr>
       </tbody>
     </table>
   </div>
@@ -454,15 +422,14 @@ last_synced_at</code></pre>
     </table>
   </div>
   <div class="note"><strong>ISO 주차는 기수 주차가 아니다.</strong> <code>week_no 36</code>은 그 해의 36번째 주라는 뜻이지 수강 36주차가 아니다. 화면의 "14주차"는 기수 시작일에서 우리가 계산한 값이다. 두 숫자를 섞으면 안 된다.</div>
-  <h3>4.3 시각 — 세 가지 형식이 섞여 있다</h3>
-  <p>한 서비스 안에서 타임스탬프 직렬화가 세 갈래다.</p>
+  <h3>4.3 시각 — 두 가지 형식이 섞여 있다</h3>
+  <p>한 서비스 안에서 타임스탬프 표기가 두 갈래이고, 그중 하나만 타임존을 알 수 있다.</p>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:26%"><col style="width:30%"><col style="width:44%"></colgroup>
       <thead><tr><th>형식</th><th>쓰는 필드</th><th>해석</th></tr></thead>
       <tbody>
         <tr><td><code>2026-09-02T00:35:46.781122</code><br><span>ISO 8601 + 마이크로초 6자리</span></td><td><code>analyzed_at</code> · <code>data_freshness</code> · <code>created_at</code> · <code>issue_timestamp</code> · <code>approved_at</code></td><td><strong>타임존 표기가 없다.</strong> <code>Z</code>도 <code>+09:00</code>도 붙지 않는다. 파이썬 <code>datetime.isoformat()</code>의 기본 출력 모양이다. UTC로 가정하고 읽되, 확정된 바 없어 요청 항목에 넣었다</td></tr>
-        <tr><td><code>2026-09-02 05:00:13</code><br><span>공백 구분 · 초 단위</span></td><td><code>last_synced_at</code></td><td><code>T</code>가 없고 마이크로초도 없다. 같은 서비스인데 <strong>직렬화 경로가 다르다.</strong> <code>05:00</code>이라는 시각은 일 배치로 보인다</td></tr>
         <tr><td><code>fb_20260902093622_…</code><br><span>압축 숫자 14자리</span></td><td><code>log_id</code> 안</td><td><code>YYYYMMDDHHMMSS</code>. <strong>이것만 KST</strong>다. 나머지가 UTC라면 9시간 차이가 난다</td></tr>
       </tbody>
     </table>
@@ -540,178 +507,90 @@ W36       0.1    478 ÷ 4946 = 0.09664   0.10   일치</code></pre>
       </tbody>
     </table>
   </div>
-  <h3>4.9 <code>/sync/students</code>는 주제별로 묶어서 준다</h3>
-  <p>주간 리포트가 <code>metrics</code> 아래 평평하게 24개를 주는 것과 달리, 여기는 주제별 객체로 나뉜다.</p>
-  <pre><code>attendance   {"present": 36, "late": 11, "early_leave": 2, "absent": 3, "excused": 2}
-assignments  {"total": 10, "submitted": 9, "not_submitted": 1}
-quizzes      {"total": 7, "attempted": 6, "avg_score_pct": 91.0}
-atmux        {"total_duration_sec": 103487.8, "total_duration_hours": 28.7, …}</code></pre>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
-      <thead><tr><th>블록</th><th>읽는 법</th></tr></thead>
-      <tbody>
-        <tr><td><code>attendance</code></td><td><strong>일수만 온다. 비율은 없다.</strong> 다섯 값을 더해야 전체 일수(54일)가 나오고, 출석률은 우리가 계산한다</td></tr>
-        <tr><td><code>assignments</code></td><td><code>total = submitted + not_submitted</code>가 성립한다(<code>10 = 9 + 1</code>). 재제출·반려 상태는 오지 않는다</td></tr>
-        <tr><td><code>quizzes</code></td><td><code>avg_score_pct</code>만 비율이고 나머지는 건수다. <code>attempted</code>가 0이면 평균이 <code>0.0</code>으로 온다</td></tr>
-        <tr><td><code>atmux</code></td><td><strong>같은 값을 두 단위로 준다.</strong> <code>103487.8</code>초와 <code>28.7</code>시간이다(<code>103487.8 ÷ 3600 = 28.746</code>, 소수 한 자리 반올림). 시간 쪽을 쓰면 나눌 필요가 없다</td></tr>
-        <tr><td><code>training_status</code></td><td><code>훈련중</code> — 한글 표시명이다. 코드값이 따로 오지 않는다</td></tr>
-      </tbody>
-    </table>
-  </div>
 </section>
 
 <section id="source-gaps">
-  <h2>5. 출결·과제·퀴즈 — 무엇이 되고 무엇이 안 되는가</h2>
-  <p class="lead">이 셋은 현재 주간 진단 리포트에 들어가지 않는다. 그런데 호출하면 값이 오기 때문에 검토 내내 "있다"와 "없다"가 뒤집혔다. 어디서 무엇이 오는지, 왜 못 쓰는지, 그래도 무엇은 되는지를 호출과 값으로 가른다.</p>
-  <h3>5.1 어디서 무엇이 오는가</h3>
+  <h2>5. 출결·과제·퀴즈 — 5개 API 안에서는 어떻게 오나</h2>
+  <p class="lead">검토 내내 이 셋을 두고 "온다"와 "없다"가 뒤집혔다. 명세서의 다섯 API만 놓고 보면 답이 단순하다 — <strong>필드는 오는데 쓸 수 있는 값이 아니고, 퀴즈는 필드조차 없다.</strong> 셋 다 주간 진단 리포트에 넣을 수 없으며, 막히는 지점이 서로 다르다.</p>
+  <h3>5.1 어느 호출에서 무엇이 오는가</h3>
   <p>실측값은 명세서 예시와 같은 정승(<code>100030029410</code>) 기준이다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:8%"><col style="width:16%"><col style="width:30%"><col style="width:22%"><col style="width:24%"></colgroup>
-      <thead><tr><th>항목</th><th>출처</th><th>필드</th><th>정승 실측값</th><th>성격</th></tr></thead>
+      <colgroup><col style="width:10%"><col style="width:14%"><col style="width:32%"><col style="width:22%"><col style="width:22%"></colgroup>
+      <thead><tr><th>항목</th><th>출처</th><th>필드</th><th>실측값</th><th>성격</th></tr></thead>
       <tbody>
         <tr><td><strong>출결</strong></td><td>API 1</td><td><code>metrics.attendance_rate</code></td><td><code>100.0</code></td><td>비율 1개</td></tr>
         <tr><td></td><td>API 2</td><td><code>project_and_portfolio.attendance_rate</code></td><td><code>100.0</code></td><td>비율 1개</td></tr>
-        <tr><td></td><td>API 4</td><td><code>metrics_snapshot.attendance_rate</code></td><td><code>100.0</code> (W33~36 <strong>4주 전부</strong>)</td><td>주차별 비율</td></tr>
-        <tr><td></td><td><code>/sync/students</code></td><td><code>attendance{present, late, early_leave, absent, excused}</code></td><td><code>100 / 5 / 5 / 4 / 4</code></td><td><strong>일수 5종, 누적</strong></td></tr>
+        <tr><td></td><td>API 4</td><td><code>metrics_snapshot.attendance_rate</code></td><td><code>100.0</code><br>W33~36 <strong>4주 전부</strong></td><td>주차별 비율</td></tr>
         <tr><td><strong>과제</strong></td><td>API 1</td><td><code>metrics.assignments_completed</code><br><code>metrics.missing_fields</code></td><td><code>0</code><br><code>["assignments"]</code></td><td>건수 1개 + <strong>미수집 선언</strong></td></tr>
         <tr><td></td><td>API 2</td><td><code>project_and_portfolio.completed_assignments</code></td><td><code>0</code></td><td>건수 1개</td></tr>
         <tr><td></td><td>API 4</td><td><code>metrics_snapshot.assignments_completed</code></td><td>W35·W36만 <code>0</code><br>W33·W34는 <strong>필드 없음</strong></td><td>주차별 건수</td></tr>
-        <tr><td></td><td><code>/sync/students</code></td><td><code>assignments{total, submitted, not_submitted}</code></td><td><code>0 / 0 / 0</code></td><td><strong>제출 상세, 누적</strong></td></tr>
         <tr><td><strong>퀴즈</strong></td><td>API 1~5</td><td>—</td><td>—</td><td><strong>필드 없음.</strong> 명세서 필드 사전에도 없다</td></tr>
-        <tr><td></td><td><code>/sync/students</code></td><td><code>quizzes{total, attempted, avg_score_pct}</code></td><td><code>0 / 0 / 0.0</code></td><td><strong>응시·점수, 누적</strong></td></tr>
       </tbody>
     </table>
   </div>
-  <h3>5.2 "온다"와 "쓸 수 있다"는 다르다</h3>
-  <p>말이 엇갈린 이유는 <strong>막히는 지점이 항목마다 다르기 때문</strong>이다. 네 가지를 구분하지 않으면 같은 항목을 두고 "온다"와 "없다"가 둘 다 맞는 말이 된다.</p>
+  <div class="note">API 3(<code>/analysis/diagnose</code>)과 API 5(<code>/feedback/approve</code>)에는 셋 다 없다. API 3은 진단 서술만, API 5는 승인 결과만 돌려준다.</div>
+  <h3>5.2 막히는 지점이 셋 다 다르다</h3>
+  <p>"호출하면 값이 온다"와 "그 값을 쓸 수 있다"는 다르다. 어디서 막히는지가 항목마다 달라 말이 계속 엇갈렸다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:5%"><col style="width:22%"><col style="width:16%"><col style="width:57%"></colgroup>
-      <thead><tr><th></th><th>막히는 지점</th><th>해당 항목</th><th>무슨 뜻인가</th></tr></thead>
+      <colgroup><col style="width:6%"><col style="width:22%"><col style="width:14%"><col style="width:58%"></colgroup>
+      <thead><tr><th></th><th>막히는 지점</th><th>해당</th><th>무슨 뜻인가</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td><strong>부르는 곳이 다르다</strong></td><td>퀴즈</td><td>명세서는 5개 API만 다루는데 실제 서버의 <code>/openapi.json</code>에는 24개가 있다. "퀴즈가 왔다"는 <code>/sync/students</code>를, "퀴즈가 없다"는 5개 API를 가리킨 말이라 <strong>둘 다 참</strong>이었다.</td></tr>
-        <tr><td>2</td><td><strong>필드는 있는데 값이 틀렸다</strong></td><td>출결</td><td><code>attendance_rate</code>가 학생과 무관하게 전부 <code>100.0</code>이다. <code>missing_fields</code>에 <code>attendance</code>가 <strong>없으므로</strong> 서버는 받았다고 본다. 결측이 아니라 <strong>틀린 값</strong>이라 더 위험하다.</td></tr>
-        <tr><td>3</td><td><strong>서버가 미수집을 선언한다</strong></td><td>과제</td><td><code>missing_fields: ["assignments"]</code>. 여기서 <code>0</code>은 <strong>0건 제출이 아니라 안 받음</strong>이다. 서버가 스스로 알려주는 정직한 처리이므로, 이 선언을 보면 오해하지 않는다.</td></tr>
-        <tr><td>4</td><td><strong>주차로 나눌 수 없다</strong></td><td>셋 다</td><td><code>/sync/students</code>는 <code>last_synced_at</code> 시점의 <strong>누적 현재값</strong>이다. 주차 파라미터가 없어 "이번 주"나 "지난주 대비"를 만들 수 없다.</td></tr>
+        <tr><td>1</td><td><strong>값에 정보가 없다</strong></td><td>출결</td><td><code>attendance_rate</code>가 <strong>학생을 바꿔도 주차를 바꿔도 <code>100.0</code></strong>이다. 값이 하나뿐이면 지표로서 구별력이 0이다. 게다가 <code>missing_fields</code>에 <code>attendance</code>가 <strong>없으므로</strong> 서버는 이 데이터를 받았다고 본다 — 결측으로 처리되지도 않는다</td></tr>
+        <tr><td>2</td><td><strong>서버가 미수집을 선언한다</strong></td><td>과제</td><td><code>missing_fields: ["assignments"]</code>. 여기서 <code>0</code>은 <strong>0건 제출이 아니라 안 받음</strong>이다. 서버가 스스로 알려주므로 오해할 여지는 없지만, 값이 없다는 사실은 그대로다</td></tr>
+        <tr><td>3</td><td><strong>필드가 아예 없다</strong></td><td>퀴즈</td><td>다섯 응답 어디에도 <code>quiz</code>를 포함하는 키가 없다. 명세서 §4 필드 사전에도 없다. 있다·없다를 논할 것도 없이 <strong>계약에 들어 있지 않다</strong></td></tr>
       </tbody>
     </table>
   </div>
   <h3>5.3 근거</h3>
-  <h4>출결 — 결석 11일인 학생도 100.0이다</h4>
-  <p><code>/sync/students</code>의 출결 상세와 API 1의 <code>attendance_rate</code>를 학생 5명에 대해 나란히 놓았다.</p>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:14%"><col style="width:30%"><col style="width:10%"><col style="width:20%"><col style="width:26%"></colgroup>
-      <thead><tr><th>학생</th><th>출결 상세 (출석/지각/조퇴/결석/공결)</th><th>합계</th><th>직접 계산한 출석률</th><th>API 1의 <code>attendance_rate</code></th></tr></thead>
-      <tbody>
-        <tr><td>정승</td><td><code>100 / 5 / 5 / 4 / 4</code></td><td>118</td><td><code>84.7%</code></td><td><code>100.0</code></td></tr>
-        <tr><td>박상희</td><td><code>61 / 3 / 8 / 11 / 2</code></td><td>85</td><td><code>71.8%</code></td><td><code>100.0</code></td></tr>
-        <tr><td>장규원</td><td><code>92 / 2 / 1 / 5 / 4</code></td><td>104</td><td><code>88.5%</code></td><td><code>100.0</code></td></tr>
-        <tr><td>윤승혁</td><td><code>112 / 1 / 0 / 1 / 4</code></td><td>118</td><td><code>94.9%</code></td><td><code>100.0</code></td></tr>
-        <tr><td>정예린</td><td><code>47 / 1 / 0 / 4 / 2</code></td><td>54</td><td><code>87.0%</code></td><td><code>100.0</code></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p>출석만 세도, 지각·조퇴를 출석으로 쳐도 <code>100</code>이 나오는 계산은 없다. 상수라고 볼 수밖에 없다.</p>
-  <h4>과제 — 같은 학생인데 호출마다 값이 다르다</h4>
-  <pre><code>curl -X GET &quot;$B/reports/weekly/$U?format=json&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;
+  <h4>출결 — 학생과 주차를 바꿔도 값이 하나다</h4>
+  <p>API 1을 학생 다섯 명에게, API 4를 네 주차에 걸쳐 호출한 결과다.</p>
+  <pre><code>API 1  학생 5명(정승·박상희·장규원·윤승혁·정예린)   attendance_rate  전원 100.0
+API 4  정승 W33·W34·W35·W36                        attendance_rate  4주 전부 100.0
+API 2  정승                                        attendance_rate  100.0</code></pre>
+  <p>세 호출·다섯 학생·네 주차에서 관측된 값이 <code>100.0</code> 하나뿐이다. 실제 출결이 전원 만점일 가능성은 없으므로 <strong>집계가 동작하지 않는 것</strong>으로 본다. 다만 <strong>다섯 API 안에는 이를 대조할 수단이 없다</strong> — 결석·지각 일수를 주는 필드가 없기 때문이다.</p>
+  <h4>과제 — 응답이 스스로 미수집을 밝힌다</h4>
+  <pre><code>curl -X GET "$B/reports/weekly/$U?format=json" -H "X-DE-API-KEY: $DE_API_KEY"
   → metrics.assignments_completed : 0
-     metrics.missing_fields       : ["assignments"]
-
-curl -X GET &quot;$B/sync/students?limit=200&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;
-  → assignments {"total": 10, "submitted": 9, "not_submitted": 1}</code></pre>
-  <p>황수빈 한 명이 한쪽에서는 <code>0</code>건, 다른 쪽에서는 <code>9</code>건 제출이다. <code>missing_fields</code>가 앞의 <code>0</code>을 미수집이라고 알려주므로 뒤가 맞다. 이 선언을 보지 않고 <code>0</code>을 쓰면 <strong>제출한 학생을 미제출로 표시하게 된다.</strong></p>
-  <h4>누적 — 주차를 바꿔도 같은 값이 온다</h4>
-  <pre><code>11주차(W33)를 봐도  → attendance {present 100, late 5, absent 4}
-14주차(W36)를 봐도  → attendance {present 100, late 5, absent 4}   동일</code></pre>
-  <h3>5.4 그래도 되는 것 — 누적 기준이면 지금도 가능하다</h3>
-  <p>정승은 과제·퀴즈가 전부 <code>0</code>이라 "값이 안 온다"고 보기 쉽다. <strong>학생을 바꾸면 값이 있다.</strong> 아래는 같은 <code>/sync/students</code> 한 번의 응답에서 뽑은 세 명이다.</p>
-  <pre><code>curl -X GET &quot;$B/sync/students?limit=200&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
+     metrics.missing_fields       : ["assignments"]</code></pre>
+  <p>같은 응답 안에 값과 그 값이 유효하지 않다는 표시가 함께 온다. <code>0</code>을 제출 건수로 읽으면 <strong>제출한 학생을 미제출로 표시하게 된다.</strong> 이 선언이 있는 한 <code>0</code>은 쓸 수 없다.</p>
+  <h4>퀴즈 — 24필드 전수에 없다</h4>
+  <p>API 1의 <code>metrics</code> 24필드, API 2의 31필드, API 3의 12필드, API 4의 44필드, API 5의 7필드를 전수 확인했다. <code>quiz</code>를 포함하는 키가 하나도 없다.</p>
+  <h3>5.4 결론</h3>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:16%"><col style="width:12%"><col style="width:24%"><col style="width:24%"><col style="width:24%"></colgroup>
-      <thead><tr><th>학생</th><th>기수</th><th>과제 total/제출/미제출</th><th>퀴즈 total/응시/평균</th><th>읽는 법</th></tr></thead>
+      <colgroup><col style="width:14%"><col style="width:18%"><col style="width:26%"><col style="width:42%"></colgroup>
+      <thead><tr><th>항목</th><th>판정</th><th>이유</th><th>무엇이 있어야 되나</th></tr></thead>
       <tbody>
-        <tr><td>정승</td><td>29기</td><td><code>0 / 0 / 0</code></td><td><code>0 / 0 / 0.0</code></td><td>부여된 과제·퀴즈가 없음</td></tr>
-        <tr><td>박상희</td><td>32기</td><td><code>6 / 0 / 6</code></td><td><code>8 / 0 / 0.0</code></td><td>부여됐으나 <strong>전부 미제출·미응시</strong></td></tr>
-        <tr><td>황수빈</td><td>34기</td><td><code>10 / 9 / 1</code></td><td><code>7 / 6 / 91.0</code></td><td><strong>제출 90% · 응시 85.7% · 평균 91.0점</strong></td></tr>
+        <tr><td><strong>출결</strong></td><td><strong>못 한다</strong></td><td>값에 구별력이 없다</td><td><code>attendance_rate</code>가 학생·주차별로 실제 값을 반영하거나, 출석·지각·결석 <strong>일수</strong>가 주차별로 와야 한다</td></tr>
+        <tr><td><strong>과제</strong></td><td><strong>못 한다</strong></td><td>서버가 미수집 선언</td><td><code>missing_fields</code>에서 <code>assignments</code>가 빠지고 <code>assignments_completed</code>에 실제 건수가 들어와야 한다</td></tr>
+        <tr><td><strong>퀴즈</strong></td><td><strong>못 한다</strong></td><td>필드 자체가 없다</td><td><code>/reports/weekly</code>·<code>/reports/history</code>에 퀴즈 필드가 <strong>신설</strong>돼야 한다</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="note"><code>avg_score_pct: 0.0</code>은 <strong>0점이 아니라 미채점</strong>이다. 박상희는 8문항이 열렸지만 응시가 0이라 평균이 <code>0.0</code>으로 온다. 이 값을 점수로 그리면 0점을 받은 것처럼 보인다. <code>attendance</code> 필드 부재도 마찬가지로 <strong>출결 0이 아니라 HRD 미연동</strong>이다.</div>
-  <h4>통계 판정</h4>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:30%"><col style="width:10%"><col style="width:24%"><col style="width:36%"></colgroup>
-      <thead><tr><th>통계</th><th>가능</th><th>근거 호출</th><th>근거 값과 계산</th></tr></thead>
-      <tbody>
-        <tr><td>누적 출결 구성 (출석·지각·조퇴·결석·공결 일수)</td><td><strong>가능</strong></td><td><code>/sync/students</code></td><td>정승 <code>100/5/5/4/4</code> — 5종이 전부 온다</td></tr>
-        <tr><td>누적 출석률</td><td><strong>가능</strong></td><td><code>/sync/students</code></td><td>직접 계산. 정승 <code>100÷118 = 84.7%</code></td></tr>
-        <tr><td>누적 과제 제출률</td><td><strong>가능</strong></td><td><code>/sync/students</code></td><td>황수빈 <code>9÷10 = 90.0%</code></td></tr>
-        <tr><td>누적 퀴즈 응시율</td><td><strong>가능</strong></td><td><code>/sync/students</code></td><td>황수빈 <code>6÷7 = 85.7%</code></td></tr>
-        <tr><td>퀴즈 평균 점수</td><td>조건부</td><td><code>/sync/students</code></td><td>황수빈 <code>91.0</code>. 응시 0이면 <code>0.0</code>이 와서 미채점과 구분해야 한다</td></tr>
-        <tr><td>반·기수 평균 대비 비교</td><td>조건부</td><td><code>/sync/students?limit=200</code></td><td>전원이 한 번에 오므로 집계는 가능. 다만 누적 기준</td></tr>
-        <tr><td><strong>주차별</strong> 출석률·과제·퀴즈</td><td><strong>불가</strong></td><td>—</td><td>API 1·2·4의 값이 상수이거나 미수집이고, <code>/sync/students</code>는 주차가 없다</td></tr>
-        <tr><td><strong>지난주 대비</strong> 변화</td><td><strong>불가</strong></td><td>—</td><td>비교할 두 시점을 만들 수 없다</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <h4>넣는다면 이렇게 쓴다</h4>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup>
-      <thead><tr><th>넣을 것</th><th>표기</th><th>붙여야 할 조건</th></tr></thead>
-      <tbody>
-        <tr><td>누적 출결 구성</td><td>출석 100 · 지각 5 · 조퇴 5 · 결석 4 · 공결 4</td><td>"이번 주"가 아니라 <strong>"지금까지"</strong>로 쓴다</td></tr>
-        <tr><td>누적 출석률</td><td>84.7% (출석 100일 / 전체 118일)</td><td>우리가 계산한 값임을 밝힌다. API의 <code>attendance_rate</code>는 쓰지 않는다</td></tr>
-        <tr><td>누적 과제 제출률</td><td>10건 중 9건 제출</td><td><code>/sync/students</code> 기준. API 1·2·4의 <code>0</code>은 쓰지 않는다</td></tr>
-        <tr><td>누적 퀴즈</td><td>7문항 중 6응시 · 평균 91.0점</td><td><code>total</code>이 0이면 감추고, <code>attempted</code>가 0이면 평균을 표시하지 않는다</td></tr>
-        <tr><td>기준 시각</td><td><code>last_synced_at</code></td><td>주차가 아니라 동기화 시각이므로 함께 적는다</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <h3>5.5 이 값들의 원천은 LMS다</h3>
-  <p><code>/sync/students</code>의 출결·과제·퀴즈는 GOV-AI가 수집한 것이 아니라 <strong>LMS가 넘긴 데이터</strong>다. <code>LMS-DOCS/10_데이터/외부_AI_코칭_API.md</code>가 정의한 <code>data-ingest-api</code>가 원천이며, 양쪽이 같은 <code>X-DE-API-KEY</code> 헤더를 쓴다.</p>
-  <pre><code>LMS data-ingest-api ──X-DE-API-KEY──▶ GOV-AI 수집 ──▶ /sync/students
-  GET /ingest/v1/courses?include=activities</code></pre>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:20%"><col style="width:44%"><col style="width:36%"></colgroup>
-      <thead><tr><th>블록</th><th>LMS가 주는 필드</th><th>GOV-AI가 저장한 것</th></tr></thead>
-      <tbody>
-        <tr><td><code>attendance</code></td><td>present, late, earlyLeave, absent, excused</td><td><strong>5개 전부</strong> (snake_case 변환)</td></tr>
-        <tr><td><code>assignments</code></td><td>total, submitted, supplementRequested, reviewDone, notSubmitted</td><td>3개만</td></tr>
-        <tr><td><code>quizzes</code></td><td>totalOpen, attempted, finalized, avgScorePct</td><td>2~3개만</td></tr>
-        <tr><td><code>qna</code> · <code>projects</code> · <code>troubleshooting</code></td><td>전부 제공</td><td><strong>사용 안 함</strong></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p>즉 GOV-AI는 우리가 준 값을 받아만 두고 <strong>주간 리포트에는 반영하지 않는다.</strong> 출결이 <code>100.0</code>인 것도 원천이 없어서가 아니라 집계 단계에서 쓰이지 않기 때문이다.</p>
-  <h3>5.6 화면 설계상으로는 이미 갈라져 있다</h3>
+  <div class="callout"><strong>셋 다 우리가 풀 수 있는 문제가 아니다.</strong> 계산으로 우회하거나 다른 값으로 대체할 방법이 다섯 API 안에 없다. 화면에 넣으려면 GOV-AI가 응답을 고쳐야 하고, 그때까지는 <strong>진단 리포트에서 뺀다.</strong> 출결·과제·퀴즈는 교육과정 허브의 전용 탭이 LMS에서 직접 가져와 담당한다.</div>
+  <h3>5.5 화면 설계상으로는 이미 갈라져 있다</h3>
   <p><code>LMS-DOCS/30_설계/60_기능/기능_명세/P0_12_수강생_과정별_역량_리포트.md</code>가 원천을 나눠 놓았다.</p>
   <div class="callout"><strong>P0-STU-DIAG-004 완료 기준</strong> — "지표는 퀴즈·과제 점수가 아니라 <strong>실습 행동 로그</strong>(정체·에러율·힌트 의존·재시도 간격) 기반임"</div>
-  <p>같은 문서가 구 <code>competency</code> 화면과의 차이를 <strong>데이터 원천</strong>으로 구분한다 — 구 화면은 "퀴즈·과제·출결·기록 집계", 진단 리포트는 "실습 단계 진행·에러·힌트·재시도 지표"다. 실제 API 응답이 이 구분과 일치한다. 출결·과제·퀴즈는 교육과정 허브의 <code>출결/태도</code>·<code>과제</code>·<code>퀴즈</code> 전용 탭이 담당한다. 진단 리포트에 넣는다면 그 탭들과 같은 원천(<code>/sync/students</code> 또는 LMS 직접 조회)을 써야 값이 어긋나지 않는다.</p>
-  <h3>5.7 GOV-AI 팀 확인 요청</h3>
+  <p>같은 문서가 구 <code>competency</code> 화면과의 차이를 <strong>데이터 원천</strong>으로 구분한다 — 구 화면은 "퀴즈·과제·출결·기록 집계", 진단 리포트는 "실습 단계 진행·에러·힌트·재시도 지표"다. <strong>실제 API 응답이 이 구분과 정확히 일치한다.</strong> 다섯 API가 주는 쓸 만한 값은 전부 실습 행동 로그이고, 출결·과제·퀴즈는 오지 않거나 값이 비어 있다. 설계가 먼저 갈라놓은 선을 데이터가 그대로 따르고 있는 셈이다.</p>
+  <h3>5.6 GOV-AI 팀 확인 요청</h3>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:5%"><col style="width:30%"><col style="width:65%"></colgroup>
+      <colgroup><col style="width:5%"><col style="width:28%"><col style="width:67%"></colgroup>
       <thead><tr><th>No.</th><th>항목</th><th>근거</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td>출결 집계 미동작</td><td><code>attendance_rate</code>가 학생 5명·주차 4개 전부 <code>100.0</code>. <code>/sync/students</code>에는 결석·지각 상세가 살아 있다 (5.3)</td></tr>
-        <tr><td>2</td><td>과제 미수집</td><td><code>missing_fields: ["assignments"]</code>. LMS는 <code>data-ingest-api</code>로 제공 중이다 (5.5)</td></tr>
-        <tr><td>3</td><td>퀴즈 필드 부재</td><td>5개 API와 명세서 필드 사전 모두에 없음. <code>/sync/students</code>에만 존재 (5.1)</td></tr>
-        <tr><td>4</td><td><code>/sync/students</code>의 위치</td><td>명세서 밖이라 계속 호출해도 되는지, 값의 갱신 주기가 어떻게 되는지 확인이 필요하다 (2장)</td></tr>
-        <tr><td>5</td><td>과거 주차 지표 축약</td><td>W33·W34의 <code>metrics_snapshot</code>이 7필드. 힌트·재시도·에러 유형이 사라진다 (5.1)</td></tr>
-        <tr><td>6</td><td><code>total_steps</code> 부재</td><td>진도의 분모가 API 2에만 있어 화면이 상수 <code>10</code>을 쓰고 있다 (5.4)</td></tr>
-        <tr><td>7</td><td>타임존 혼재</td><td><code>log_id</code>는 KST, <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 UTC (2장)</td></tr>
-        <tr><td>8</td><td><strong>주차별 승인 상태 필드 부재</strong></td><td>화면에 강사 승인 게이트가 있는데 승인 여부를 주는 필드가 API 4에 없다. API 2의 <code>human_in_the_loop</code>은 증명서 단위라 주차별이 아니다. <code>/feedback/approve</code>로 승인해도 수강생 화면이 알 수 없다 (3장)</td></tr>
-        <tr><td>9</td><td><strong>학생 프로필 불일치</strong></td><td>같은 학생이 <code>/reports/weekly</code>에서는 <code>python</code>·<code>current_step 10</code>·<code>total_runs 4,946</code>인데 <code>/sync/students</code>에서는 <code>typescript</code>·프런트엔드·<code>7</code>·<code>6,364</code>다. 어느 쪽이 기준인지 확인이 필요하다</td></tr>
-        <tr><td>10</td><td><strong>주차 간 실행량 급증</strong></td><td>W35→W36에 <code>total_runs</code>가 <code>264 → 4,946</code>(18.7배)로 뛰었다. 활동일은 1.75배만 늘어 학습량 증가로 설명되지 않는다. 수집 범위가 바뀐 것인지 확인이 필요하다</td></tr>
-        <tr><td>11</td><td><strong>재시도 횟수 미제공</strong></td><td><code>avg_retry_gap_min</code>·<code>max_retry_gap_min</code>은 간격만 주고 횟수 필드가 없다. 평균을 계산했다면 건수를 갖고 있다는 뜻이라 필드로 내려줄 수 있을 것으로 보인다</td></tr>
-        <tr><td>12</td><td><strong><code>weekly_daily_avg_hours</code>의 기준 기간</strong></td><td>"주간"이 어느 7일인지 명세에 없다. 화면에 "하루 평균 학습 시간"으로 쓰려면 확정이 필요하다</td></tr>
-        <tr><td>13</td><td>승인 로그 삭제 수단 없음</td><td><code>/feedback/approve</code>가 누적 생성만 하고 삭제 API가 없다. 검증 호출분에 <code>[TEST]</code> 표기를 남겼다</td></tr>
+        <tr><td>1</td><td>출결 집계 미동작</td><td><code>attendance_rate</code>가 학생 5명·주차 4개·API 3종 전부 <code>100.0</code>이다 (5.3)</td></tr>
+        <tr><td>2</td><td>과제 미수집</td><td><code>missing_fields: ["assignments"]</code>. LMS는 <code>data-ingest-api</code>로 제공 중이다 (5.3)</td></tr>
+        <tr><td>3</td><td>퀴즈 필드 부재</td><td>다섯 응답과 명세서 §4 필드 사전 모두에 없다 (5.1)</td></tr>
+        <tr><td>4</td><td>과거 주차 지표 축약</td><td>W33·W34의 <code>metrics_snapshot</code>이 7필드. 힌트·재시도·에러 유형이 사라진다</td></tr>
+        <tr><td>5</td><td><code>total_steps</code> 부재</td><td>진도의 분모가 API 2에만 있어 화면이 상수 <code>10</code>을 쓰고 있다</td></tr>
+        <tr><td>6</td><td>주차별 승인 상태 필드 부재</td><td>승인 게이트가 화면에 있는데 승인 여부를 주는 필드가 API 4에 없다. API 2의 <code>human_in_the_loop</code>은 증명서 단위다</td></tr>
+        <tr><td>7</td><td><code>language</code> 값 고정</td><td>학생을 가리지 않고 <code>python</code>이 온다. 값 범위가 명세에 없다</td></tr>
+        <tr><td>8</td><td>주차 간 실행량 급증</td><td>W35→W36에 <code>total_runs</code>가 <code>264 → 4,946</code>(18.7배). 활동일은 1.75배만 늘었다</td></tr>
+        <tr><td>9</td><td>재시도 횟수 미제공</td><td><code>avg_retry_gap_min</code>은 간격만 준다. 평균을 계산했다면 건수를 갖고 있다는 뜻이다</td></tr>
+        <tr><td>10</td><td>타임존 혼재</td><td><code>log_id</code>는 KST, <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 표기가 없다 (4.3)</td></tr>
+        <tr><td>11</td><td>승인 로그 삭제 수단 없음</td><td><code>/feedback/approve</code>가 누적 생성만 하고 삭제 API가 없다. 검증 호출분에 <code>[TEST]</code> 표기를 남겼다</td></tr>
       </tbody>
     </table>
   </div>

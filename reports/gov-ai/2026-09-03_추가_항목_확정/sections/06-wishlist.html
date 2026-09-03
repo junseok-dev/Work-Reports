@@ -1,18 +1,19 @@
 <section id="wishlist">
   <h2>6. 처음에 넣고 싶었던 다섯 가지</h2>
-  <p>검토를 시작할 때 추가하려던 항목들이다. 각각의 답을 한자리에 모은다.</p>
+  <p class="lead">검토를 시작할 때 추가하려던 항목들이다. 결론부터 적으면 <strong>다섯 다 지금은 못 한다.</strong> 넣고 싶지 않아서가 아니라 다섯 API가 재료를 주지 않아서다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:22%"><col style="width:14%"><col style="width:64%"></colgroup>
-      <thead><tr><th>원래 항목</th><th>결론</th><th>내용</th></tr></thead>
+      <colgroup><col style="width:20%"><col style="width:12%"><col style="width:34%"><col style="width:34%"></colgroup>
+      <thead><tr><th>원래 항목</th><th>결론</th><th>왜 못 하나</th><th>무엇이 오면 되나</th></tr></thead>
       <tbody>
-        <tr><td>일일 평균 학습 시간</td><td><strong>넣는다</strong></td><td><code>atmux.weekly_daily_avg_hours = 4.1</code>. <strong>별도 수집이 필요할 줄 알았는데 이미 계산돼 오고 있었다.</strong> 어느 7일 기준인지만 확인하면 된다</td></tr>
-        <tr><td>과제 상세</td><td><strong>넣는다</strong> (누적)</td><td><code>assignments{10, 9, 1}</code>. 주간 리포트의 <code>0</code>은 미수집이므로 쓰지 않고 <code>/sync/students</code>를 쓴다</td></tr>
-        <tr><td>퀴즈 상세</td><td><strong>넣는다</strong> (누적)</td><td><code>quizzes{7, 6, 91.0}</code>. 미채점(<code>0.0</code>)과 0점을 구분하는 가드가 붙는다</td></tr>
-        <tr><td>출결 상세</td><td><strong>넣는다</strong> (누적)</td><td><code>attendance{36, 11, 2, 3, 2}</code>. 5종 일수가 그대로 온다. 비율은 우리가 계산한다</td></tr>
-        <tr><td>평균 재시도 횟수</td><td><strong>못 한다</strong></td><td>간격만 오고 횟수 필드가 없다. 요청 항목으로 넘긴다. 대신 <strong>에러당 힌트(0.60)</strong>가 비슷한 질문에 답한다 — 막혔을 때 어떻게 대응하는가</td></tr>
+        <tr><td>일일 평균 학습 시간</td><td><strong>못 한다</strong></td><td>다섯 응답에 시간·접속 관련 필드가 하나도 없다</td><td>주차별 학습 시간 필드. 실습 서버 접속 시간을 집계해 내려주면 된다</td></tr>
+        <tr><td>과제 상세</td><td><strong>못 한다</strong></td><td><code>assignments_completed</code>가 <code>0</code>이고 <code>missing_fields</code>가 미수집을 선언한다</td><td>미수집 선언이 빠지고 실제 제출 건수가 들어오면 된다</td></tr>
+        <tr><td>퀴즈 상세</td><td><strong>못 한다</strong></td><td>필드 자체가 없다. 명세서 필드 사전에도 없다</td><td>응시·정답률·점수 필드가 주차별로 신설돼야 한다</td></tr>
+        <tr><td>출결 상세</td><td><strong>못 한다</strong></td><td><code>attendance_rate</code>가 전부 <code>100.0</code>이라 구별력이 없다</td><td>실제 출석률이거나, 출석·지각·결석 일수</td></tr>
+        <tr><td>평균 재시도 횟수</td><td><strong>못 한다</strong></td><td>간격만 오고 횟수 필드가 없다</td><td>재시도 건수. <strong>서버가 이미 세고 있을 가능성이 높다</strong> — 평균 간격을 계산하려면 건수가 필요하기 때문이다</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="callout">다섯 중 <strong>넷이 된다.</strong> 다만 셋(과제·퀴즈·출결)은 주차별이 아니라 <strong>누적</strong>이고, 그래서 화면에서 별도 블록으로 나뉜다. 처음에 "주간 리포트에 넣는다"고 생각했던 형태와는 다르다.</div>
+  <div class="callout"><strong>다섯 중 가장 받기 쉬운 것은 재시도 횟수다.</strong> 나머지 넷은 수집·집계 자체를 손봐야 하지만, 재시도 횟수는 서버가 이미 갖고 있는 값을 필드로 하나 더 내려주면 되는 일로 보인다. 요청할 때 우선순위를 여기에 두는 편이 낫다.</div>
+  <p>대신 <a href="#accept">2장</a>에서 정한 여섯 가지가 들어간다. 원래 원했던 것과 성격이 다르다 — 출결·과제·퀴즈가 <strong>학습 관리</strong> 정보라면, 넣기로 한 것은 <strong>실습 행동</strong> 정보다. 전자는 교육과정 허브의 전용 탭이 LMS에서 직접 가져와 담당한다.</p>
 </section>

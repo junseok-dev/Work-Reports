@@ -17,30 +17,31 @@
     </header>
     <main class="content"><section id="rule">
   <h2>1. 어떻게 판정했나</h2>
-  <p class="lead">이 문서는 검토와 구현 사이에 있다. 앞 단계(<a href="../2026-09-03_API_응답_기반_분석_가능성/">분석 가능성</a>)가 "무엇을 만들 수 있나"를 봤다면, 여기서는 <strong>"무엇을 넣기로 하는가"</strong>를 정한다. 뒤 단계(<a href="../2026-09-03_mock_데이터_구성안/">mock 구성</a>·<a href="../2026-09-03_주간진단리포트_항목별_데이터/">화면 렌더</a>)는 이 결정을 입력으로 받는다.</p>
-  <p>후보 29종에 네 가지를 물었다. 하나라도 걸리면 넣지 않는다.</p>
+  <p class="lead">앞 단계(<a href="../2026-09-03_API_응답_기반_분석_가능성/">분석 가능성</a>)가 "무엇을 만들 수 있나"를 봤다면, 여기서는 <strong>"무엇을 넣기로 하는가"</strong>를 정한다. 뒤 단계(<a href="../2026-09-03_mock_데이터_구성안/">mock 구성</a>·<a href="../2026-09-03_주간진단리포트_항목별_데이터/">화면 렌더</a>)는 이 결정을 입력으로 받는다.</p>
+  <div class="callout"><strong>명세서의 다섯 API만 재료로 쓴다.</strong> 문서에 없는 엔드포인트는 계약 밖이라 언제 사라져도 이상하지 않다. 거기 있는 값에 화면을 의존시키면 어느 날 화면이 깨진다. 그래서 후보에서 제외했다.</div>
+  <p>후보 20종에 네 가지를 물었다. 하나라도 걸리면 넣지 않는다.</p>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:14%"><col style="width:38%"><col style="width:48%"></colgroup>
       <thead><tr><th>기준</th><th>묻는 것</th><th>걸리면</th></tr></thead>
       <tbody>
-        <tr><td><strong>재료</strong></td><td>그 값을 주는 필드가 응답에 있나</td><td><strong>못 한다</strong> — GOV-AI에 요청</td></tr>
-        <tr><td><strong>단위</strong></td><td>주간 리포트에 맞는 단위인가</td><td>주차별이면 넣고, 누적이면 <strong>누적이라고 밝히고</strong> 넣는다</td></tr>
+        <tr><td><strong>재료</strong></td><td>그 값을 주는 필드가 다섯 API 안에 있나</td><td><strong>못 한다</strong> — GOV-AI에 요청</td></tr>
         <tr><td><strong>신뢰</strong></td><td>값이 실제를 반영하나</td><td><strong>보류</strong> — 원인 확인 후 재판정</td></tr>
         <tr><td><strong>중복</strong></td><td>이미 화면에 있는 것과 겹치나</td><td><strong>안 넣는다</strong></td></tr>
+        <tr><td><strong>해석</strong></td><td>수강생이 읽고 뜻을 알 수 있나</td><td><strong>안 넣는다</strong></td></tr>
       </tbody>
     </table>
   </div>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:18%"><col style="width:12%"><col style="width:70%"></colgroup>
+      <colgroup><col style="width:20%"><col style="width:12%"><col style="width:68%"></colgroup>
       <thead><tr><th>판정</th><th>건수</th><th>뜻</th></tr></thead>
       <tbody>
-        <tr><td><strong>넣는다</strong></td><td>11</td><td>지금 데이터로 되고, 화면에 올릴 값어치가 있다</td></tr>
+        <tr><td><strong>넣는다</strong></td><td>6</td><td>지금 데이터로 되고, 화면에 올릴 값어치가 있다</td></tr>
         <tr><td>보류</td><td>4</td><td>될 수도 있는데 조건이 해소돼야 한다</td></tr>
-        <tr><td>안 넣는다</td><td>6</td><td>되지만 넣지 않는다 — 중복이거나 수강생에게 의미가 없다</td></tr>
-        <tr><td><strong>못 한다</strong></td><td>5</td><td>재료가 없다. GOV-AI 확인 요청으로 넘긴다</td></tr>
-        <tr><td>결정 필요</td><td>1</td><td>데이터가 아니라 <strong>규정</strong>이 정해야 한다</td></tr>
+        <tr><td>안 넣는다</td><td>5</td><td>되지만 넣지 않는다 — 중복이거나 읽을 수 없는 숫자다</td></tr>
+        <tr><td>이미 있거나 흡수</td><td>5</td><td>지금 화면이 이미 보여주거나 다른 항목에 포함된다</td></tr>
+        <tr><td><strong>못 한다</strong></td><td>5</td><td>재료가 없다. 후보 밖이며 GOV-AI 확인 요청으로 넘긴다</td></tr>
       </tbody>
     </table>
   </div>
@@ -48,12 +49,12 @@
 </section>
 
 <section id="accept">
-  <h2>2. 넣는다 — 11종</h2>
+  <h2>2. 넣는다 — 6종</h2>
+  <p class="lead">여섯 가지 모두 재료가 <code>api4-history.json</code> 안에 있다. <strong>새로 호출해 받아올 것이 없다.</strong></p>
   <h3>2.1 주차 지표에 더할 것</h3>
-  <p>지금 지표 8칸 옆에 붙는다. 재료가 <code>api4-history.json</code> 안에 이미 있다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:20%"><col style="width:22%"><col style="width:22%"><col style="width:36%"></colgroup>
+      <colgroup><col style="width:20%"><col style="width:24%"><col style="width:20%"><col style="width:36%"></colgroup>
       <thead><tr><th>항목</th><th>화면 표기</th><th>계산</th><th>왜 넣나</th></tr></thead>
       <tbody>
         <tr><td><strong>에러당 힌트</strong></td><td>막혔을 때 10번 중 6번 힌트를 봤어요</td><td><code>286 ÷ 478 = 0.60</code></td><td>지금 있는 <code>hint_per_active_day 40.86</code>은 절대값이라 많은지 적은지 감이 안 온다. 비율은 <strong>자력 해결 정도</strong>를 바로 읽게 해준다</td></tr>
@@ -74,22 +75,7 @@
       </tbody>
     </table>
   </div>
-  <h3>2.3 누적으로 넣을 것</h3>
-  <p>재료가 <code>ext-sync-students.json</code>에 있다. <strong>주차별이 아니므로 "지금까지"로 표기한다</strong> — 이 조건이 빠지면 넣지 않는다.</p>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:18%"><col style="width:30%"><col style="width:18%"><col style="width:34%"></colgroup>
-      <thead><tr><th>항목</th><th>화면 표기</th><th>실측</th><th>조건</th></tr></thead>
-      <tbody>
-        <tr><td><strong>총 학습 시간</strong></td><td>지금까지 실습 서버에서 28.7시간</td><td><code>28.7</code></td><td><code>atmux.total_duration_hours</code> 그대로</td></tr>
-        <tr><td><strong>일 평균 학습 시간</strong></td><td>하루 평균 4.1시간</td><td><code>4.1</code></td><td>서버가 계산해 준다. <strong>어느 7일 기준인지 확인 필요</strong> — 요청 항목에 넣었다</td></tr>
-        <tr><td><strong>출결 구성</strong></td><td>출석 36 · 지각 11 · 조퇴 2 · 결석 3 · 공결 2일</td><td>합 <code>54</code>일</td><td>API 1·2·4의 <code>attendance_rate</code>는 <strong>쓰지 않는다</strong>(전원 100.0)</td></tr>
-        <tr><td><strong>과제 제출률</strong></td><td>10건 중 9건 제출</td><td><code>90.0%</code></td><td>주간 리포트의 <code>assignments_completed 0</code>은 쓰지 않는다</td></tr>
-        <tr><td><strong>퀴즈 응시·평균</strong></td><td>7문항 중 6응시 · 평균 91.0점</td><td><code>85.7%</code> · <code>91.0</code></td><td><code>total</code>이 0이면 감추고, <code>attempted</code>가 0이면 <strong>평균을 표시하지 않는다</strong>(미채점이 0점으로 보인다)</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="callout"><strong>누적을 주차 화면에 넣을 때의 규칙.</strong> 진단 리포트는 주차를 넘겨 보는 화면이다. 누적값은 주차를 바꿔도 같은 값이 나오므로, 주차 지표와 <strong>같은 영역에 섞어 놓으면 안 된다.</strong> 별도 블록으로 분리하고 <code>last_synced_at</code>을 함께 적는다.</div>
+  <div class="callout"><strong>여섯 다 실습 행동 로그다.</strong> 다섯 API가 쓸 만한 값을 주는 영역이 거기뿐이라 자연스러운 결과이고, <code>P0_12</code>가 정한 "진단 리포트는 실습 행동 로그 기반"과도 맞는다.</div>
 </section>
 
 <section id="hold">
@@ -111,19 +97,32 @@
 </section>
 
 <section id="reject">
-  <h2>4. 안 넣는다 — 6종</h2>
+  <h2>4. 안 넣는다 — 5종</h2>
   <p>만들 수는 있다. 넣지 않기로 한 이유가 각각 있다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:22%"><col style="width:16%"><col style="width:62%"></colgroup>
+      <colgroup><col style="width:24%"><col style="width:16%"><col style="width:60%"></colgroup>
       <thead><tr><th>항목</th><th>사유</th><th>설명</th></tr></thead>
       <tbody>
         <tr><td>활동 밀도 (<code>7 ÷ 7</code>)</td><td>중복</td><td>지표에 <strong>활동일 7일</strong>이 이미 있다. 같은 값을 비율로 한 번 더 보여줄 이유가 없다</td></tr>
+        <tr><td>활동 밀도 추세</td><td>중복</td><td>위와 같다. 활동일 자체가 주차별로 이미 보인다</td></tr>
         <tr><td>에러 집중도 (<code>63.6%</code>)</td><td>해석 불가</td><td>분모가 <code>top_error_types</code> 상위 3종이라 "상위 3종이 전체의 63.6%"라는 뜻이다. 나머지 36.4%가 몇 종인지 모르는 채로 수강생이 읽을 수 있는 숫자가 아니다</td></tr>
         <tr><td>최다 에러 비중 (<code>22.0%</code>)</td><td>중복</td><td>지표의 <strong>주요 에러</strong> 칸에 이미 유형과 횟수가 나온다</td></tr>
         <tr><td>확신도 추세</td><td>혼란</td><td>확신도는 <strong>AI 판정의 확실성</strong>이지 학습 상태가 아니다. 추세로 보여주면 "내 실력이 떨어졌나"로 읽힌다. 이번 주 값만 등급 옆에 두는 지금이 맞다</td></tr>
-        <tr><td>실습 서버 CPU (<code>29.5%</code>)</td><td>의미 없음</td><td>수강생이 보고 할 수 있는 일이 없다</td></tr>
-        <tr><td>텔레메트리 수집량 (<code>7,238</code>건)</td><td>의미 없음</td><td>내부 수집 지표다. 다만 접속 시간과 교차 검증하는 <strong>내부 용도</strong>로는 쓸 수 있다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>이미 있거나 다른 항목에 흡수된 것 — 5종</h3>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:26%"><col style="width:74%"></colgroup>
+      <thead><tr><th>항목</th><th>어디에 있나</th></tr></thead>
+      <tbody>
+        <tr><td>진도율</td><td>지표 <strong>진행 단계</strong> 칸이 <code>10/10 완료</code>로 이미 보여준다</td></tr>
+        <tr><td>학습 리듬</td><td><strong>잘하고 있는 점</strong>이 "7일 학습해 흐름을 유지했어요"로 이미 말한다</td></tr>
+        <tr><td>판정의 확실성</td><td>등급 옆 <strong>확신도</strong>로 이미 보인다</td></tr>
+        <tr><td>시행착오의 양</td><td>단계당 실행 횟수와 같은 지표다. 보류로 함께 묶었다</td></tr>
+        <tr><td>개선 폭</td><td><strong>에러율 추세</strong>에 포함해 넣기로 했다</td></tr>
       </tbody>
     </table>
   </div>
@@ -131,97 +130,88 @@
 
 <section id="blocked">
   <h2>5. 못 한다 — 5종</h2>
-  <p>재료가 없다. 우리가 만들 수 있는 것이 아니라 <strong>GOV-AI가 주어야 하는 것</strong>이다.</p>
+  <p class="lead">재료가 다섯 API 안에 없다. 우리가 계산으로 우회할 수 있는 것이 아니라 <strong>GOV-AI가 응답을 고쳐야 하는 것</strong>이다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:24%"><col style="width:18%"><col style="width:58%"></colgroup>
-      <thead><tr><th>항목</th><th>막히는 지점</th><th>근거</th></tr></thead>
+      <colgroup><col style="width:20%"><col style="width:18%"><col style="width:30%"><col style="width:32%"></colgroup>
+      <thead><tr><th>항목</th><th>막히는 지점</th><th>근거</th><th>무엇이 있어야 되나</th></tr></thead>
       <tbody>
-        <tr><td><strong>주차별 출결</strong></td><td>값이 틀렸다</td><td><code>attendance_rate</code>가 학생 5명·주차 4개 전부 <code>100.0</code>이다. 결석 11일인 학생도 같다</td></tr>
-        <tr><td><strong>주차별 과제</strong></td><td>미수집</td><td><code>missing_fields: ["assignments"]</code>. 서버가 스스로 안 받았다고 알린다</td></tr>
-        <tr><td><strong>주차별 퀴즈</strong></td><td>필드 없음</td><td>API 1~5 어디에도 없다. 명세서 필드 사전에도 없다</td></tr>
-        <tr><td><strong>주차별 학습 시간</strong></td><td>단위</td><td><code>atmux</code>가 누적이다. 주차로 나눌 수단이 없다</td></tr>
-        <tr><td><strong>평균 재시도 횟수</strong></td><td>필드 없음</td><td><code>avg_retry_gap_min</code>·<code>max_retry_gap_min</code>은 <strong>간격</strong>이고 횟수 필드가 없다. 그런데 평균을 냈다는 것은 <strong>서버가 재시도 건수를 세고 있다는 뜻</strong>이다. 갖고 있는데 안 주는 값이라 요청하면 받을 가능성이 있다</td></tr>
+        <tr><td><strong>출결</strong></td><td>값에 정보가 없다</td><td><code>attendance_rate</code>가 학생 5명·주차 4개·API 3종 전부 <code>100.0</code></td><td>학생·주차별 실제 값, 또는 출석·지각·결석 <strong>일수</strong></td></tr>
+        <tr><td><strong>과제</strong></td><td>미수집 선언</td><td><code>missing_fields: ["assignments"]</code></td><td><code>missing_fields</code>에서 빠지고 <code>assignments_completed</code>에 실제 건수</td></tr>
+        <tr><td><strong>퀴즈</strong></td><td>필드 없음</td><td>다섯 응답·명세서 필드 사전 모두에 없음</td><td><code>/reports/weekly</code>·<code>/reports/history</code>에 퀴즈 필드 신설</td></tr>
+        <tr><td><strong>학습 시간</strong></td><td>필드 없음</td><td>다섯 응답 어디에도 시간·접속 관련 필드가 없다</td><td>주차별 학습 시간 또는 접속 시간 필드</td></tr>
+        <tr><td><strong>평균 재시도 횟수</strong></td><td>필드 없음</td><td><code>avg_retry_gap_min</code>·<code>max_retry_gap_min</code>은 <strong>간격</strong>이고 횟수가 없다</td><td>재시도 <strong>건수</strong> 필드. 평균을 계산했다면 서버가 이미 세고 있다</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="callout"><strong>누적으로는 넷 다 된다.</strong> 출결·과제·퀴즈·학습 시간은 <code>/sync/students</code>에 실값이 있어 2.3에서 넣기로 했다. "못 한다"는 <strong>주차별</strong>에 한정된 판정이다. 다섯 번째인 재시도 횟수만 누적으로도 안 된다.</div>
+  <div class="callout"><strong>다섯 다 우회로가 없다.</strong> 다른 필드로 추정하거나 계산으로 만들어낼 수 없다. 요청 항목에 넣고, 응답이 바뀌기 전까지는 화면에서 뺀다. 근거는 <a href="../2026-09-03_API_응답_필드_정리/index.html#source-gaps">필드 정리 보고서 5장</a>에 있다.</div>
 </section>
 
 <section id="wishlist">
   <h2>6. 처음에 넣고 싶었던 다섯 가지</h2>
-  <p>검토를 시작할 때 추가하려던 항목들이다. 각각의 답을 한자리에 모은다.</p>
+  <p class="lead">검토를 시작할 때 추가하려던 항목들이다. 결론부터 적으면 <strong>다섯 다 지금은 못 한다.</strong> 넣고 싶지 않아서가 아니라 다섯 API가 재료를 주지 않아서다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:22%"><col style="width:14%"><col style="width:64%"></colgroup>
-      <thead><tr><th>원래 항목</th><th>결론</th><th>내용</th></tr></thead>
+      <colgroup><col style="width:20%"><col style="width:12%"><col style="width:34%"><col style="width:34%"></colgroup>
+      <thead><tr><th>원래 항목</th><th>결론</th><th>왜 못 하나</th><th>무엇이 오면 되나</th></tr></thead>
       <tbody>
-        <tr><td>일일 평균 학습 시간</td><td><strong>넣는다</strong></td><td><code>atmux.weekly_daily_avg_hours = 4.1</code>. <strong>별도 수집이 필요할 줄 알았는데 이미 계산돼 오고 있었다.</strong> 어느 7일 기준인지만 확인하면 된다</td></tr>
-        <tr><td>과제 상세</td><td><strong>넣는다</strong> (누적)</td><td><code>assignments{10, 9, 1}</code>. 주간 리포트의 <code>0</code>은 미수집이므로 쓰지 않고 <code>/sync/students</code>를 쓴다</td></tr>
-        <tr><td>퀴즈 상세</td><td><strong>넣는다</strong> (누적)</td><td><code>quizzes{7, 6, 91.0}</code>. 미채점(<code>0.0</code>)과 0점을 구분하는 가드가 붙는다</td></tr>
-        <tr><td>출결 상세</td><td><strong>넣는다</strong> (누적)</td><td><code>attendance{36, 11, 2, 3, 2}</code>. 5종 일수가 그대로 온다. 비율은 우리가 계산한다</td></tr>
-        <tr><td>평균 재시도 횟수</td><td><strong>못 한다</strong></td><td>간격만 오고 횟수 필드가 없다. 요청 항목으로 넘긴다. 대신 <strong>에러당 힌트(0.60)</strong>가 비슷한 질문에 답한다 — 막혔을 때 어떻게 대응하는가</td></tr>
+        <tr><td>일일 평균 학습 시간</td><td><strong>못 한다</strong></td><td>다섯 응답에 시간·접속 관련 필드가 하나도 없다</td><td>주차별 학습 시간 필드. 실습 서버 접속 시간을 집계해 내려주면 된다</td></tr>
+        <tr><td>과제 상세</td><td><strong>못 한다</strong></td><td><code>assignments_completed</code>가 <code>0</code>이고 <code>missing_fields</code>가 미수집을 선언한다</td><td>미수집 선언이 빠지고 실제 제출 건수가 들어오면 된다</td></tr>
+        <tr><td>퀴즈 상세</td><td><strong>못 한다</strong></td><td>필드 자체가 없다. 명세서 필드 사전에도 없다</td><td>응시·정답률·점수 필드가 주차별로 신설돼야 한다</td></tr>
+        <tr><td>출결 상세</td><td><strong>못 한다</strong></td><td><code>attendance_rate</code>가 전부 <code>100.0</code>이라 구별력이 없다</td><td>실제 출석률이거나, 출석·지각·결석 일수</td></tr>
+        <tr><td>평균 재시도 횟수</td><td><strong>못 한다</strong></td><td>간격만 오고 횟수 필드가 없다</td><td>재시도 건수. <strong>서버가 이미 세고 있을 가능성이 높다</strong> — 평균 간격을 계산하려면 건수가 필요하기 때문이다</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="callout">다섯 중 <strong>넷이 된다.</strong> 다만 셋(과제·퀴즈·출결)은 주차별이 아니라 <strong>누적</strong>이고, 그래서 화면에서 별도 블록으로 나뉜다. 처음에 "주간 리포트에 넣는다"고 생각했던 형태와는 다르다.</div>
+  <div class="callout"><strong>다섯 중 가장 받기 쉬운 것은 재시도 횟수다.</strong> 나머지 넷은 수집·집계 자체를 손봐야 하지만, 재시도 횟수는 서버가 이미 갖고 있는 값을 필드로 하나 더 내려주면 되는 일로 보인다. 요청할 때 우선순위를 여기에 두는 편이 낫다.</div>
+  <p>대신 <a href="#accept">2장</a>에서 정한 여섯 가지가 들어간다. 원래 원했던 것과 성격이 다르다 — 출결·과제·퀴즈가 <strong>학습 관리</strong> 정보라면, 넣기로 한 것은 <strong>실습 행동</strong> 정보다. 전자는 교육과정 허브의 전용 탭이 LMS에서 직접 가져와 담당한다.</p>
 </section>
 
 <section id="next">
   <h2>7. 이 결정이 다음 단계에 요구하는 것</h2>
-  <h3>7.1 mock — 추가 수집이 필요 없다</h3>
-  <p>넣기로 한 11종의 재료를 확인한 결과, <strong>지금 가진 fixture 두 개로 전부 된다.</strong></p>
+  <h3>7.1 mock — 새로 받아올 것이 없다</h3>
+  <p>넣기로 한 여섯 가지의 재료를 확인한 결과, <strong>이미 핸들러에 연결된 파일 하나로 전부 된다.</strong></p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:30%"><col style="width:26%"><col style="width:44%"></colgroup>
+      <colgroup><col style="width:34%"><col style="width:24%"><col style="width:42%"></colgroup>
       <thead><tr><th>넣는 것</th><th>재료 파일</th><th>지금 상태</th></tr></thead>
       <tbody>
-        <tr><td>에러당 힌트 · 등급 변화 · 에러율 추세 · 단계 증가 속도<br>문제 해결 방식 · 막힌 영역</td><td><code>api4-history.json</code></td><td><strong>이미 핸들러에 연결돼 있다.</strong> 어댑터에 계산만 더하면 된다</td></tr>
-        <tr><td>총 학습 시간 · 일 평균 학습 시간<br>출결 구성 · 과제 제출률 · 퀴즈 응시·평균</td><td><code>ext-sync-students.json</code></td><td><strong>파일은 있는데 핸들러에 연결돼 있지 않다.</strong> 지금은 스키마 참조용으로만 내보낸다. 개인 리포트 응답에 합쳐야 한다</td></tr>
+        <tr><td>에러당 힌트 · 등급 변화 · 에러율 추세 · 단계 증가 속도<br>문제 해결 방식 · 막힌 영역</td><td><code>api4-history.json</code></td><td><strong>이미 연결돼 있다.</strong> 어댑터에 계산과 문장 생성만 더하면 된다</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="callout"><strong>mock 작업은 수집이 아니라 배선이다.</strong> <code>ext-sync-students.json</code>을 <code>my-reports</code> 응답에 합치고, 누적 블록임을 타입으로 구분하면 된다. 새로 호출해 받아올 것이 없다.</div>
-  <h3>7.2 화면 — 주차 영역과 누적 영역을 나눈다</h3>
+  <div class="callout"><strong>mock 작업이 가장 가벼운 단계가 됐다.</strong> 파일을 추가하거나 새로 호출할 일이 없고, <code>adapter.ts</code>와 <code>derive.ts</code>에 계산을 붙이는 일만 남는다. 출결·과제·퀴즈를 뺀 결과이기도 하다.</div>
+  <h3>7.2 화면 — 추이 영역이 하나 는다</h3>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:26%"><col style="width:24%"><col style="width:50%"></colgroup>
+      <colgroup><col style="width:26%"><col style="width:30%"><col style="width:44%"></colgroup>
       <thead><tr><th>영역</th><th>무엇이 들어가나</th><th>표기 규칙</th></tr></thead>
       <tbody>
-        <tr><td>주차 지표 (기존 8칸)</td><td>에러당 힌트 <strong>추가</strong></td><td>주차를 바꾸면 값이 바뀐다</td></tr>
-        <tr><td>주차 추이 <strong>신설</strong></td><td>등급 변화 · 에러율 추세 · 단계 증가 속도</td><td>4주가 한 번에 보인다. <strong>결측 주차는 선을 잇지 않는다</strong></td></tr>
-        <tr><td>서술 4섹션 (기존)</td><td>문제 해결 방식 · 막힌 영역 <strong>추가</strong></td><td>지표에 근거가 있는 문장만</td></tr>
-        <tr><td><strong>누적 현황 신설</strong></td><td>학습 시간 · 출결 · 과제 · 퀴즈</td><td><strong>"지금까지"로 쓴다.</strong> 주차 영역과 섞지 않고 <code>last_synced_at</code>을 함께 적는다</td></tr>
+        <tr><td>지표 8칸 (기존)</td><td>에러당 힌트 <strong>추가</strong> → 9칸</td><td>주차를 바꾸면 값이 바뀐다</td></tr>
+        <tr><td><strong>주차 추이 신설</strong></td><td>등급 변화 · 에러율 추세 · 단계 증가 속도</td><td>4주가 한 번에 보인다. <strong>결측 주차는 선을 잇지 않는다</strong> — W33·W34는 힌트·재시도가 없다</td></tr>
+        <tr><td>서술 4섹션 (기존)</td><td>문제 해결 방식 · 막힌 영역 <strong>추가</strong></td><td>지표에 근거가 있는 문장만 만든다</td></tr>
       </tbody>
     </table>
   </div>
-  <h3>7.3 GOV-AI 확인 요청에 더할 것</h3>
+  <p>누적 블록은 만들지 않는다. 출결·과제·퀴즈·학습 시간이 전부 빠져 넣을 것이 없다.</p>
+  <h3>7.3 GOV-AI 확인 요청</h3>
+  <p>못 하기로 한 다섯 가지가 곧 요청 항목이다. 전체 11건은 <a href="../2026-09-03_API_응답_필드_정리/index.html#source-gaps">필드 정리 보고서 5.6</a>에 있고, 그중 이 결정에서 나온 것은 다음과 같다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:6%"><col style="width:30%"><col style="width:64%"></colgroup>
-      <thead><tr><th></th><th>항목</th><th>이유</th></tr></thead>
+      <colgroup><col style="width:8%"><col style="width:30%"><col style="width:62%"></colgroup>
+      <thead><tr><th>우선</th><th>항목</th><th>이유</th></tr></thead>
       <tbody>
-        <tr><td>A</td><td><strong>재시도 횟수 미제공</strong></td><td>평균 간격을 계산했다면 건수를 갖고 있다. 필드로 내려주면 원래 넣으려던 항목이 살아난다</td></tr>
-        <tr><td>B</td><td><code>weekly_daily_avg_hours</code>의 기준 기간</td><td>"주간"이 어느 7일인지 명세에 없다. 화면에 "하루 평균"으로 쓰려면 확정이 필요하다</td></tr>
-        <tr><td>C</td><td>실행량 급증 원인</td><td>W35→W36 18.7배. 수집 범위 변경이면 추세를 쓸 수 없다</td></tr>
-        <tr><td>D</td><td>축약 주차 지표 복원</td><td>W33·W34의 힌트·재시도가 없어 추세가 끊긴다</td></tr>
+        <tr><td><strong>높음</strong></td><td>재시도 횟수 필드</td><td>서버가 이미 세고 있을 값이라 가장 받기 쉽다. 원래 넣으려던 항목이 바로 살아난다</td></tr>
+        <tr><td><strong>높음</strong></td><td>출결 집계 수정</td><td>필드는 이미 있고 값만 고치면 된다. 스키마 변경이 필요 없다</td></tr>
+        <tr><td>중간</td><td>과제 수집 시작</td><td>LMS가 <code>data-ingest-api</code>로 이미 제공 중이라 수집 경로는 있다</td></tr>
+        <tr><td>중간</td><td>축약 주차 지표 복원</td><td>W33·W34에 힌트·재시도가 없어 추이 넷 중 둘이 끊긴다</td></tr>
+        <tr><td>중간</td><td>실행량 급증 원인</td><td>확인돼야 실행량 추세를 보류에서 풀 수 있다</td></tr>
+        <tr><td>낮음</td><td>퀴즈 필드 신설</td><td>스키마를 새로 만들어야 해 가장 오래 걸린다</td></tr>
+        <tr><td>낮음</td><td>학습 시간 필드</td><td>수집 자체가 없다면 가장 큰 작업이다</td></tr>
       </tbody>
     </table>
   </div>
-  <h3>7.4 남은 결정 하나 — 출석률 정의</h3>
-  <p>이것만 데이터로 정해지지 않는다. <strong>LMS 출결 규정이 정할 문제</strong>다.</p>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:30%"><col style="width:18%"><col style="width:52%"></colgroup>
-      <thead><tr><th>정의</th><th>황수빈</th><th>설명</th></tr></thead>
-      <tbody>
-        <tr><td>출석만 센다 <code>present ÷ 합계</code></td><td><code>66.7%</code></td><td>지각·조퇴를 결석과 같게 본다</td></tr>
-        <tr><td>지각·조퇴를 포함한다 <code>(present+late+early) ÷ 합계</code></td><td><code>90.7%</code></td><td>출석은 했다고 본다</td></tr>
-        <tr><td>공결을 분모에서 뺀다</td><td>별도 계산</td><td>공결은 사유가 인정된 결석이라 분모에서 제외하는 규정도 있다</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="callout">숫자가 <strong>24%p 차이</strong>가 난다. 수강생이 보는 값이라 규정과 다르면 문의가 들어온다. 교육과정 허브의 <code>출결/태도</code> 탭이 쓰는 정의와 <strong>반드시 같아야</strong> 한다 — 한 화면에서 66.7%, 다른 화면에서 90.7%가 나오면 안 된다.</div>
+  <div class="note">우선순위는 <strong>받기 쉬운 순</strong>이다. 값만 고치면 되는 것(출결)과 이미 있는 값을 내려주면 되는 것(재시도 횟수)이 위, 스키마를 새로 만들어야 하는 것(퀴즈·학습 시간)이 아래다.</div>
 </section></main>
     <footer class="report-footer">2026-09-03 기준 실호출 결과다. 인증 키는 저장소에 두지 않고 환경변수로 참조한다.</footer>
   </article>

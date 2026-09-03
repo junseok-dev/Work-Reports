@@ -1,29 +1,30 @@
 <section id="rule">
   <h2>1. 어떻게 판정했나</h2>
-  <p class="lead">이 문서는 검토와 구현 사이에 있다. 앞 단계(<a href="../2026-09-03_API_응답_기반_분석_가능성/">분석 가능성</a>)가 "무엇을 만들 수 있나"를 봤다면, 여기서는 <strong>"무엇을 넣기로 하는가"</strong>를 정한다. 뒤 단계(<a href="../2026-09-03_mock_데이터_구성안/">mock 구성</a>·<a href="../2026-09-03_주간진단리포트_항목별_데이터/">화면 렌더</a>)는 이 결정을 입력으로 받는다.</p>
-  <p>후보 29종에 네 가지를 물었다. 하나라도 걸리면 넣지 않는다.</p>
+  <p class="lead">앞 단계(<a href="../2026-09-03_API_응답_기반_분석_가능성/">분석 가능성</a>)가 "무엇을 만들 수 있나"를 봤다면, 여기서는 <strong>"무엇을 넣기로 하는가"</strong>를 정한다. 뒤 단계(<a href="../2026-09-03_mock_데이터_구성안/">mock 구성</a>·<a href="../2026-09-03_주간진단리포트_항목별_데이터/">화면 렌더</a>)는 이 결정을 입력으로 받는다.</p>
+  <div class="callout"><strong>명세서의 다섯 API만 재료로 쓴다.</strong> 문서에 없는 엔드포인트는 계약 밖이라 언제 사라져도 이상하지 않다. 거기 있는 값에 화면을 의존시키면 어느 날 화면이 깨진다. 그래서 후보에서 제외했다.</div>
+  <p>후보 20종에 네 가지를 물었다. 하나라도 걸리면 넣지 않는다.</p>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:14%"><col style="width:38%"><col style="width:48%"></colgroup>
       <thead><tr><th>기준</th><th>묻는 것</th><th>걸리면</th></tr></thead>
       <tbody>
-        <tr><td><strong>재료</strong></td><td>그 값을 주는 필드가 응답에 있나</td><td><strong>못 한다</strong> — GOV-AI에 요청</td></tr>
-        <tr><td><strong>단위</strong></td><td>주간 리포트에 맞는 단위인가</td><td>주차별이면 넣고, 누적이면 <strong>누적이라고 밝히고</strong> 넣는다</td></tr>
+        <tr><td><strong>재료</strong></td><td>그 값을 주는 필드가 다섯 API 안에 있나</td><td><strong>못 한다</strong> — GOV-AI에 요청</td></tr>
         <tr><td><strong>신뢰</strong></td><td>값이 실제를 반영하나</td><td><strong>보류</strong> — 원인 확인 후 재판정</td></tr>
         <tr><td><strong>중복</strong></td><td>이미 화면에 있는 것과 겹치나</td><td><strong>안 넣는다</strong></td></tr>
+        <tr><td><strong>해석</strong></td><td>수강생이 읽고 뜻을 알 수 있나</td><td><strong>안 넣는다</strong></td></tr>
       </tbody>
     </table>
   </div>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:18%"><col style="width:12%"><col style="width:70%"></colgroup>
+      <colgroup><col style="width:20%"><col style="width:12%"><col style="width:68%"></colgroup>
       <thead><tr><th>판정</th><th>건수</th><th>뜻</th></tr></thead>
       <tbody>
-        <tr><td><strong>넣는다</strong></td><td>11</td><td>지금 데이터로 되고, 화면에 올릴 값어치가 있다</td></tr>
+        <tr><td><strong>넣는다</strong></td><td>6</td><td>지금 데이터로 되고, 화면에 올릴 값어치가 있다</td></tr>
         <tr><td>보류</td><td>4</td><td>될 수도 있는데 조건이 해소돼야 한다</td></tr>
-        <tr><td>안 넣는다</td><td>6</td><td>되지만 넣지 않는다 — 중복이거나 수강생에게 의미가 없다</td></tr>
-        <tr><td><strong>못 한다</strong></td><td>5</td><td>재료가 없다. GOV-AI 확인 요청으로 넘긴다</td></tr>
-        <tr><td>결정 필요</td><td>1</td><td>데이터가 아니라 <strong>규정</strong>이 정해야 한다</td></tr>
+        <tr><td>안 넣는다</td><td>5</td><td>되지만 넣지 않는다 — 중복이거나 읽을 수 없는 숫자다</td></tr>
+        <tr><td>이미 있거나 흡수</td><td>5</td><td>지금 화면이 이미 보여주거나 다른 항목에 포함된다</td></tr>
+        <tr><td><strong>못 한다</strong></td><td>5</td><td>재료가 없다. 후보 밖이며 GOV-AI 확인 요청으로 넘긴다</td></tr>
       </tbody>
     </table>
   </div>

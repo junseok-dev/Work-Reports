@@ -1,43 +1,43 @@
 <section id="for-analysis">
-  <h2>7. 분석을 붙인다면 mock에 무엇이 더 필요한가</h2>
-  <p class="lead"><a href="../2026-09-03_API_응답_기반_분석_가능성/">분석 가능성 보고서</a>가 정리한 통계를 화면에 올린다고 할 때, 지금 fixture로 되는 것과 더 받아야 하는 것을 가른다. 기준은 하나다 — <strong>실제로 호출해서 받은 값만 쓴다.</strong></p>
+  <h2>7. 확정 항목을 넣으려면 무엇이 더 필요한가</h2>
+  <p class="lead"><a href="../2026-09-03_추가_항목_확정/#accept">확정 보고서</a>가 정한 여섯 가지를 화면에 올린다고 할 때, 지금 fixture로 되는 것과 더 받아야 하는 것을 가른다. 기준은 하나다 — <strong>명세서의 다섯 API를 실제로 호출해 받은 값만 쓴다.</strong></p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:30%"><col style="width:14%"><col style="width:56%"></colgroup>
-      <thead><tr><th>분석</th><th>지금 되나</th><th>이유</th></tr></thead>
+      <colgroup><col style="width:34%"><col style="width:14%"><col style="width:52%"></colgroup>
+      <thead><tr><th>확정 항목</th><th>지금 되나</th><th>이유</th></tr></thead>
       <tbody>
-        <tr><td>한 주차 파생 지표 7종<br><span>단계당 실행·활동 밀도·에러 집중도 등</span></td><td><strong>된다</strong></td><td><code>api4-history.json</code> 한 행에서 전부 계산된다. 추가 수집이 필요 없다</td></tr>
-        <tr><td>주차 추이 7종<br><span>등급·에러율·단계·실행량 등</span></td><td><strong>된다</strong></td><td>W33~W36 4주가 이미 배열로 들어 있다. 다만 힌트·재시도는 <strong>축약 주차 2주가 결측</strong>이라 선이 끊긴다</td></tr>
-        <tr><td>누적 통계 9종<br><span>출결·과제·퀴즈·학습 시간</span></td><td><strong>된다</strong></td><td><code>ext-sync-students.json</code>에 <code>attendance</code>·<code>assignments</code>·<code>quizzes</code>·<code>atmux</code>가 모두 있다</td></tr>
-        <tr><td>진도율 (분모 있는 형태)</td><td>부분</td><td><code>total_steps</code>가 <code>api2-certificate.json</code>에 있으므로 두 파일을 함께 읽으면 된다</td></tr>
+        <tr><td>에러당 힌트<br>문제 해결 방식 · 막힌 영역</td><td><strong>된다</strong></td><td><code>api4-history.json</code> 한 행에서 전부 계산된다. <code>hint_requests_count</code>·<code>total_errors</code>·<code>avg_retry_gap_min</code>·<code>top_error_types</code>가 다 들어 있다</td></tr>
+        <tr><td>등급 변화 이력 · 에러율 추세<br>단계 증가 속도</td><td><strong>된다</strong></td><td>W33~W36 4주가 이미 배열로 들어 있다. 주차 간 차분만 하면 된다</td></tr>
+        <tr><td><span>(참고) 진도율의 분모</span></td><td>부분</td><td><code>total_steps</code>가 <code>api2-certificate.json</code>에 있다. 두 파일을 함께 읽으면 상수 <code>10</code>을 없앨 수 있다</td></tr>
         <tr><td><strong>기수·반 평균 대비 비교</strong></td><td><strong>안 된다</strong></td><td>지금 fixture는 <strong>학생 한 명</strong>이다. 분포를 계산할 상대가 없다</td></tr>
-        <tr><td><strong>동료 대비 백분위</strong></td><td><strong>안 된다</strong></td><td>위와 같다</td></tr>
       </tbody>
     </table>
   </div>
-  <h3>다학생 분포를 하려면</h3>
-  <p>두 호출의 성격이 달라서 난이도도 다르다.</p>
+  <div class="callout"><strong>확정 여섯 가지는 추가 수집이 전혀 필요 없다.</strong> 파일도 그대로, 호출도 그대로다. <code>adapter.ts</code>와 <code>derive.ts</code>에 계산과 문장 생성을 더하는 일만 남는다.</div>
+  <h3>분포를 하려면 — 표본이 얇다</h3>
+  <p>다섯 API 중 여러 학생의 주차 지표를 주는 것은 <code>/reports/history</code>뿐인데 <strong>학생마다 따로 호출해야 한다.</strong></p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:26%"><col style="width:22%"><col style="width:52%"></colgroup>
-      <thead><tr><th>필요한 것</th><th>호출</th><th>지금 상태</th></tr></thead>
+      <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+      <thead><tr><th>관측</th><th>내용</th></tr></thead>
       <tbody>
-        <tr><td><strong>누적 지표의 분포</strong><br><span>출결·과제·퀴즈·학습 시간</span></td><td><code>GET /sync/students?limit=200</code></td><td><strong>이미 한 번에 123명 전원이 온다.</strong> 지금 fixture는 거기서 <strong>한 명만 잘라</strong> 왔다. 응답 전체를 저장하면 그날로 분포를 만들 수 있다</td></tr>
-        <tr><td><strong>주차 지표의 분포</strong><br><span>등급·에러율·힌트</span></td><td><code>GET /reports/history/{uuid}</code></td><td><strong>학생마다 따로 불러야 한다.</strong> 게다가 표본이 얇다 — 15명을 확인했을 때 리포트가 있는 학생이 6명이었고 대부분 1주치뿐이었다. 4주가 온 것은 데모 시드 계정 하나였다</td></tr>
+        <tr><td>표본</td><td>15명을 확인했을 때 리포트가 있는 학생이 <strong>6명</strong>이었고 대부분 <strong>1주치</strong>뿐이었다. 4주가 온 것은 데모 시드 계정 하나였다</td></tr>
+        <tr><td>호출 비용</td><td>기수 전체를 보려면 학생 수만큼 호출해야 한다. 한 번에 여러 학생을 주는 엔드포인트가 다섯 API 안에 없다</td></tr>
+        <tr><td>판단</td><td><strong>표본이 쌓일 때까지 분포·백분위는 화면에 올리지 않는다.</strong> 없는 학생을 지어내면 화면은 그럴듯해지지만 실연동에서 전혀 다른 그림이 나온다</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="callout"><strong>없는 학생을 지어내지 않는다.</strong> 분포가 필요하다고 가짜 학생을 만들면 화면은 그럴듯해지지만 실연동에서 전혀 다른 그림이 나온다. 누적 분포는 <code>/sync/students</code> 응답을 통째로 저장해 해결하고, 주차 분포는 <strong>표본이 쌓일 때까지 화면에 올리지 않는다.</strong></div>
-  <h3>추가한다면 이 두 파일</h3>
+  <h3>파일을 손볼 것</h3>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:28%"><col style="width:24%"><col style="width:48%"></colgroup>
-      <thead><tr><th>파일</th><th>호출</th><th>무엇을 담나</th></tr></thead>
+      <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+      <thead><tr><th>대상</th><th>할 일</th></tr></thead>
       <tbody>
-        <tr><td><code>ext-sync-students-all.json</code></td><td><code>GET /sync/students?limit=200</code></td><td>응답 전체(123명). 지금 한 명짜리 <code>ext-sync-students.json</code>을 대체하지 않고 나란히 둔다 — 한 명짜리는 화면 mock, 전체는 분포 계산용</td></tr>
-        <tr><td><code>api2-certificate.json</code></td><td>이미 있음</td><td><code>total_steps</code>를 쓰려면 <code>index.ts</code>에서 함께 내보내면 된다. 새 수집이 필요 없다</td></tr>
+        <tr><td><code>ext-sync-students.json</code></td><td><strong>제거한다.</strong> 문서 밖 엔드포인트의 응답이라 계약 밖이다. <code>index.ts</code>의 <code>DATALAKE_SAMPLES</code>에서도 뺀다</td></tr>
+        <tr><td><code>_manifest.json</code></td><td><code>files</code> 목록에서 위 파일을 지우고 <code>knownQuirks</code>의 관련 줄을 정리한다</td></tr>
+        <tr><td><code>api2-certificate.json</code></td><td>이미 있다. <code>total_steps</code>를 쓰려면 <code>index.ts</code>에서 함께 내보내면 된다</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="note">파일이 늘면 <code>_manifest.json</code>의 <code>files</code> 목록과 <code>collectedAt</code>을 함께 갱신한다. 어느 시점에 받은 값인지 없으면 <strong>주차 지표가 캐시본이라 나중에 대조가 불가능해진다.</strong></div>
+  <div class="note">파일이 바뀌면 <code>_manifest.json</code>의 <code>collectedAt</code>도 함께 본다. 주차 지표가 캐시본이라 <strong>언제 받은 값인지 없으면 나중에 대조가 불가능하다.</strong></div>
 </section>

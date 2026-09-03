@@ -1,6 +1,6 @@
 <section id="api-calls">
   <h2>2. API 1~5 호출과 응답</h2>
-  <p class="lead">명세서 §2의 다섯 엔드포인트를 순서대로 호출한 결과다. 각 호출의 실제 명령과 응답의 최상위 구조를 기록한다. 필드 하나하나는 <a href="#fields">3장</a>에서 편다.</p>
+  <p class="lead">명세서 §2의 다섯 엔드포인트를 순서대로 호출한 결과다. 각 호출의 실제 명령과 응답의 최상위 구조를 기록한다. 명세서에 정의된 다섯 개가 전부다. 필드 하나하나는 <a href="#fields">3장</a>에서 편다.</p>
 
   <h3>API 1. 주간 AI 학습 맞춤 진단 리포트</h3>
   <pre><code>curl -X GET "$B/reports/weekly/$U?format=json" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
@@ -71,35 +71,4 @@ curl -X POST "$B/feedback/approve" -H "X-DE-API-KEY: $DE_API_KEY"   -H "Content-
   <p>응답은 3필드뿐이다. 승인 로그가 <strong>누적 생성</strong>되고 삭제 API가 없으므로, 검증 호출에는 <code>[TEST]</code> 표기를 붙여 나중에 골라낼 수 있게 했다.</p>
   <div class="note"><code>log_id</code>의 시각 <code>103059</code>는 <strong>KST</strong>다. 같은 순간 다른 응답의 <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 UTC로 온다. 한 서비스 안에서 타임존이 섞여 있다.</p></div>
 
-  <h3>문서 밖 엔드포인트 — <code>/sync/students</code></h3>
-  <p>명세서 5개 API에는 없고 <code>/openapi.json</code>에서 찾은 엔드포인트다.</p>
-  <pre><code>curl -X GET "$B/sync/students?limit=200" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
-  <pre><code>student_uuid · user_id · name · cohort_id · cohort_label · education_title · training_status
-assignments {total, submitted, not_submitted}
-quizzes     {total, attempted, avg_score_pct}
-attendance  {present, late, early_leave, absent, excused}
-atmux       {total_duration_sec, total_duration_hours, weekly_daily_avg_hours, avg_cpu_util, telemetry_count}
-playlang    {current_step, course, language, total_events, runs_count, errors_count, hints_count, error_rate_pct}
-last_synced_at</code></pre>
-  <p>학생 마스터라 123명 전원이 오고, <strong>주차 개념이 없다.</strong> <code>last_synced_at</code> 시점의 누적 현재값이다. 이 블록들의 실측값과 그것으로 무엇을 낼 수 있는지는 <a href="#source-gaps">4장</a>에서 다룬다.</p>
-
-  <h4>왜 호출되는가</h4>
-  <p>문서에 없는데 응답이 오는 이유는 <strong>인증이 하나이기 때문</strong>이다. 5개 API와 같은 <code>X-DE-API-KEY</code>를 쓰고 엔드포인트별 권한 구분이 없다. 문서에 안 적혔을 뿐 막혀 있지 않다.</p>
-  <p>그렇다면 이 엔드포인트는 무엇을 위한 것인가. 응답에서 관측되는 것은 다음과 같다.</p>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
-      <thead><tr><th>관측</th><th>무엇을 말해주나</th></tr></thead>
-      <tbody>
-        <tr><td>이름이 <code>sync</code>다</td><td>분석(<code>analysis</code>)·진단(<code>diagnose</code>)·리포트(<code>reports</code>)와 이름 계열이 다르다.</td></tr>
-        <tr><td><code>last_synced_at</code>을 담는다</td><td>주차가 아니라 <strong>마지막 동기화 시각</strong>을 기준으로 한다. 분석 산출물이라면 필요 없는 필드다.</td></tr>
-        <tr><td>주차 개념이 없다</td><td>123명 전원의 <strong>현재 누적값</strong>만 온다. 주차를 바꿔 호출할 수단이 없다.</td></tr>
-        <tr><td>필드 모양이 LMS와 같다</td><td>LMS <code>data-ingest-api</code>가 주는 구조를 거의 그대로 따르고 <code>camelCase → snake_case</code>만 바뀌었다.</td></tr>
-        <tr><td><code>education_title</code>·<code>training_status</code>가 있다</td><td>분석에 쓰이지 않는 <strong>행정 정보</strong>다. 5개 API 어디에도 없다.</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p>종합하면 이 엔드포인트는 분석 결과를 내주는 곳이 아니라 <strong>LMS가 넘긴 원천이 제대로 적재됐는지 확인하는 동기화 점검용</strong>으로 보인다. LMS가 보낸 값이 그대로 남아 있는 것이지, GOV-AI가 분석해 만든 값이 아니다. 적재 경로는 <a href="#source-gaps">4.5</a>에 정리했다.</p>
-  <div class="callout">다만 이는 <strong>관측에 근거한 해석</strong>이다. 명세서에 설명이 없어 확정할 수 없으므로, 이 엔드포인트를 우리가 계속 호출해도 되는지와 값의 갱신 주기를 GOV-AI에 확인해야 한다(4장 요청 항목).</div>
-  <p>주차가 없어 주간 리포트의 시계열에는 그대로 넣을 수 없다. 무엇을 쓸 수 있고 무엇을 못 쓰는지는 <a href="#source-gaps">4장</a>에서 가른다.</p>
 </section>

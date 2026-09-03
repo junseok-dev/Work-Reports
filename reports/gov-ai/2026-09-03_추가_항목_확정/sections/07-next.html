@@ -1,56 +1,46 @@
 <section id="next">
   <h2>7. 이 결정이 다음 단계에 요구하는 것</h2>
-  <h3>7.1 mock — 추가 수집이 필요 없다</h3>
-  <p>넣기로 한 11종의 재료를 확인한 결과, <strong>지금 가진 fixture 두 개로 전부 된다.</strong></p>
+  <h3>7.1 mock — 새로 받아올 것이 없다</h3>
+  <p>넣기로 한 여섯 가지의 재료를 확인한 결과, <strong>이미 핸들러에 연결된 파일 하나로 전부 된다.</strong></p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:30%"><col style="width:26%"><col style="width:44%"></colgroup>
+      <colgroup><col style="width:34%"><col style="width:24%"><col style="width:42%"></colgroup>
       <thead><tr><th>넣는 것</th><th>재료 파일</th><th>지금 상태</th></tr></thead>
       <tbody>
-        <tr><td>에러당 힌트 · 등급 변화 · 에러율 추세 · 단계 증가 속도<br>문제 해결 방식 · 막힌 영역</td><td><code>api4-history.json</code></td><td><strong>이미 핸들러에 연결돼 있다.</strong> 어댑터에 계산만 더하면 된다</td></tr>
-        <tr><td>총 학습 시간 · 일 평균 학습 시간<br>출결 구성 · 과제 제출률 · 퀴즈 응시·평균</td><td><code>ext-sync-students.json</code></td><td><strong>파일은 있는데 핸들러에 연결돼 있지 않다.</strong> 지금은 스키마 참조용으로만 내보낸다. 개인 리포트 응답에 합쳐야 한다</td></tr>
+        <tr><td>에러당 힌트 · 등급 변화 · 에러율 추세 · 단계 증가 속도<br>문제 해결 방식 · 막힌 영역</td><td><code>api4-history.json</code></td><td><strong>이미 연결돼 있다.</strong> 어댑터에 계산과 문장 생성만 더하면 된다</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="callout"><strong>mock 작업은 수집이 아니라 배선이다.</strong> <code>ext-sync-students.json</code>을 <code>my-reports</code> 응답에 합치고, 누적 블록임을 타입으로 구분하면 된다. 새로 호출해 받아올 것이 없다.</div>
-  <h3>7.2 화면 — 주차 영역과 누적 영역을 나눈다</h3>
+  <div class="callout"><strong>mock 작업이 가장 가벼운 단계가 됐다.</strong> 파일을 추가하거나 새로 호출할 일이 없고, <code>adapter.ts</code>와 <code>derive.ts</code>에 계산을 붙이는 일만 남는다. 출결·과제·퀴즈를 뺀 결과이기도 하다.</div>
+  <h3>7.2 화면 — 추이 영역이 하나 는다</h3>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:26%"><col style="width:24%"><col style="width:50%"></colgroup>
+      <colgroup><col style="width:26%"><col style="width:30%"><col style="width:44%"></colgroup>
       <thead><tr><th>영역</th><th>무엇이 들어가나</th><th>표기 규칙</th></tr></thead>
       <tbody>
-        <tr><td>주차 지표 (기존 8칸)</td><td>에러당 힌트 <strong>추가</strong></td><td>주차를 바꾸면 값이 바뀐다</td></tr>
-        <tr><td>주차 추이 <strong>신설</strong></td><td>등급 변화 · 에러율 추세 · 단계 증가 속도</td><td>4주가 한 번에 보인다. <strong>결측 주차는 선을 잇지 않는다</strong></td></tr>
-        <tr><td>서술 4섹션 (기존)</td><td>문제 해결 방식 · 막힌 영역 <strong>추가</strong></td><td>지표에 근거가 있는 문장만</td></tr>
-        <tr><td><strong>누적 현황 신설</strong></td><td>학습 시간 · 출결 · 과제 · 퀴즈</td><td><strong>"지금까지"로 쓴다.</strong> 주차 영역과 섞지 않고 <code>last_synced_at</code>을 함께 적는다</td></tr>
+        <tr><td>지표 8칸 (기존)</td><td>에러당 힌트 <strong>추가</strong> → 9칸</td><td>주차를 바꾸면 값이 바뀐다</td></tr>
+        <tr><td><strong>주차 추이 신설</strong></td><td>등급 변화 · 에러율 추세 · 단계 증가 속도</td><td>4주가 한 번에 보인다. <strong>결측 주차는 선을 잇지 않는다</strong> — W33·W34는 힌트·재시도가 없다</td></tr>
+        <tr><td>서술 4섹션 (기존)</td><td>문제 해결 방식 · 막힌 영역 <strong>추가</strong></td><td>지표에 근거가 있는 문장만 만든다</td></tr>
       </tbody>
     </table>
   </div>
-  <h3>7.3 GOV-AI 확인 요청에 더할 것</h3>
+  <p>누적 블록은 만들지 않는다. 출결·과제·퀴즈·학습 시간이 전부 빠져 넣을 것이 없다.</p>
+  <h3>7.3 GOV-AI 확인 요청</h3>
+  <p>못 하기로 한 다섯 가지가 곧 요청 항목이다. 전체 11건은 <a href="../2026-09-03_API_응답_필드_정리/index.html#source-gaps">필드 정리 보고서 5.6</a>에 있고, 그중 이 결정에서 나온 것은 다음과 같다.</p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:6%"><col style="width:30%"><col style="width:64%"></colgroup>
-      <thead><tr><th></th><th>항목</th><th>이유</th></tr></thead>
+      <colgroup><col style="width:8%"><col style="width:30%"><col style="width:62%"></colgroup>
+      <thead><tr><th>우선</th><th>항목</th><th>이유</th></tr></thead>
       <tbody>
-        <tr><td>A</td><td><strong>재시도 횟수 미제공</strong></td><td>평균 간격을 계산했다면 건수를 갖고 있다. 필드로 내려주면 원래 넣으려던 항목이 살아난다</td></tr>
-        <tr><td>B</td><td><code>weekly_daily_avg_hours</code>의 기준 기간</td><td>"주간"이 어느 7일인지 명세에 없다. 화면에 "하루 평균"으로 쓰려면 확정이 필요하다</td></tr>
-        <tr><td>C</td><td>실행량 급증 원인</td><td>W35→W36 18.7배. 수집 범위 변경이면 추세를 쓸 수 없다</td></tr>
-        <tr><td>D</td><td>축약 주차 지표 복원</td><td>W33·W34의 힌트·재시도가 없어 추세가 끊긴다</td></tr>
+        <tr><td><strong>높음</strong></td><td>재시도 횟수 필드</td><td>서버가 이미 세고 있을 값이라 가장 받기 쉽다. 원래 넣으려던 항목이 바로 살아난다</td></tr>
+        <tr><td><strong>높음</strong></td><td>출결 집계 수정</td><td>필드는 이미 있고 값만 고치면 된다. 스키마 변경이 필요 없다</td></tr>
+        <tr><td>중간</td><td>과제 수집 시작</td><td>LMS가 <code>data-ingest-api</code>로 이미 제공 중이라 수집 경로는 있다</td></tr>
+        <tr><td>중간</td><td>축약 주차 지표 복원</td><td>W33·W34에 힌트·재시도가 없어 추이 넷 중 둘이 끊긴다</td></tr>
+        <tr><td>중간</td><td>실행량 급증 원인</td><td>확인돼야 실행량 추세를 보류에서 풀 수 있다</td></tr>
+        <tr><td>낮음</td><td>퀴즈 필드 신설</td><td>스키마를 새로 만들어야 해 가장 오래 걸린다</td></tr>
+        <tr><td>낮음</td><td>학습 시간 필드</td><td>수집 자체가 없다면 가장 큰 작업이다</td></tr>
       </tbody>
     </table>
   </div>
-  <h3>7.4 남은 결정 하나 — 출석률 정의</h3>
-  <p>이것만 데이터로 정해지지 않는다. <strong>LMS 출결 규정이 정할 문제</strong>다.</p>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:30%"><col style="width:18%"><col style="width:52%"></colgroup>
-      <thead><tr><th>정의</th><th>황수빈</th><th>설명</th></tr></thead>
-      <tbody>
-        <tr><td>출석만 센다 <code>present ÷ 합계</code></td><td><code>66.7%</code></td><td>지각·조퇴를 결석과 같게 본다</td></tr>
-        <tr><td>지각·조퇴를 포함한다 <code>(present+late+early) ÷ 합계</code></td><td><code>90.7%</code></td><td>출석은 했다고 본다</td></tr>
-        <tr><td>공결을 분모에서 뺀다</td><td>별도 계산</td><td>공결은 사유가 인정된 결석이라 분모에서 제외하는 규정도 있다</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="callout">숫자가 <strong>24%p 차이</strong>가 난다. 수강생이 보는 값이라 규정과 다르면 문의가 들어온다. 교육과정 허브의 <code>출결/태도</code> 탭이 쓰는 정의와 <strong>반드시 같아야</strong> 한다 — 한 화면에서 66.7%, 다른 화면에서 90.7%가 나오면 안 된다.</div>
+  <div class="note">우선순위는 <strong>받기 쉬운 순</strong>이다. 값만 고치면 되는 것(출결)과 이미 있는 값을 내려주면 되는 것(재시도 횟수)이 위, 스키마를 새로 만들어야 하는 것(퀴즈·학습 시간)이 아래다.</div>
 </section>

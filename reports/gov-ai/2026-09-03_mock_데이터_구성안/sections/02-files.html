@@ -1,6 +1,6 @@
 <section id="files">
-  <h2>2. 몇 개로 나누는가 — 9개 + 매니페스트</h2>
-  <p>호출 5개에 대해 응답 형태가 갈리는 변형을 더해 9개가 된다. API 1은 <strong>같은 엔드포인트인데 파라미터에 따라 스키마가 달라져</strong> 셋으로 나눴다.</p>
+  <h2>2. 몇 개로 나누는가 — 8개 + 매니페스트</h2>
+  <p>호출 5개에 대해 응답 형태가 갈리는 변형을 더해 8개가 된다. API 1은 <strong>같은 엔드포인트인데 파라미터에 따라 스키마가 달라져</strong> 셋으로 나눴다.</p>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:22%"><col style="width:30%"><col style="width:10%"><col style="width:38%"></colgroup>
@@ -14,10 +14,9 @@
         <tr><td><code>api3-diagnose.json</code></td><td><code>POST /analysis/diagnose/{uuid}</code></td><td>3,624</td><td>진단 블록이 최상위로 평탄화된 형태. API 1의 <code>diagnosis</code>와 키가 같고 값이 다르다</td></tr>
         <tr><td><code>api4-history.json</code></td><td><code>GET /reports/history/{uuid}?limit=30</code></td><td>11,948</td><td><strong>화면의 주 재료.</strong> W33~W36 4주치가 배열로 온다</td></tr>
         <tr><td><code>api5-approve.json</code></td><td><code>POST /feedback/approve</code></td><td>387</td><td>요청·응답 형태. <strong>실제로는 호출하지 않았다</strong> — 승인 로그가 누적되고 삭제 API가 없어, 관측된 형태로만 구성했다</td></tr>
-        <tr><td><code>ext-sync-students.json</code></td><td><code>GET /sync/students?limit=200</code></td><td>1,108</td><td>문서 밖 엔드포인트. 출결·과제·퀴즈·atmux 상세가 <strong>여기에만</strong> 있다. <code>ext-</code> 접두사로 명세서 밖임을 표시</td></tr>
         <tr><td><code>_manifest.json</code></td><td>—</td><td>3,422</td><td>출처·수집 시각·치환 규칙·알려진 특이사항. <strong>근거를 파일 안에 남긴다</strong></td></tr>
       </tbody>
     </table>
   </div>
-  <div class="callout"><strong>화면은 <code>api4-history.json</code> 하나만 쓴다.</strong> 그런데도 9개를 두는 이유는 나머지가 <em>대조용</em>이기 때문이다 — 필드명이 호출마다 다르고(<code>studentUuid</code>↔<code>student_uuid</code>), 같은 값이 호출마다 어긋나며(확신도 <code>0.8</code>↔<code>0.85</code>), 주차에 따라 필드가 사라진다. 어댑터가 이 셋을 모두 흡수하는지 검증하려면 원본이 남아 있어야 한다.</div>
+  <div class="callout"><strong>화면은 <code>api4-history.json</code> 하나만 쓴다.</strong> 그런데도 8개를 두는 이유는 나머지가 <em>대조용</em>이기 때문이다 — 필드명이 호출마다 다르고(<code>studentUuid</code>↔<code>student_uuid</code>), 같은 값이 호출마다 어긋나며(확신도 <code>0.8</code>↔<code>0.85</code>), 주차에 따라 필드가 사라진다. 어댑터가 이 셋을 모두 흡수하는지 검증하려면 원본이 남아 있어야 한다.</div>
 </section>

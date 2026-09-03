@@ -13,7 +13,7 @@
         <tr><td><code>cohort</code></td><td><code>34기</code></td><td>문자열 3자</td><td><strong>숫자에 한글 접미사가 붙은 표시명이다.</strong> 기수 번호가 따로 오지 않으므로 정렬하려면 파싱해야 한다. 문자열로 정렬하면 <code>34기</code>가 <code>9기</code>보다 앞에 온다</td></tr>
         <tr><td><code>cohortId</code></td><td><code>f34c88f3-7cd2-…</code></td><td>UUID 36자</td><td>기수의 기계용 식별자. 정렬·비교는 이쪽을 쓴다</td></tr>
         <tr><td><code>group</code></td><td><code>A</code></td><td>문자 1자</td><td>반. 값 범위가 명세에 없어 <code>A</code> 외에 무엇이 오는지 알 수 없다</td></tr>
-        <tr><td><code>language</code></td><td><code>python</code></td><td>소문자 문자열</td><td><strong>이 값을 화면에 쓰면 안 된다.</strong> 주간 리포트는 전원을 <code>python</code>으로 준다. 황수빈의 실제 언어는 <code>/sync/students</code>의 <code>typescript</code>다</td></tr>
+        <tr><td><code>language</code></td><td><code>python</code></td><td>소문자 문자열</td><td><strong>이 값은 확인이 필요하다.</strong> 주간 리포트가 학생을 가리지 않고 <code>python</code>을 준다. 값 범위가 명세에 없어 실제 실습 언어를 반영한 것인지 알 수 없다</td></tr>
       </tbody>
     </table>
   </div>
@@ -32,15 +32,14 @@
     </table>
   </div>
   <div class="note"><strong>ISO 주차는 기수 주차가 아니다.</strong> <code>week_no 36</code>은 그 해의 36번째 주라는 뜻이지 수강 36주차가 아니다. 화면의 "14주차"는 기수 시작일에서 우리가 계산한 값이다. 두 숫자를 섞으면 안 된다.</div>
-  <h3>4.3 시각 — 세 가지 형식이 섞여 있다</h3>
-  <p>한 서비스 안에서 타임스탬프 직렬화가 세 갈래다.</p>
+  <h3>4.3 시각 — 두 가지 형식이 섞여 있다</h3>
+  <p>한 서비스 안에서 타임스탬프 표기가 두 갈래이고, 그중 하나만 타임존을 알 수 있다.</p>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:26%"><col style="width:30%"><col style="width:44%"></colgroup>
       <thead><tr><th>형식</th><th>쓰는 필드</th><th>해석</th></tr></thead>
       <tbody>
         <tr><td><code>2026-09-02T00:35:46.781122</code><br><span>ISO 8601 + 마이크로초 6자리</span></td><td><code>analyzed_at</code> · <code>data_freshness</code> · <code>created_at</code> · <code>issue_timestamp</code> · <code>approved_at</code></td><td><strong>타임존 표기가 없다.</strong> <code>Z</code>도 <code>+09:00</code>도 붙지 않는다. 파이썬 <code>datetime.isoformat()</code>의 기본 출력 모양이다. UTC로 가정하고 읽되, 확정된 바 없어 요청 항목에 넣었다</td></tr>
-        <tr><td><code>2026-09-02 05:00:13</code><br><span>공백 구분 · 초 단위</span></td><td><code>last_synced_at</code></td><td><code>T</code>가 없고 마이크로초도 없다. 같은 서비스인데 <strong>직렬화 경로가 다르다.</strong> <code>05:00</code>이라는 시각은 일 배치로 보인다</td></tr>
         <tr><td><code>fb_20260902093622_…</code><br><span>압축 숫자 14자리</span></td><td><code>log_id</code> 안</td><td><code>YYYYMMDDHHMMSS</code>. <strong>이것만 KST</strong>다. 나머지가 UTC라면 9시간 차이가 난다</td></tr>
       </tbody>
     </table>
@@ -115,25 +114,6 @@ W36       0.1    478 ÷ 4946 = 0.09664   0.10   일치</code></pre>
         <tr><td><strong>키가 아예 없다</strong></td><td>축약 주차의 <code>top_error_types</code></td><td>W33·W34의 <code>metrics_snapshot</code>은 7필드다(W36은 24필드). <code>null</code>이 아니라 <strong>키 자체가 없다.</strong> <code>null</code> 검사로는 못 걸러내고 <strong>키 존재 여부</strong>를 봐야 한다</td></tr>
         <tr><td><strong>빈 배열</strong></td><td><code>missing_fields: []</code></td><td>결측 항목이 없다는 뜻. 반대로 <code>["assignments"]</code>면 그 항목을 못 받았다는 <strong>서버의 선언</strong>이다</td></tr>
         <tr><td><strong>0이 들어온다</strong></td><td><code>avg_score_pct: 0.0</code><br><code>assignments_completed: 0</code></td><td><strong>가장 위험한 형태.</strong> 값이 0인지 모르는 것인지 구분되지 않는다. 퀴즈 평균 <code>0.0</code>은 미채점이고, 과제 <code>0</code>은 미수집이다 — 둘 다 0점·0건이 아니다</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <h3>4.9 <code>/sync/students</code>는 주제별로 묶어서 준다</h3>
-  <p>주간 리포트가 <code>metrics</code> 아래 평평하게 24개를 주는 것과 달리, 여기는 주제별 객체로 나뉜다.</p>
-  <pre><code>attendance   {"present": 36, "late": 11, "early_leave": 2, "absent": 3, "excused": 2}
-assignments  {"total": 10, "submitted": 9, "not_submitted": 1}
-quizzes      {"total": 7, "attempted": 6, "avg_score_pct": 91.0}
-atmux        {"total_duration_sec": 103487.8, "total_duration_hours": 28.7, …}</code></pre>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
-      <thead><tr><th>블록</th><th>읽는 법</th></tr></thead>
-      <tbody>
-        <tr><td><code>attendance</code></td><td><strong>일수만 온다. 비율은 없다.</strong> 다섯 값을 더해야 전체 일수(54일)가 나오고, 출석률은 우리가 계산한다</td></tr>
-        <tr><td><code>assignments</code></td><td><code>total = submitted + not_submitted</code>가 성립한다(<code>10 = 9 + 1</code>). 재제출·반려 상태는 오지 않는다</td></tr>
-        <tr><td><code>quizzes</code></td><td><code>avg_score_pct</code>만 비율이고 나머지는 건수다. <code>attempted</code>가 0이면 평균이 <code>0.0</code>으로 온다</td></tr>
-        <tr><td><code>atmux</code></td><td><strong>같은 값을 두 단위로 준다.</strong> <code>103487.8</code>초와 <code>28.7</code>시간이다(<code>103487.8 ÷ 3600 = 28.746</code>, 소수 한 자리 반올림). 시간 쪽을 쓰면 나눌 필요가 없다</td></tr>
-        <tr><td><code>training_status</code></td><td><code>훈련중</code> — 한글 표시명이다. 코드값이 따로 오지 않는다</td></tr>
       </tbody>
     </table>
   </div>

@@ -37,8 +37,8 @@
 </section>
 
 <section id="files">
-  <h2>2. 몇 개로 나누는가 — 9개 + 매니페스트</h2>
-  <p>호출 5개에 대해 응답 형태가 갈리는 변형을 더해 9개가 된다. API 1은 <strong>같은 엔드포인트인데 파라미터에 따라 스키마가 달라져</strong> 셋으로 나눴다.</p>
+  <h2>2. 몇 개로 나누는가 — 8개 + 매니페스트</h2>
+  <p>호출 5개에 대해 응답 형태가 갈리는 변형을 더해 8개가 된다. API 1은 <strong>같은 엔드포인트인데 파라미터에 따라 스키마가 달라져</strong> 셋으로 나눴다.</p>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:22%"><col style="width:30%"><col style="width:10%"><col style="width:38%"></colgroup>
@@ -52,12 +52,11 @@
         <tr><td><code>api3-diagnose.json</code></td><td><code>POST /analysis/diagnose/{uuid}</code></td><td>3,624</td><td>진단 블록이 최상위로 평탄화된 형태. API 1의 <code>diagnosis</code>와 키가 같고 값이 다르다</td></tr>
         <tr><td><code>api4-history.json</code></td><td><code>GET /reports/history/{uuid}?limit=30</code></td><td>11,948</td><td><strong>화면의 주 재료.</strong> W33~W36 4주치가 배열로 온다</td></tr>
         <tr><td><code>api5-approve.json</code></td><td><code>POST /feedback/approve</code></td><td>387</td><td>요청·응답 형태. <strong>실제로는 호출하지 않았다</strong> — 승인 로그가 누적되고 삭제 API가 없어, 관측된 형태로만 구성했다</td></tr>
-        <tr><td><code>ext-sync-students.json</code></td><td><code>GET /sync/students?limit=200</code></td><td>1,108</td><td>문서 밖 엔드포인트. 출결·과제·퀴즈·atmux 상세가 <strong>여기에만</strong> 있다. <code>ext-</code> 접두사로 명세서 밖임을 표시</td></tr>
         <tr><td><code>_manifest.json</code></td><td>—</td><td>3,422</td><td>출처·수집 시각·치환 규칙·알려진 특이사항. <strong>근거를 파일 안에 남긴다</strong></td></tr>
       </tbody>
     </table>
   </div>
-  <div class="callout"><strong>화면은 <code>api4-history.json</code> 하나만 쓴다.</strong> 그런데도 9개를 두는 이유는 나머지가 <em>대조용</em>이기 때문이다 — 필드명이 호출마다 다르고(<code>studentUuid</code>↔<code>student_uuid</code>), 같은 값이 호출마다 어긋나며(확신도 <code>0.8</code>↔<code>0.85</code>), 주차에 따라 필드가 사라진다. 어댑터가 이 셋을 모두 흡수하는지 검증하려면 원본이 남아 있어야 한다.</div>
+  <div class="callout"><strong>화면은 <code>api4-history.json</code> 하나만 쓴다.</strong> 그런데도 8개를 두는 이유는 나머지가 <em>대조용</em>이기 때문이다 — 필드명이 호출마다 다르고(<code>studentUuid</code>↔<code>student_uuid</code>), 같은 값이 호출마다 어긋나며(확신도 <code>0.8</code>↔<code>0.85</code>), 주차에 따라 필드가 사라진다. 어댑터가 이 셋을 모두 흡수하는지 검증하려면 원본이 남아 있어야 한다.</div>
 </section>
 
 <section id="contents">
@@ -78,7 +77,6 @@
       </tbody>
     </table>
   </div>
-  <div class="note"><code>ext-sync-students.json</code>만 예외다. 치환본이 아니라 <strong>실제 황수빈 레코드</strong>다. <code>/sync/students</code>가 123명 전원을 주므로 황수빈을 그대로 뽑아 쓸 수 있었다. 그래서 이 파일의 과제 <code>10/9/1</code>·퀴즈 <code>7/6/91.0</code>은 실제 LMS 값이다.</div>
   <h3>뺀 것</h3>
   <p><code>markdown_content</code>를 제거했다. 주차당 약 2,900자이고 <code>api4-history.json</code>이 4주치라 그대로 두면 파일이 세 배가 되는데, 화면은 이 필드를 읽지 않는다. 문서 형태가 필요하면 <code>api1-weekly.md</code>가 같은 내용을 담고 있다.</p>
 </section>
@@ -91,9 +89,8 @@
       <colgroup><col style="width:26%"><col style="width:26%"><col style="width:48%"></colgroup>
       <thead><tr><th>값</th><th>잘못된 해석</th><th>실제 뜻과 mock에서의 처리</th></tr></thead>
       <tbody>
-        <tr><td><code>assignments_completed: 0</code></td><td>과제를 0건 제출했다</td><td><strong>미수집이다.</strong> 같은 응답의 <code>missing_fields: ["assignments"]</code>가 알려준다. 같은 학생이 <code>/sync/students</code>에서는 9건 제출이다. mock은 <code>missing_fields</code>를 함께 보존해 화면이 구분할 수 있게 한다</td></tr>
-        <tr><td><code>attendance_rate: 100.0</code></td><td>출석률이 100%다</td><td><strong>집계가 안 된 값이다.</strong> 결석 11일인 학생도 <code>100.0</code>이다. mock에 원본 그대로 두되 매니페스트에 특이사항으로 기록했다</td></tr>
-        <tr><td><code>avg_score_pct: 0.0</code></td><td>퀴즈 평균이 0점이다</td><td><strong>미채점이다.</strong> 응시가 0이면 이 값이 온다. 점수로 그리면 0점을 받은 것처럼 보인다</td></tr>
+        <tr><td><code>assignments_completed: 0</code></td><td>과제를 0건 제출했다</td><td><strong>미수집이다.</strong> 같은 응답의 <code>missing_fields: ["assignments"]</code>가 알려준다. mock은 <code>missing_fields</code>를 함께 보존해 화면이 구분할 수 있게 한다</td></tr>
+        <tr><td><code>attendance_rate: 100.0</code></td><td>출석률이 100%다</td><td><strong>집계가 안 된 값이다.</strong> 학생 5명·주차 4개가 전부 같은 값이라 구별력이 없다. mock에 원본 그대로 두되 매니페스트에 특이사항으로 기록했다</td></tr>
         <tr><td>W33·W34의 사라진 필드</td><td>힌트를 한 번도 안 썼다</td><td><strong>수집 자체가 없다.</strong> <code>metrics_snapshot</code>이 7필드로 축약된다. mock은 <strong>없는 키를 만들어 넣지 않고</strong> 그대로 비운다. 화면은 이 주차를 축약으로 표시한다</td></tr>
         <tr><td><code>top_error_types</code> 3건</td><td>이게 에러의 전부다</td><td><strong>상위 3개만 온다.</strong> 실측에서 세 건의 합이 <code>total_errors</code>의 63.6%였다. 나머지 36.4%는 어디에도 없고 '기타' 항목도 없다</td></tr>
       </tbody>
@@ -101,14 +98,13 @@
   </div>
   <h3>매니페스트에 남긴 특이사항</h3>
   <p><code>_manifest.json</code>의 <code>knownQuirks</code>에 일곱 건을 적어 두었다. mock을 다시 만들거나 실연동으로 바꿀 때 확인해야 할 목록이다.</p>
-  <pre><code>attendance_rate는 원본이 전원 100.0 (ext-sync의 absent 3일과 불일치)
+  <pre><code>attendance_rate는 원본이 전원 100.0
 assignments_completed는 항상 0이고 missing_fields:['assignments'] — 미수집이지 0건 제출이 아님
-avg_score_pct 0.0은 미채점이지 0점이 아님
 risk.status_label이 status를 반영하지 않음 (completed_waiting인데 '정상 훈련')
 weakness 블록은 stalled_risk 외 전부 metrics·diagnosis 복사본
 과거 주차(W33·W34)는 metrics 7필드. 결측을 0으로 채우지 말 것
-weekly의 language·current_step이 ext-sync의 playlang과 다름</code></pre>
-  <div class="note"><strong>매니페스트에 틀린 줄이 하나 있다.</strong> <code>api1-weekly.md</code>의 note가 <code>contributing_signals</code>·<code>action_priority</code>·<code>recommended_action</code>이 여기에만 나온다고 적고 있으나, 실제 파일에는 그 세 항목이 없다. Markdown은 JSON과 같은 내용을 문서로 렌더한 것이고 추가 필드는 없다. 이 줄은 정정이 필요하다.</div>
+weekly의 language가 학생을 가리지 않고 python</code></pre>
+  <div class="note"><strong>매니페스트를 손봐야 한다.</strong> 위 인용은 다섯 API에 해당하는 항목만 추린 것이다. 실제 <code>_manifest.json</code>에는 문서 밖 엔드포인트 관련 줄이 남아 있어 파일과 함께 정리해야 한다. 또, <code>api1-weekly.md</code>의 note가 <code>contributing_signals</code>·<code>action_priority</code>·<code>recommended_action</code>이 여기에만 나온다고 적고 있으나, 실제 파일에는 그 세 항목이 없다. Markdown은 JSON과 같은 내용을 문서로 렌더한 것이고 추가 필드는 없다. 이 줄은 정정이 필요하다.</div>
 </section>
 
 <section id="switch">
@@ -148,9 +144,7 @@ GET $B/reports/history/{studentUuid}?limit=30   →  같은 배열</code></pre>
         <tr><td><code>cohortId</code> · <code>cohort_id</code></td><td><code>f34c88f3-…</code></td><td>기수 UUID</td></tr>
         <tr><td><code>cohort</code> · <code>cohort_label</code></td><td><code>34기</code></td><td>기수 표시명</td></tr>
         <tr><td><code>group</code></td><td><code>A</code></td><td>반</td></tr>
-        <tr><td><code>language</code></td><td><code>python</code></td><td>실습 언어. <strong>주간 리포트는 전원 python을 준다</strong> — 실제 프로필은 <code>ext-sync</code>의 <code>typescript</code>가 맞다</td></tr>
-        <tr><td><code>education_title</code></td><td>SK네트웍스 Family AI 캠프</td><td>과정명. <code>ext-sync</code>에만 있다</td></tr>
-        <tr><td><code>training_status</code></td><td><code>훈련중</code></td><td>훈련 상태. <code>ext-sync</code>에만 있다</td></tr>
+        <tr><td><code>language</code></td><td><code>python</code></td><td>실습 언어. <strong>학생을 가리지 않고 <code>python</code>이 온다</strong> — 값 범위가 명세에 없어 확인이 필요하다</td></tr>
       </tbody>
     </table>
   </div>
@@ -204,68 +198,50 @@ GET $B/reports/history/{studentUuid}?limit=30   →  같은 배열</code></pre>
       </tbody>
     </table>
   </div>
-  <h3>지금까지 얼마나 — 누적 (<code>ext-sync-students.json</code>)</h3>
-  <div class="table-wrap">
-    <table class="index-table">
-      <colgroup><col style="width:28%"><col style="width:26%"><col style="width:46%"></colgroup>
-      <thead><tr><th>필드</th><th>값</th><th>무엇인가</th></tr></thead>
-      <tbody>
-        <tr><td><code>attendance{5종}</code></td><td><code>36/11/2/3/2</code></td><td>출석·지각·조퇴·결석·공결 <strong>일수</strong>. 비율 필드는 없다</td></tr>
-        <tr><td><code>assignments{3종}</code></td><td><code>10/9/1</code></td><td>과제 총수·제출·미제출 <strong>건수</strong></td></tr>
-        <tr><td><code>quizzes{3종}</code></td><td><code>7/6/91.0</code></td><td>퀴즈 총수·응시 건수·평균 점수(%)</td></tr>
-        <tr><td><code>atmux.total_duration_hours</code></td><td><code>28.7</code></td><td><strong>실습 서버 총 접속 시간</strong></td></tr>
-        <tr><td><code>atmux.weekly_daily_avg_hours</code></td><td><code>4.1</code></td><td><strong>일 평균 학습 시간</strong>. 서버가 계산해 준다</td></tr>
-        <tr><td><code>atmux.avg_cpu_util</code></td><td><code>29.5</code></td><td>실습 서버 평균 CPU 사용률(%)</td></tr>
-        <tr><td><code>atmux.telemetry_count</code></td><td><code>7,238</code></td><td>텔레메트리 수집 건수(10초 주기)</td></tr>
-        <tr><td><code>playlang.*</code></td><td>step 7 · 프런트엔드</td><td>실습 도구 기준 진도·과정·언어·실행·에러·힌트. <strong>weekly와 값이 다르다</strong></td></tr>
-        <tr><td><code>last_synced_at</code></td><td><code>2026-09-02 05:00:13</code></td><td>마지막 동기화 시각. 주차가 아니다</td></tr>
-      </tbody>
-    </table>
-  </div>
 </section>
 
 <section id="for-analysis">
-  <h2>7. 분석을 붙인다면 mock에 무엇이 더 필요한가</h2>
-  <p class="lead"><a href="../2026-09-03_API_응답_기반_분석_가능성/">분석 가능성 보고서</a>가 정리한 통계를 화면에 올린다고 할 때, 지금 fixture로 되는 것과 더 받아야 하는 것을 가른다. 기준은 하나다 — <strong>실제로 호출해서 받은 값만 쓴다.</strong></p>
+  <h2>7. 확정 항목을 넣으려면 무엇이 더 필요한가</h2>
+  <p class="lead"><a href="../2026-09-03_추가_항목_확정/#accept">확정 보고서</a>가 정한 여섯 가지를 화면에 올린다고 할 때, 지금 fixture로 되는 것과 더 받아야 하는 것을 가른다. 기준은 하나다 — <strong>명세서의 다섯 API를 실제로 호출해 받은 값만 쓴다.</strong></p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:30%"><col style="width:14%"><col style="width:56%"></colgroup>
-      <thead><tr><th>분석</th><th>지금 되나</th><th>이유</th></tr></thead>
+      <colgroup><col style="width:34%"><col style="width:14%"><col style="width:52%"></colgroup>
+      <thead><tr><th>확정 항목</th><th>지금 되나</th><th>이유</th></tr></thead>
       <tbody>
-        <tr><td>한 주차 파생 지표 7종<br><span>단계당 실행·활동 밀도·에러 집중도 등</span></td><td><strong>된다</strong></td><td><code>api4-history.json</code> 한 행에서 전부 계산된다. 추가 수집이 필요 없다</td></tr>
-        <tr><td>주차 추이 7종<br><span>등급·에러율·단계·실행량 등</span></td><td><strong>된다</strong></td><td>W33~W36 4주가 이미 배열로 들어 있다. 다만 힌트·재시도는 <strong>축약 주차 2주가 결측</strong>이라 선이 끊긴다</td></tr>
-        <tr><td>누적 통계 9종<br><span>출결·과제·퀴즈·학습 시간</span></td><td><strong>된다</strong></td><td><code>ext-sync-students.json</code>에 <code>attendance</code>·<code>assignments</code>·<code>quizzes</code>·<code>atmux</code>가 모두 있다</td></tr>
-        <tr><td>진도율 (분모 있는 형태)</td><td>부분</td><td><code>total_steps</code>가 <code>api2-certificate.json</code>에 있으므로 두 파일을 함께 읽으면 된다</td></tr>
+        <tr><td>에러당 힌트<br>문제 해결 방식 · 막힌 영역</td><td><strong>된다</strong></td><td><code>api4-history.json</code> 한 행에서 전부 계산된다. <code>hint_requests_count</code>·<code>total_errors</code>·<code>avg_retry_gap_min</code>·<code>top_error_types</code>가 다 들어 있다</td></tr>
+        <tr><td>등급 변화 이력 · 에러율 추세<br>단계 증가 속도</td><td><strong>된다</strong></td><td>W33~W36 4주가 이미 배열로 들어 있다. 주차 간 차분만 하면 된다</td></tr>
+        <tr><td><span>(참고) 진도율의 분모</span></td><td>부분</td><td><code>total_steps</code>가 <code>api2-certificate.json</code>에 있다. 두 파일을 함께 읽으면 상수 <code>10</code>을 없앨 수 있다</td></tr>
         <tr><td><strong>기수·반 평균 대비 비교</strong></td><td><strong>안 된다</strong></td><td>지금 fixture는 <strong>학생 한 명</strong>이다. 분포를 계산할 상대가 없다</td></tr>
-        <tr><td><strong>동료 대비 백분위</strong></td><td><strong>안 된다</strong></td><td>위와 같다</td></tr>
       </tbody>
     </table>
   </div>
-  <h3>다학생 분포를 하려면</h3>
-  <p>두 호출의 성격이 달라서 난이도도 다르다.</p>
+  <div class="callout"><strong>확정 여섯 가지는 추가 수집이 전혀 필요 없다.</strong> 파일도 그대로, 호출도 그대로다. <code>adapter.ts</code>와 <code>derive.ts</code>에 계산과 문장 생성을 더하는 일만 남는다.</div>
+  <h3>분포를 하려면 — 표본이 얇다</h3>
+  <p>다섯 API 중 여러 학생의 주차 지표를 주는 것은 <code>/reports/history</code>뿐인데 <strong>학생마다 따로 호출해야 한다.</strong></p>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:26%"><col style="width:22%"><col style="width:52%"></colgroup>
-      <thead><tr><th>필요한 것</th><th>호출</th><th>지금 상태</th></tr></thead>
+      <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+      <thead><tr><th>관측</th><th>내용</th></tr></thead>
       <tbody>
-        <tr><td><strong>누적 지표의 분포</strong><br><span>출결·과제·퀴즈·학습 시간</span></td><td><code>GET /sync/students?limit=200</code></td><td><strong>이미 한 번에 123명 전원이 온다.</strong> 지금 fixture는 거기서 <strong>한 명만 잘라</strong> 왔다. 응답 전체를 저장하면 그날로 분포를 만들 수 있다</td></tr>
-        <tr><td><strong>주차 지표의 분포</strong><br><span>등급·에러율·힌트</span></td><td><code>GET /reports/history/{uuid}</code></td><td><strong>학생마다 따로 불러야 한다.</strong> 게다가 표본이 얇다 — 15명을 확인했을 때 리포트가 있는 학생이 6명이었고 대부분 1주치뿐이었다. 4주가 온 것은 데모 시드 계정 하나였다</td></tr>
+        <tr><td>표본</td><td>15명을 확인했을 때 리포트가 있는 학생이 <strong>6명</strong>이었고 대부분 <strong>1주치</strong>뿐이었다. 4주가 온 것은 데모 시드 계정 하나였다</td></tr>
+        <tr><td>호출 비용</td><td>기수 전체를 보려면 학생 수만큼 호출해야 한다. 한 번에 여러 학생을 주는 엔드포인트가 다섯 API 안에 없다</td></tr>
+        <tr><td>판단</td><td><strong>표본이 쌓일 때까지 분포·백분위는 화면에 올리지 않는다.</strong> 없는 학생을 지어내면 화면은 그럴듯해지지만 실연동에서 전혀 다른 그림이 나온다</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="callout"><strong>없는 학생을 지어내지 않는다.</strong> 분포가 필요하다고 가짜 학생을 만들면 화면은 그럴듯해지지만 실연동에서 전혀 다른 그림이 나온다. 누적 분포는 <code>/sync/students</code> 응답을 통째로 저장해 해결하고, 주차 분포는 <strong>표본이 쌓일 때까지 화면에 올리지 않는다.</strong></div>
-  <h3>추가한다면 이 두 파일</h3>
+  <h3>파일을 손볼 것</h3>
   <div class="table-wrap">
     <table class="index-table">
-      <colgroup><col style="width:28%"><col style="width:24%"><col style="width:48%"></colgroup>
-      <thead><tr><th>파일</th><th>호출</th><th>무엇을 담나</th></tr></thead>
+      <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+      <thead><tr><th>대상</th><th>할 일</th></tr></thead>
       <tbody>
-        <tr><td><code>ext-sync-students-all.json</code></td><td><code>GET /sync/students?limit=200</code></td><td>응답 전체(123명). 지금 한 명짜리 <code>ext-sync-students.json</code>을 대체하지 않고 나란히 둔다 — 한 명짜리는 화면 mock, 전체는 분포 계산용</td></tr>
-        <tr><td><code>api2-certificate.json</code></td><td>이미 있음</td><td><code>total_steps</code>를 쓰려면 <code>index.ts</code>에서 함께 내보내면 된다. 새 수집이 필요 없다</td></tr>
+        <tr><td><code>ext-sync-students.json</code></td><td><strong>제거한다.</strong> 문서 밖 엔드포인트의 응답이라 계약 밖이다. <code>index.ts</code>의 <code>DATALAKE_SAMPLES</code>에서도 뺀다</td></tr>
+        <tr><td><code>_manifest.json</code></td><td><code>files</code> 목록에서 위 파일을 지우고 <code>knownQuirks</code>의 관련 줄을 정리한다</td></tr>
+        <tr><td><code>api2-certificate.json</code></td><td>이미 있다. <code>total_steps</code>를 쓰려면 <code>index.ts</code>에서 함께 내보내면 된다</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="note">파일이 늘면 <code>_manifest.json</code>의 <code>files</code> 목록과 <code>collectedAt</code>을 함께 갱신한다. 어느 시점에 받은 값인지 없으면 <strong>주차 지표가 캐시본이라 나중에 대조가 불가능해진다.</strong></div>
+  <div class="note">파일이 바뀌면 <code>_manifest.json</code>의 <code>collectedAt</code>도 함께 본다. 주차 지표가 캐시본이라 <strong>언제 받은 값인지 없으면 나중에 대조가 불가능하다.</strong></div>
 </section></main>
     <footer class="report-footer">2026-09-03 기준 실호출 결과다. 인증 키는 저장소에 두지 않고 환경변수로 참조한다.</footer>
   </article>
