@@ -30,7 +30,7 @@ API 5  /feedback/approve   → 1개
       <tbody>
         <tr><td><code>api2-certificate.json</code></td><td><code>GET /certificate/{uuid}</code></td><td>3,629</td><td>증명서 8블록 — <code>student</code>·<code>summary</code>·<code>technical_proof</code>·<code>project_and_portfolio</code>·<code>ai_analysis_narrative</code>·<code>human_in_the_loop</code> 등. <strong><code>summary.total_steps</code>가 여기에만</strong> 있어 진도의 분모를 준다</td></tr>
         <tr><td><code>api3-diagnose.json</code></td><td><code>POST /analysis/diagnose/{uuid}</code></td><td>3,624</td><td>진단 결과가 <strong>최상위 10키로 평탄화</strong>돼 온다. API 1의 <code>diagnosis</code> 블록과 키가 똑같은데 확신도가 <code>0.85</code>로 다르다 — 부를 때마다 새로 분석하기 때문이다</td></tr>
-        <tr><td><code>api4-history.json</code></td><td><code>GET /reports/history/{uuid}</code></td><td>15,975</td><td><strong>화면의 주 재료.</strong> W33~W36 <strong>4주가 배열</strong>로 온다. 행마다 최상위 20키 + <code>metrics_snapshot</code> 23필드. 필드명이 weekly와 달라 <code>student_uuid</code>·<code>recommendations</code>·<code>feedback_draft</code>·<code>risk_status</code>로 온다</td></tr>
+        <tr><td><code>api4-history.json</code></td><td><code>GET /reports/history/{uuid}</code></td><td>12,114</td><td><strong>화면의 주 재료.</strong> W33~W36 <strong>4주가 배열</strong>로 온다. 행마다 최상위 20키 + <code>metrics_snapshot</code>인데, <strong>W35·W36은 23필드, W33·W34는 7필드</strong>로 축약돼 온다. 필드명이 weekly와 달라 <code>student_uuid</code>·<code>recommendations</code>·<code>feedback_draft</code>·<code>risk_status</code>로 온다</td></tr>
         <tr><td><code>api5-approve.json</code></td><td><code>POST /feedback/approve</code></td><td>387</td><td><code>request</code>(4필드)와 <code>response</code>(3필드)를 함께 담았다. <strong>실제로는 호출하지 않았다</strong> — 승인 로그가 누적되고 삭제 API가 없어, 관측된 형태로만 구성했다</td></tr>
       </tbody>
     </table>
@@ -41,7 +41,7 @@ API 5  /feedback/approve   → 1개
       <colgroup><col style="width:24%"><col style="width:12%"><col style="width:64%"></colgroup>
       <thead><tr><th>파일</th><th>크기</th><th>무엇이 들어 있나</th></tr></thead>
       <tbody>
-        <tr><td><code>_manifest.json</code></td><td>6,765</td><td>수집 범위(<code>scope</code>)·용도(<code>purpose</code>)·데모 수강생 식별자(<code>demoStudent</code>)·파일별 호출(<code>files</code>)·손댄 내역(<code>transforms</code>)·<strong>보강 내역(<code>provenance</code>)</strong>·알려진 특이사항(<code>knownQuirks</code>). <strong>근거를 파일 안에 남긴다</strong></td></tr>
+        <tr><td><code>_manifest.json</code></td><td>5,550</td><td>수집 범위(<code>scope</code>)·용도(<code>purpose</code>)·데모 수강생 식별자(<code>demoStudent</code>)·파일별 호출(<code>files</code>)·손댄 내역(<code>transforms</code>)·<strong>값의 출처(<code>provenance</code>)</strong>·알려진 특이사항(<code>knownQuirks</code>). <strong>근거를 파일 안에 남긴다</strong></td></tr>
       </tbody>
     </table>
   </div>
