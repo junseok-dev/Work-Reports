@@ -1,0 +1,79 @@
+<section id="report-data">
+  <h2>4. 주간 진단 리포트가 쓰는 데이터</h2>
+  <p class="lead">진단 리포트는 <strong>수강생 한 명의 한 주</strong>를 다룬다. 화면 항목마다 어떤 필드를 읽고 그 값이 어떻게 문장·숫자가 되는지를 실측과 함께 정리한다.</p>
+  <h3>4.1 화면은 호출 하나만 쓴다</h3>
+  <p>3장의 다섯 호출 중 화면이 부르는 것은 <strong>API 4</strong> 하나다. 한 번에 여러 주차가 배열로 오므로 주차 전환에 추가 호출이 필요 없다.</p>
+  <pre><code>curl -X GET &quot;$B/reports/history/$U?limit=5&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
+  <p>데모 계정 황수빈(<code>100051503818</code>)은 4주치가 온다. 주차마다 값이 실제로 달라진다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:10%"><col style="width:10%"><col style="width:8%"><col style="width:10%"><col style="width:10%"><col style="width:12%"><col style="width:12%"><col style="width:14%"><col style="width:14%"></colgroup>
+      <thead><tr><th>주차</th><th>등급</th><th>확신도</th><th>완료 단계</th><th>활동일</th><th>실행/에러</th><th>실행당 에러</th><th>힌트(일평균)</th><th>재시도 평균</th></tr></thead>
+      <tbody>
+        <tr><td>2026-W33</td><td>초급</td><td>0.88</td><td>1</td><td>3</td><td>80 / 36</td><td>0.45</td><td>—</td><td>—</td></tr>
+        <tr><td>2026-W34</td><td>중급</td><td>0.80</td><td>3</td><td>4</td><td>140 / 31</td><td>0.22</td><td>—</td><td>—</td></tr>
+        <tr><td>2026-W35</td><td>해결사</td><td>0.75</td><td>5</td><td>4</td><td>264 / 27</td><td>0.10</td><td>18회 (4.5)</td><td>0.2분</td></tr>
+        <tr><td>2026-W36</td><td>해결사</td><td>0.80</td><td>10</td><td>7</td><td>4,946 / 478</td><td>0.10</td><td>286회 (40.86)</td><td>0.2분</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">W33·W34는 <code>metrics_snapshot</code>이 <strong>7필드로 축약</strong>되어 힌트·재시도·정체·에러 유형이 아예 없다. 결측을 <code>0</code>으로 채우면 "힌트를 한 번도 안 썼다"로 읽히므로, 화면은 이 주차에 해당 문장을 만들지 않고 안내 문구를 띄운다.</div>
+  <h3>4.2 항목별로 어떤 데이터가 쓰이는가</h3>
+  <p>근거 값은 황수빈 <strong>2026-W36</strong> 응답이다. <strong>성격</strong>은 그 값이 어디서 왔는지를 뜻한다 — <em>원천</em>은 API가 준 값 그대로, <em>계산</em>은 앞 주차와의 비교, <em>생성</em>은 지표를 근거로 FE가 만든 문장이다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:14%"><col style="width:20%"><col style="width:22%"><col style="width:28%"><col style="width:16%"></colgroup>
+      <thead><tr><th>화면 항목</th><th>화면에 나오는 것</th><th>읽는 필드</th><th>W36 실측 근거</th><th>성격</th></tr></thead>
+      <tbody>
+        <tr><td>헤더 · 주차</td><td>14주차 · 08/31~09/06</td><td><code>week_no</code> · <code>week_range</code></td><td><code>36</code> → 기수 시작일에서 14주차로 환산</td><td>변환</td></tr>
+        <tr><td>이번 주 나의 수준</td><td>해결사 · 확신도 중간</td><td><code>grade</code> · <code>confidence</code></td><td><code>해결사</code> · <code>0.8</code> → <code>중간</code></td><td>원천 + 변환</td></tr>
+        <tr><td>지표 · 진행 단계</td><td>10/10 완료 (현재 10단계)</td><td><code>steps_completed</code> · <code>current_step</code></td><td><code>10</code> · <code>10</code>. 분모는 <strong>상수 10</strong></td><td>원천 + 상수</td></tr>
+        <tr><td>지표 · 활동일</td><td>7일</td><td><code>active_days_count</code></td><td><code>7</code></td><td>원천</td></tr>
+        <tr><td>지표 · 현 단계 정체</td><td>0일</td><td><code>stalled_days_on_current_step</code></td><td><code>0</code></td><td>원천</td></tr>
+        <tr><td>지표 · 최근 미접속</td><td>0일</td><td><code>days_since_last_activity</code></td><td><code>0</code></td><td>원천</td></tr>
+        <tr><td>지표 · 실행당 에러</td><td>0.10 (478회/4,946회)</td><td><code>error_per_run</code> · <code>total_errors</code> · <code>total_runs</code></td><td><code>0.1</code> · <code>478</code> · <code>4946</code></td><td>원천</td></tr>
+        <tr><td>지표 · 힌트 요청</td><td>286회 (일 40.86회)</td><td><code>hint_requests_count</code> · <code>hint_per_active_day</code></td><td><code>286</code> · <code>40.86</code></td><td>원천</td></tr>
+        <tr><td>지표 · 재시도 간격</td><td>0.2분 (최대 23.0분)</td><td><code>avg_retry_gap_min</code> · <code>max_retry_gap_min</code></td><td><code>0.2</code> · <code>23.0</code></td><td>원천</td></tr>
+        <tr><td>지표 · 주요 에러</td><td>ConnectionError×105, TimeoutError×104, IntegrityError×95</td><td><code>top_error_types[{type, count}]</code></td><td>3건. 원본 유형명이 200자를 넘어 <strong>예외 클래스명만</strong> 남긴다</td><td>원천 + 축약</td></tr>
+        <tr><td>지난주 대비 변화</td><td>완료 단계가 5→10단계로 늘었어요 (+5).<br>실행 횟수가 264→4,946회로 늘었어요.</td><td><code>steps_completed</code> · <code>total_runs</code> · <code>error_per_run</code></td><td>W35 <code>5·264·0.1</code> → W36 <code>10·4946·0.1</code>. 에러율은 변화가 없어 문장을 만들지 않는다</td><td><strong>계산</strong></td></tr>
+        <tr><td>잘하고 있는 점</td><td>10단계를 모두 완료했어요.<br>실행 4,946회 중 에러율 0.10로 낮게 유지했어요.<br>7일 학습해 흐름을 유지했어요.<br>막힘 없이 진행했고 최근 미접속도 없어요.</td><td><code>steps_completed</code> · <code>error_per_run</code> · <code>active_days_count</code> · <code>stalled_days_on_current_step</code> · <code>days_since_last_activity</code></td><td>네 조건이 각각 성립: <code>10≥10</code> · <code>0&lt;0.1&lt;0.3</code> · <code>7≥5</code> · <code>0·0</code></td><td><strong>생성</strong></td></tr>
+        <tr><td>보완하면 좋은 점</td><td>네트워크·비동기 타임아웃 예외 발생…<br>데이터베이스 고유 키 제약 조건 위반…</td><td><code>weak_patterns</code></td><td>2건. <strong>원천 서술을 그대로</strong> 싣는다</td><td>원천</td></tr>
+        <tr><td>이번 주 학습 제안</td><td>힌트를 하루 평균 40.9회 사용했어요 — 열기 전에 에러 메시지를 한 번 더 읽어보세요.<br>에러 후 평균 0.2분 만에 다시 실행했어요 — 원인을 1분만 생각해 본 뒤 고쳐보세요.</td><td><code>hint_per_active_day</code> · <code>avg_retry_gap_min</code></td><td>임계값에 걸린 것만: <code>40.86 ≥ 20</code> · <code>0.2 &lt; 0.5</code>. 미접속·정체·에러율은 걸리지 않아 제외</td><td><strong>생성</strong></td></tr>
+        <tr><td>강사 피드백</td><td>승인된 전달본</td><td><code>feedback_draft</code></td><td>417자. <strong>승인 전에는 감춘다</strong> — AI가 수강생에게 직접 전달하지 않는다</td><td>원천 + 승인 게이트</td></tr>
+        <tr><td>생성 표기</td><td>google · gemini-3.5-flash</td><td><code>llm_provider</code> · <code>llm_model</code></td><td><code>google</code> · <code>gemini-3.5-flash</code></td><td>원천</td></tr>
+        <tr><td>주차 관리 표시</td><td>관리가 필요한 주차 강조</td><td><code>risk_status</code></td><td><code>completed_waiting</code> → 표시하지 않음. <code>stalled_learning</code>·<code>at_risk</code>만 강조</td><td>원천 + 판정</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>4.3 서술 네 개 중 셋은 우리가 만든다</h3>
+  <p>API 4가 학생별로 주는 서술은 <code>weak_patterns</code> 하나뿐이다. 나머지 세 섹션은 대응하는 필드가 없어 지표에서 만든다. 원칙은 <strong>근거가 있는 문장만 만든다</strong>이며, 근거 없는 격려 문구는 넣지 않는다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:12%"><col style="width:66%"></colgroup>
+      <thead><tr><th>항목</th><th>성격</th><th>만드는 방식과 기준</th></tr></thead>
+      <tbody>
+        <tr><td>보완하면 좋은 점</td><td><strong>원천</strong></td><td><code>weak_patterns</code>를 그대로 싣는다.</td></tr>
+        <tr><td>지난주 대비 변화</td><td>계산</td><td>앞 주차 행과 <code>steps_completed</code>·<code>error_per_run</code>·<code>total_runs</code>를 비교한다. 값이 같으면 그 문장은 만들지 않는다. 첫 주차는 비교 대상이 없어 출발점만 적는다.</td></tr>
+        <tr><td>잘하고 있는 점</td><td>생성</td><td>네 조건을 각각 검사한다 — 단계 완료, 에러율 <code>0.3</code> 미만, 활동일 <code>5</code>일 이상, 정체·미접속 <code>0</code>.</td></tr>
+        <tr><td>이번 주 학습 제안</td><td>생성</td><td>임계값에 걸린 항목만 제안한다 — 미접속 <code>3</code>일↑, 정체 <code>3</code>일↑, 힌트 <code>20</code>회/일↑, 재시도 <code>0.5</code>분↓, 에러율 <code>0.3</code>↑.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>임계값은 실측 분포에서 잡았다.</strong> 관측 범위가 힌트 <code>4.5~50.9</code>회/일, 에러율 <code>0.10~0.45</code>, 재시도 <code>0.2~0.3</code>분이었다. 이전에 쓰던 기준(힌트 <code>2</code>회/일)은 실제와 20배 차이가 나 그대로 두면 전원이 "힌트 과다"로 걸린다.</div>
+  <h3>4.4 받지만 쓰지 않는 것</h3>
+  <p>API 4가 주는 44필드 중 화면이 읽는 것은 25개다. 나머지를 쓰지 않는 이유는 넷으로 나뉜다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:18%"><col style="width:46%"><col style="width:36%"></colgroup>
+      <thead><tr><th>분류</th><th>필드</th><th>쓰지 않는 이유</th></tr></thead>
+      <tbody>
+        <tr><td>신원</td><td><code>student_uuid</code> · <code>cohort_label</code> · <code>metrics_snapshot</code>의 이름·기수·반·언어·UUID 7필드</td><td>로그인한 본인 화면이라 다시 받을 이유가 없다</td></tr>
+        <tr><td>집계</td><td><code>assignments_completed</code> · <code>attendance_rate</code> · <code>missing_fields</code></td><td>값이 고정이거나 미수집이다 — <a href="#source-gaps">5장</a></td></tr>
+        <tr><td>운영</td><td><code>id</code> · <code>week_label</code> · <code>risk_score</code> · <code>created_at</code> · <code>data_freshness</code></td><td>레코드 관리용이다</td></tr>
+        <tr><td>강사용</td><td><code>recommendations</code></td><td>강사 권장 조치라 수강생 화면에 노출하지 않는다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><code>top_error_types</code>는 상위 3개만 온다. 실측에서 세 건의 합이 <code>total_errors</code>의 62.6%였고, 나머지 37.4%는 어느 응답에도 나타나지 않으며 "기타" 항목도 없다. 막대그래프를 그리면 합이 전체와 맞지 않는다.</div>
+  <div class="callout"><strong>총 단계 수가 응답에 없다.</strong> <code>total_steps</code>는 API 2에만 있고 화면이 쓰는 API 4에는 없어, 지금은 코드에 상수 <code>10</code>을 두고 있다. API 2를 함께 부르거나 API 4에 필드가 추가돼야 없앨 수 있다.</div>
+</section>
