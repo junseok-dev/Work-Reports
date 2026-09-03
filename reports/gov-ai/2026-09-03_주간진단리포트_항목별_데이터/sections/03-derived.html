@@ -1,0 +1,17 @@
+<section id="derived">
+  <h2>3. 서술 네 개 중 셋은 우리가 만든다</h2>
+  <p>API 4가 학생별로 주는 서술은 <code>weak_patterns</code> 하나뿐이다. 나머지 세 섹션은 대응하는 필드가 없어 지표에서 만든다. 원칙은 <strong>근거가 있는 문장만 만든다</strong>이며, 근거 없는 격려 문구는 넣지 않는다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:12%"><col style="width:66%"></colgroup>
+      <thead><tr><th>항목</th><th>성격</th><th>만드는 방식과 기준</th></tr></thead>
+      <tbody>
+        <tr><td>보완하면 좋은 점</td><td><strong>원천</strong></td><td><code>weak_patterns</code>를 그대로 싣는다.</td></tr>
+        <tr><td>지난주 대비 변화</td><td>계산</td><td>앞 주차 행과 <code>steps_completed</code>·<code>error_per_run</code>·<code>total_runs</code>를 비교한다. 값이 같으면 그 문장은 만들지 않는다. 첫 주차는 비교 대상이 없어 출발점만 적는다.</td></tr>
+        <tr><td>잘하고 있는 점</td><td>생성</td><td>네 조건을 각각 검사한다 — 단계 완료, 에러율 <code>0.3</code> 미만, 활동일 <code>5</code>일 이상, 정체·미접속 <code>0</code>.</td></tr>
+        <tr><td>이번 주 학습 제안</td><td>생성</td><td>임계값에 걸린 항목만 제안한다 — 미접속 <code>3</code>일↑, 정체 <code>3</code>일↑, 힌트 <code>20</code>회/일↑, 재시도 <code>0.5</code>분↓, 에러율 <code>0.3</code>↑.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>임계값은 실측 분포에서 잡았다.</strong> 관측 범위가 힌트 <code>4.5~50.9</code>회/일, 에러율 <code>0.10~0.45</code>, 재시도 <code>0.2~0.3</code>분이었다. 이전에 쓰던 기준(힌트 <code>2</code>회/일)은 실제와 20배 차이가 나 그대로 두면 전원이 "힌트 과다"로 걸린다.</div>
+</section>

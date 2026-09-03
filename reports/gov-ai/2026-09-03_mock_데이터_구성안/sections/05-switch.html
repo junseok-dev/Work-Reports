@@ -1,0 +1,21 @@
+<section id="switch">
+  <h2>5. 실연동으로 바꿀 때</h2>
+  <p>파일과 호출이 1:1이라 교체 지점이 분명하다. 지금은 <code>index.ts</code>가 <code>userId</code>로 이력을 찾아 주는데, 이 매핑만 fetch로 바꾸면 나머지 코드는 그대로다.</p>
+  <pre><code>// 지금
+export const DATALAKE_HISTORY = { [DEMO_USER_ID]: history }
+
+// 실연동
+GET $B/reports/history/{studentUuid}?limit=30   →  같은 배열</code></pre>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:30%"><col style="width:34%"><col style="width:36%"></colgroup>
+      <thead><tr><th>mock 파일</th><th>대체할 호출</th><th>주의</th></tr></thead>
+      <tbody>
+        <tr><td><code>api4-history.json</code></td><td><code>GET /reports/history/{uuid}?limit=30</code></td><td>화면이 쓰는 유일한 호출. 여기만 바꾸면 화면이 산다</td></tr>
+        <tr><td><code>api2-certificate.json</code></td><td><code>GET /certificate/{uuid}</code></td><td><code>total_steps</code>가 필요하면 함께 호출해야 한다. 지금은 상수 10</td></tr>
+        <tr><td>나머지 7개</td><td>—</td><td>대조·회귀 검증용이라 화면 전환과 무관하다. 스키마가 바뀌면 다시 수집한다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><strong>수집 시점을 함께 기록한다.</strong> <code>_manifest.json</code>의 <code>collectedAt</code>은 <code>2026-09-02</code>다. 응답이 캐시본이라 시점에 따라 값이 달라지고, 실제로 <code>refresh=true</code>로 다시 부르면 21개 필드가 바뀐다. 언제 받은 값인지 없이는 어긋남을 판단할 수 없다.</div>
+</section>

@@ -1,0 +1,20 @@
+<section id="one-call">
+  <h2>1. 화면은 호출 하나만 쓴다</h2>
+  <p class="lead">진단 리포트는 <strong>수강생 한 명의 한 주</strong>를 다룬다. 화면 항목마다 어떤 필드를 읽고 그 값이 어떻게 문장·숫자가 되는지를 실측과 함께 정리한다.</p>
+  <p>3장의 다섯 호출 중 화면이 부르는 것은 <strong>API 4</strong> 하나다. 한 번에 여러 주차가 배열로 오므로 주차 전환에 추가 호출이 필요 없다.</p>
+  <pre><code>curl -X GET &quot;$B/reports/history/$U?limit=5&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
+  <p>데모 계정 황수빈(<code>100051503818</code>)은 4주치가 온다. 주차마다 값이 실제로 달라진다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:10%"><col style="width:10%"><col style="width:8%"><col style="width:10%"><col style="width:10%"><col style="width:12%"><col style="width:12%"><col style="width:14%"><col style="width:14%"></colgroup>
+      <thead><tr><th>주차</th><th>등급</th><th>확신도</th><th>완료 단계</th><th>활동일</th><th>실행/에러</th><th>실행당 에러</th><th>힌트(일평균)</th><th>재시도 평균</th></tr></thead>
+      <tbody>
+        <tr><td>2026-W33</td><td>초급</td><td>0.88</td><td>1</td><td>3</td><td>80 / 36</td><td>0.45</td><td>—</td><td>—</td></tr>
+        <tr><td>2026-W34</td><td>중급</td><td>0.80</td><td>3</td><td>4</td><td>140 / 31</td><td>0.22</td><td>—</td><td>—</td></tr>
+        <tr><td>2026-W35</td><td>해결사</td><td>0.75</td><td>5</td><td>4</td><td>264 / 27</td><td>0.10</td><td>18회 (4.5)</td><td>0.2분</td></tr>
+        <tr><td>2026-W36</td><td>해결사</td><td>0.80</td><td>10</td><td>7</td><td>4,946 / 478</td><td>0.10</td><td>286회 (40.86)</td><td>0.2분</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">W33·W34는 <code>metrics_snapshot</code>이 <strong>7필드로 축약</strong>되어 힌트·재시도·정체·에러 유형이 아예 없다. 결측을 <code>0</code>으로 채우면 "힌트를 한 번도 안 썼다"로 읽히므로, 화면은 이 주차에 해당 문장을 만들지 않고 안내 문구를 띄운다.</div>
+</section>

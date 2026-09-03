@@ -8,11 +8,11 @@
       <colgroup><col style="width:30%"><col style="width:48%"><col style="width:22%"></colgroup>
       <thead><tr><th>질문</th><th>결론</th><th>근거</th></tr></thead>
       <tbody>
-        <tr><td>주간 리포트는 어떤 데이터로 그려지는가</td><td><strong>API 4 한 번의 호출</strong>이 주는 25개 필드다. 화면 항목 16개가 이 값에서 나온다</td><td><a href="#report-data">4장</a></td></tr>
-        <tr><td>출결이 오는가</td><td><strong>온다.</strong> API 1·2·4에 <code>attendance_rate</code>가 있다. 다만 학생·주차와 무관하게 전부 <code>100.0</code>이다</td><td><a href="#source-gaps">5장</a></td></tr>
-        <tr><td>과제가 오는가</td><td><strong>온다.</strong> <code>assignments_completed</code>가 있다. 값은 <code>0</code>이고 같은 응답의 <code>missing_fields</code>가 미수집을 선언한다</td><td><a href="#source-gaps">5장</a></td></tr>
-        <tr><td>퀴즈가 오는가</td><td><strong>5개 API 어디에도 없다.</strong> 명세서 필드 사전에도 없다. 문서 밖 <code>/sync/students</code>에만 있다</td><td><a href="#source-gaps">5장</a></td></tr>
-        <tr><td>그럼 출결·과제·퀴즈는 못 쓰는가</td><td>주차별은 못 쓴다. <strong>누적 기준이면 지금도 가능하다</strong> — 출결 구성·출석률·과제 제출률·퀴즈 응시율</td><td><a href="#source-gaps">5장</a></td></tr>
+        <tr><td>주간 리포트는 어떤 데이터로 그려지는가</td><td><strong>API 4 한 번의 호출</strong>이 주는 25개 필드다. 항목별 대응은 별도 보고서에서 다룬다</td><td><a href="../2026-09-03_주간진단리포트_항목별_데이터/">항목별 데이터 보고서</a></td></tr>
+        <tr><td>출결이 오는가</td><td><strong>온다.</strong> API 1·2·4에 <code>attendance_rate</code>가 있다. 다만 학생·주차와 무관하게 전부 <code>100.0</code>이다</td><td><a href="#source-gaps">4장</a></td></tr>
+        <tr><td>과제가 오는가</td><td><strong>온다.</strong> <code>assignments_completed</code>가 있다. 값은 <code>0</code>이고 같은 응답의 <code>missing_fields</code>가 미수집을 선언한다</td><td><a href="#source-gaps">4장</a></td></tr>
+        <tr><td>퀴즈가 오는가</td><td><strong>5개 API 어디에도 없다.</strong> 명세서 필드 사전에도 없다. 문서 밖 <code>/sync/students</code>에만 있다</td><td><a href="#source-gaps">4장</a></td></tr>
+        <tr><td>그럼 출결·과제·퀴즈는 못 쓰는가</td><td>주차별은 못 쓴다. <strong>누적 기준이면 지금도 가능하다</strong> — 출결 구성·출석률·과제 제출률·퀴즈 응시율</td><td><a href="#source-gaps">4장</a></td></tr>
       </tbody>
     </table>
   </div>

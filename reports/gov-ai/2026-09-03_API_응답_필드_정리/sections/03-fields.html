@@ -15,7 +15,7 @@
       </tbody>
     </table>
   </div>
-  <div class="callout"><strong>쓰임</strong> 열의 <code>●</code>는 현재 수강생 진단 리포트 화면이 실제로 읽는 필드다. 화면은 <strong>API 4(주차별 리포트 이력)</strong> 하나만 호출하므로 API 1·2·3·5는 전부 <code>·</code>가 된다. 같은 지표가 API 1에도 있지만 경로와 필드명이 달라 그대로 바꿔 끼울 수 없다. 어느 필드가 화면의 어느 항목이 되는지는 <a href="#report-data">4장</a>에서 다룬다.</div>
+  <div class="callout"><strong>쓰임</strong> 열의 <code>●</code>는 현재 수강생 진단 리포트 화면이 실제로 읽는 필드다. 화면은 <strong>API 4(주차별 리포트 이력)</strong> 하나만 호출하므로 API 1·2·3·5는 전부 <code>·</code>가 된다. 같은 지표가 API 1에도 있지만 경로와 필드명이 달라 그대로 바꿔 끼울 수 없다. 어느 필드가 화면의 어느 항목이 되는지는 <a href="../2026-09-03_주간진단리포트_항목별_데이터/">항목별 데이터 보고서</a>에서 다룬다.</div>
   <h4>API 1 · 주간 AI 학습 맞춤 진단 리포트</h4>
   <pre><code>curl -X GET &quot;$B/reports/weekly/$U?format=json&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
   <p>최상위 6필드 + <code>metrics</code>·<code>diagnosis</code>·<code>weakness</code>·<code>risk</code> 4블록.</p>

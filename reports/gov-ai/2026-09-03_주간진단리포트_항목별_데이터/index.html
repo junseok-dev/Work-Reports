@@ -1,7 +1,23 @@
-<section id="report-data">
-  <h2>4. 주간 진단 리포트가 쓰는 데이터</h2>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>주간 진단 리포트 항목별 데이터</title>
+  <link rel="stylesheet" href="../../../../assets/data-report.css" />
+</head>
+<body>
+  <article class="page">
+    <header class="report-header">
+      <p class="eyebrow">GOV-AI DataLake · Report Composition</p>
+      <h1>주간 진단 리포트 항목별 데이터</h1>
+      <p class="header-summary">수강생 한 명의 한 주를 그리는 진단 리포트에서, 화면 항목마다 어떤 API 응답 값이 들어가고 그것이 어떤 숫자·문장이 되는지를 실측과 함께 정리한다.</p>
+      <div class="meta"><span class="badge">작성일 2026-09-03</span><span class="badge">화면 항목별 대응</span><span class="badge">API 4 실응답 기준</span></div>
+    </header>
+    <main class="content"><section id="one-call">
+  <h2>1. 화면은 호출 하나만 쓴다</h2>
   <p class="lead">진단 리포트는 <strong>수강생 한 명의 한 주</strong>를 다룬다. 화면 항목마다 어떤 필드를 읽고 그 값이 어떻게 문장·숫자가 되는지를 실측과 함께 정리한다.</p>
-  <h3>4.1 화면은 호출 하나만 쓴다</h3>
   <p>3장의 다섯 호출 중 화면이 부르는 것은 <strong>API 4</strong> 하나다. 한 번에 여러 주차가 배열로 오므로 주차 전환에 추가 호출이 필요 없다.</p>
   <pre><code>curl -X GET &quot;$B/reports/history/$U?limit=5&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
   <p>데모 계정 황수빈(<code>100051503818</code>)은 4주치가 온다. 주차마다 값이 실제로 달라진다.</p>
@@ -18,7 +34,10 @@
     </table>
   </div>
   <div class="note">W33·W34는 <code>metrics_snapshot</code>이 <strong>7필드로 축약</strong>되어 힌트·재시도·정체·에러 유형이 아예 없다. 결측을 <code>0</code>으로 채우면 "힌트를 한 번도 안 썼다"로 읽히므로, 화면은 이 주차에 해당 문장을 만들지 않고 안내 문구를 띄운다.</div>
-  <h3>4.2 항목별로 어떤 데이터가 쓰이는가</h3>
+</section>
+
+<section id="per-item">
+  <h2>2. 항목별로 어떤 데이터가 쓰이는가</h2>
   <p>근거 값은 황수빈 <strong>2026-W36</strong> 응답이다. <strong>성격</strong>은 그 값이 어디서 왔는지를 뜻한다 — <em>원천</em>은 API가 준 값 그대로, <em>계산</em>은 앞 주차와의 비교, <em>생성</em>은 지표를 근거로 FE가 만든 문장이다.</p>
   <div class="table-wrap">
     <table class="index-table">
@@ -45,7 +64,10 @@
       </tbody>
     </table>
   </div>
-  <h3>4.3 서술 네 개 중 셋은 우리가 만든다</h3>
+</section>
+
+<section id="derived">
+  <h2>3. 서술 네 개 중 셋은 우리가 만든다</h2>
   <p>API 4가 학생별로 주는 서술은 <code>weak_patterns</code> 하나뿐이다. 나머지 세 섹션은 대응하는 필드가 없어 지표에서 만든다. 원칙은 <strong>근거가 있는 문장만 만든다</strong>이며, 근거 없는 격려 문구는 넣지 않는다.</p>
   <div class="table-wrap">
     <table class="index-table">
@@ -60,7 +82,10 @@
     </table>
   </div>
   <div class="callout"><strong>임계값은 실측 분포에서 잡았다.</strong> 관측 범위가 힌트 <code>4.5~50.9</code>회/일, 에러율 <code>0.10~0.45</code>, 재시도 <code>0.2~0.3</code>분이었다. 이전에 쓰던 기준(힌트 <code>2</code>회/일)은 실제와 20배 차이가 나 그대로 두면 전원이 "힌트 과다"로 걸린다.</div>
-  <h3>4.4 받지만 쓰지 않는 것</h3>
+</section>
+
+<section id="unused">
+  <h2>4. 받지만 쓰지 않는 것</h2>
   <p>API 4가 주는 44필드 중 화면이 읽는 것은 25개다. 나머지를 쓰지 않는 이유는 넷으로 나뉜다.</p>
   <div class="table-wrap">
     <table class="index-table">
@@ -68,7 +93,7 @@
       <thead><tr><th>분류</th><th>필드</th><th>쓰지 않는 이유</th></tr></thead>
       <tbody>
         <tr><td>신원</td><td><code>student_uuid</code> · <code>cohort_label</code> · <code>metrics_snapshot</code>의 이름·기수·반·언어·UUID 7필드</td><td>로그인한 본인 화면이라 다시 받을 이유가 없다</td></tr>
-        <tr><td>집계</td><td><code>assignments_completed</code> · <code>attendance_rate</code> · <code>missing_fields</code></td><td>값이 고정이거나 미수집이다 — <a href="#source-gaps">5장</a></td></tr>
+        <tr><td>집계</td><td><code>assignments_completed</code> · <code>attendance_rate</code> · <code>missing_fields</code></td><td>값이 고정이거나 미수집이다 — <a href="../2026-09-03_API_응답_필드_정리/index.html#source-gaps">필드 정리 보고서 4장</a></td></tr>
         <tr><td>운영</td><td><code>id</code> · <code>week_label</code> · <code>risk_score</code> · <code>created_at</code> · <code>data_freshness</code></td><td>레코드 관리용이다</td></tr>
         <tr><td>강사용</td><td><code>recommendations</code></td><td>강사 권장 조치라 수강생 화면에 노출하지 않는다</td></tr>
       </tbody>
@@ -76,4 +101,8 @@
   </div>
   <div class="note"><code>top_error_types</code>는 상위 3개만 온다. 실측에서 세 건의 합이 <code>total_errors</code>의 62.6%였고, 나머지 37.4%는 어느 응답에도 나타나지 않으며 "기타" 항목도 없다. 막대그래프를 그리면 합이 전체와 맞지 않는다.</div>
   <div class="callout"><strong>총 단계 수가 응답에 없다.</strong> <code>total_steps</code>는 API 2에만 있고 화면이 쓰는 API 4에는 없어, 지금은 코드에 상수 <code>10</code>을 두고 있다. API 2를 함께 부르거나 API 4에 필드가 추가돼야 없앨 수 있다.</div>
-</section>
+</section></main>
+    <footer class="report-footer">2026-09-03 기준 실호출 결과다. 인증 키는 저장소에 두지 않고 환경변수로 참조한다.</footer>
+  </article>
+</body>
+</html>

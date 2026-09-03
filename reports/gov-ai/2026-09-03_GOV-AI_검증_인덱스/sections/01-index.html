@@ -1,0 +1,54 @@
+<section id="index">
+  <h2>세 보고서</h2>
+  <p class="lead">2026-09-03에 GOV-AI DataLake 명세서(<code>REPORT-API-CALL.md</code> v1.3)의 5개 API를 직접 호출해 응답을 확인했다. 확인한 내용을 성격에 따라 셋으로 나눴다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:22%"><col style="width:30%"><col style="width:48%"></colgroup>
+      <thead><tr><th>보고서</th><th>다루는 것</th><th>이런 질문의 답이 있다</th></tr></thead>
+      <tbody>
+        <tr><td><a href="../2026-09-03_API_응답_필드_정리/"><strong>① API 응답 필드 정리</strong></a></td><td>5개 API를 어떻게 불렀고 무엇이 왔는가. 필드 전체와 출결·과제·퀴즈</td><td>어떤 필드가 오는가 · 그 필드가 무슨 뜻인가 · 출결이 왜 100.0인가 · 퀴즈로 통계를 낼 수 있는가</td></tr>
+        <tr><td><a href="../2026-09-03_주간진단리포트_항목별_데이터/"><strong>② 주간 진단 리포트 항목별 데이터</strong></a></td><td>화면 항목마다 어떤 값이 들어가 어떤 숫자·문장이 되는가</td><td>지난주 대비 변화는 어떻게 만들어지나 · 학습 제안은 무슨 기준인가 · 진도의 분모는 어디서 오나</td></tr>
+        <tr><td><a href="../2026-09-03_mock_데이터_구성안/"><strong>③ mock 데이터 구성안</strong></a></td><td>실응답만으로 mock을 어떻게 나누고 무엇을 넣는가</td><td>몇 개 파일로 나누나 · 원본을 어디까지 바꿨나 · 결측을 어떻게 두나 · 실연동 전환은 어디를 고치나</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>항목별 바로가기</h2>
+  <p>찾는 내용이 있는 곳으로 바로 이동한다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:46%"><col style="width:54%"></colgroup>
+      <thead><tr><th>알고 싶은 것</th><th>들어갈 곳</th></tr></thead>
+      <tbody>
+        <tr><td>5개 API를 어떤 명령으로 불렀는가</td><td><a href="../2026-09-03_API_응답_필드_정리/#api-calls">① 2장 — API 1~5 호출과 응답</a></td></tr>
+        <tr><td>각 필드가 무엇인지, 어떤 값이 왔는지</td><td><a href="../2026-09-03_API_응답_필드_정리/#fields">① 3장 — 응답 필드 사전</a></td></tr>
+        <tr><td><code>/sync/students</code>는 왜 호출되는가</td><td><a href="../2026-09-03_API_응답_필드_정리/#api-calls">① 2장 — 문서 밖 엔드포인트</a></td></tr>
+        <tr><td>출결이 왜 전원 <code>100.0</code>인가</td><td><a href="../2026-09-03_API_응답_필드_정리/#source-gaps">① 4.3 — 근거</a></td></tr>
+        <tr><td>과제 <code>0</code>이 왜 0건 제출이 아닌가</td><td><a href="../2026-09-03_API_응답_필드_정리/#source-gaps">① 4.3 — 근거</a></td></tr>
+        <tr><td>퀴즈·과제로 어떤 통계가 가능한가</td><td><a href="../2026-09-03_API_응답_필드_정리/#source-gaps">① 4.4 — 그래도 되는 것</a></td></tr>
+        <tr><td>GOV-AI에 무엇을 요청해야 하는가</td><td><a href="../2026-09-03_API_응답_필드_정리/#source-gaps">① 4.7 — 확인 요청 8건</a></td></tr>
+        <tr><td>화면이 호출을 몇 개 쓰는가</td><td><a href="../2026-09-03_주간진단리포트_항목별_데이터/#one-call">② 1장 — 화면은 호출 하나만 쓴다</a></td></tr>
+        <tr><td>지표 8칸이 각각 어느 필드인가</td><td><a href="../2026-09-03_주간진단리포트_항목별_데이터/#per-item">② 2장 — 항목별로 어떤 데이터가 쓰이는가</a></td></tr>
+        <tr><td>서술 네 섹션은 어떻게 만들어지는가</td><td><a href="../2026-09-03_주간진단리포트_항목별_데이터/#derived">② 3장 — 서술 네 개 중 셋은 우리가 만든다</a></td></tr>
+        <tr><td>받는데 안 쓰는 필드는 무엇인가</td><td><a href="../2026-09-03_주간진단리포트_항목별_데이터/#unused">② 4장 — 받지만 쓰지 않는 것</a></td></tr>
+        <tr><td>mock을 왜 JSON으로, 호출 단위로 나누나</td><td><a href="../2026-09-03_mock_데이터_구성안/#principle">③ 1장 — 나누는 기준</a></td></tr>
+        <tr><td>mock 파일이 몇 개이고 각각 무엇인가</td><td><a href="../2026-09-03_mock_데이터_구성안/#files">③ 2장 — 9개 + 매니페스트</a></td></tr>
+        <tr><td>원본 값을 어디까지 바꿨는가</td><td><a href="../2026-09-03_mock_데이터_구성안/#contents">③ 3장 — 식별자만 바꾸고 지표는 그대로</a></td></tr>
+        <tr><td>결측을 어떻게 다루는가</td><td><a href="../2026-09-03_mock_데이터_구성안/#missing">③ 4장 — 0으로 채우지 않는다</a></td></tr>
+        <tr><td>실연동으로 바꿀 때 어디를 고치는가</td><td><a href="../2026-09-03_mock_데이터_구성안/#switch">③ 5장 — 실연동으로 바꿀 때</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>세 보고서가 공유하는 전제</h2>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+      <thead><tr><th>항목</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td>대상</td><td><code>https://datalake.isitsoft.kr/api/v1</code> · API v1.0.0 · 인증 헤더 <code>X-DE-API-KEY</code></td></tr>
+        <tr><td>검증 수강생</td><td>명세서 예시와 같은 <code>100030029410</code>(정승, 29기 A반). 화면·mock 예시는 데모 계정 <code>100051503818</code>(황수빈, 34기)</td></tr>
+        <tr><td>수집 시각</td><td><code>2026-09-02</code>. 응답이 캐시본이라 시점에 따라 값이 달라진다</td></tr>
+        <tr><td>근거 원칙</td><td>모든 수치는 실호출 응답에서 왔다. 계산한 값은 계산이라고, 우리가 만든 문장은 생성이라고 표시했다</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>

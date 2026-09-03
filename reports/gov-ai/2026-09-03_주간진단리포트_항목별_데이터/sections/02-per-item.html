@@ -1,0 +1,29 @@
+<section id="per-item">
+  <h2>2. 항목별로 어떤 데이터가 쓰이는가</h2>
+  <p>근거 값은 황수빈 <strong>2026-W36</strong> 응답이다. <strong>성격</strong>은 그 값이 어디서 왔는지를 뜻한다 — <em>원천</em>은 API가 준 값 그대로, <em>계산</em>은 앞 주차와의 비교, <em>생성</em>은 지표를 근거로 FE가 만든 문장이다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:14%"><col style="width:20%"><col style="width:22%"><col style="width:28%"><col style="width:16%"></colgroup>
+      <thead><tr><th>화면 항목</th><th>화면에 나오는 것</th><th>읽는 필드</th><th>W36 실측 근거</th><th>성격</th></tr></thead>
+      <tbody>
+        <tr><td>헤더 · 주차</td><td>14주차 · 08/31~09/06</td><td><code>week_no</code> · <code>week_range</code></td><td><code>36</code> → 기수 시작일에서 14주차로 환산</td><td>변환</td></tr>
+        <tr><td>이번 주 나의 수준</td><td>해결사 · 확신도 중간</td><td><code>grade</code> · <code>confidence</code></td><td><code>해결사</code> · <code>0.8</code> → <code>중간</code></td><td>원천 + 변환</td></tr>
+        <tr><td>지표 · 진행 단계</td><td>10/10 완료 (현재 10단계)</td><td><code>steps_completed</code> · <code>current_step</code></td><td><code>10</code> · <code>10</code>. 분모는 <strong>상수 10</strong></td><td>원천 + 상수</td></tr>
+        <tr><td>지표 · 활동일</td><td>7일</td><td><code>active_days_count</code></td><td><code>7</code></td><td>원천</td></tr>
+        <tr><td>지표 · 현 단계 정체</td><td>0일</td><td><code>stalled_days_on_current_step</code></td><td><code>0</code></td><td>원천</td></tr>
+        <tr><td>지표 · 최근 미접속</td><td>0일</td><td><code>days_since_last_activity</code></td><td><code>0</code></td><td>원천</td></tr>
+        <tr><td>지표 · 실행당 에러</td><td>0.10 (478회/4,946회)</td><td><code>error_per_run</code> · <code>total_errors</code> · <code>total_runs</code></td><td><code>0.1</code> · <code>478</code> · <code>4946</code></td><td>원천</td></tr>
+        <tr><td>지표 · 힌트 요청</td><td>286회 (일 40.86회)</td><td><code>hint_requests_count</code> · <code>hint_per_active_day</code></td><td><code>286</code> · <code>40.86</code></td><td>원천</td></tr>
+        <tr><td>지표 · 재시도 간격</td><td>0.2분 (최대 23.0분)</td><td><code>avg_retry_gap_min</code> · <code>max_retry_gap_min</code></td><td><code>0.2</code> · <code>23.0</code></td><td>원천</td></tr>
+        <tr><td>지표 · 주요 에러</td><td>ConnectionError×105, TimeoutError×104, IntegrityError×95</td><td><code>top_error_types[{type, count}]</code></td><td>3건. 원본 유형명이 200자를 넘어 <strong>예외 클래스명만</strong> 남긴다</td><td>원천 + 축약</td></tr>
+        <tr><td>지난주 대비 변화</td><td>완료 단계가 5→10단계로 늘었어요 (+5).<br>실행 횟수가 264→4,946회로 늘었어요.</td><td><code>steps_completed</code> · <code>total_runs</code> · <code>error_per_run</code></td><td>W35 <code>5·264·0.1</code> → W36 <code>10·4946·0.1</code>. 에러율은 변화가 없어 문장을 만들지 않는다</td><td><strong>계산</strong></td></tr>
+        <tr><td>잘하고 있는 점</td><td>10단계를 모두 완료했어요.<br>실행 4,946회 중 에러율 0.10로 낮게 유지했어요.<br>7일 학습해 흐름을 유지했어요.<br>막힘 없이 진행했고 최근 미접속도 없어요.</td><td><code>steps_completed</code> · <code>error_per_run</code> · <code>active_days_count</code> · <code>stalled_days_on_current_step</code> · <code>days_since_last_activity</code></td><td>네 조건이 각각 성립: <code>10≥10</code> · <code>0&lt;0.1&lt;0.3</code> · <code>7≥5</code> · <code>0·0</code></td><td><strong>생성</strong></td></tr>
+        <tr><td>보완하면 좋은 점</td><td>네트워크·비동기 타임아웃 예외 발생…<br>데이터베이스 고유 키 제약 조건 위반…</td><td><code>weak_patterns</code></td><td>2건. <strong>원천 서술을 그대로</strong> 싣는다</td><td>원천</td></tr>
+        <tr><td>이번 주 학습 제안</td><td>힌트를 하루 평균 40.9회 사용했어요 — 열기 전에 에러 메시지를 한 번 더 읽어보세요.<br>에러 후 평균 0.2분 만에 다시 실행했어요 — 원인을 1분만 생각해 본 뒤 고쳐보세요.</td><td><code>hint_per_active_day</code> · <code>avg_retry_gap_min</code></td><td>임계값에 걸린 것만: <code>40.86 ≥ 20</code> · <code>0.2 &lt; 0.5</code>. 미접속·정체·에러율은 걸리지 않아 제외</td><td><strong>생성</strong></td></tr>
+        <tr><td>강사 피드백</td><td>승인된 전달본</td><td><code>feedback_draft</code></td><td>417자. <strong>승인 전에는 감춘다</strong> — AI가 수강생에게 직접 전달하지 않는다</td><td>원천 + 승인 게이트</td></tr>
+        <tr><td>생성 표기</td><td>google · gemini-3.5-flash</td><td><code>llm_provider</code> · <code>llm_model</code></td><td><code>google</code> · <code>gemini-3.5-flash</code></td><td>원천</td></tr>
+        <tr><td>주차 관리 표시</td><td>관리가 필요한 주차 강조</td><td><code>risk_status</code></td><td><code>completed_waiting</code> → 표시하지 않음. <code>stalled_learning</code>·<code>at_risk</code>만 강조</td><td>원천 + 판정</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -1,7 +1,7 @@
 <section id="source-gaps">
-  <h2>5. 출결·과제·퀴즈 — 무엇이 되고 무엇이 안 되는가</h2>
-  <p class="lead">4장에서 보듯 이 셋은 현재 리포트에 들어가지 않는다. 그런데 호출하면 값이 오기 때문에 검토 내내 "있다"와 "없다"가 뒤집혔다. 어디서 무엇이 오는지, 왜 못 쓰는지, 그래도 무엇은 되는지를 호출과 값으로 가른다.</p>
-  <h3>5.1 어디서 무엇이 오는가</h3>
+  <h2>4. 출결·과제·퀴즈 — 무엇이 되고 무엇이 안 되는가</h2>
+  <p class="lead">이 셋은 현재 주간 진단 리포트에 들어가지 않는다. 그런데 호출하면 값이 오기 때문에 검토 내내 "있다"와 "없다"가 뒤집혔다. 어디서 무엇이 오는지, 왜 못 쓰는지, 그래도 무엇은 되는지를 호출과 값으로 가른다.</p>
+  <h3>4.1 어디서 무엇이 오는가</h3>
   <p>실측값은 명세서 예시와 같은 정승(<code>100030029410</code>) 기준이다.</p>
   <div class="table-wrap">
     <table class="index-table">
@@ -21,7 +21,7 @@
       </tbody>
     </table>
   </div>
-  <h3>5.2 "온다"와 "쓸 수 있다"는 다르다</h3>
+  <h3>4.2 "온다"와 "쓸 수 있다"는 다르다</h3>
   <p>말이 엇갈린 이유는 <strong>막히는 지점이 항목마다 다르기 때문</strong>이다. 네 가지를 구분하지 않으면 같은 항목을 두고 "온다"와 "없다"가 둘 다 맞는 말이 된다.</p>
   <div class="table-wrap">
     <table class="index-table">
@@ -35,7 +35,7 @@
       </tbody>
     </table>
   </div>
-  <h3>5.3 근거</h3>
+  <h3>4.3 근거</h3>
   <h4>출결 — 결석 11일인 학생도 100.0이다</h4>
   <p><code>/sync/students</code>의 출결 상세와 API 1의 <code>attendance_rate</code>를 학생 5명에 대해 나란히 놓았다.</p>
   <div class="table-wrap">
@@ -63,7 +63,7 @@ curl -X GET &quot;$B/sync/students?limit=200&quot; -H &quot;X-DE-API-KEY: $DE_AP
   <h4>누적 — 주차를 바꿔도 같은 값이 온다</h4>
   <pre><code>11주차(W33)를 봐도  → attendance {present 100, late 5, absent 4}
 14주차(W36)를 봐도  → attendance {present 100, late 5, absent 4}   동일</code></pre>
-  <h3>5.4 그래도 되는 것 — 누적 기준이면 지금도 가능하다</h3>
+  <h3>4.4 그래도 되는 것 — 누적 기준이면 지금도 가능하다</h3>
   <p>정승은 과제·퀴즈가 전부 <code>0</code>이라 "값이 안 온다"고 보기 쉽다. <strong>학생을 바꾸면 값이 있다.</strong> 아래는 같은 <code>/sync/students</code> 한 번의 응답에서 뽑은 세 명이다.</p>
   <pre><code>curl -X GET &quot;$B/sync/students?limit=200&quot; -H &quot;X-DE-API-KEY: $DE_API_KEY&quot;</code></pre>
   <div class="table-wrap">
@@ -109,7 +109,7 @@ curl -X GET &quot;$B/sync/students?limit=200&quot; -H &quot;X-DE-API-KEY: $DE_AP
       </tbody>
     </table>
   </div>
-  <h3>5.5 이 값들의 원천은 LMS다</h3>
+  <h3>4.5 이 값들의 원천은 LMS다</h3>
   <p><code>/sync/students</code>의 출결·과제·퀴즈는 GOV-AI가 수집한 것이 아니라 <strong>LMS가 넘긴 데이터</strong>다. <code>LMS-DOCS/10_데이터/외부_AI_코칭_API.md</code>가 정의한 <code>data-ingest-api</code>가 원천이며, 양쪽이 같은 <code>X-DE-API-KEY</code> 헤더를 쓴다.</p>
   <pre><code>LMS data-ingest-api ──X-DE-API-KEY──▶ GOV-AI 수집 ──▶ /sync/students
   GET /ingest/v1/courses?include=activities</code></pre>
@@ -126,19 +126,19 @@ curl -X GET &quot;$B/sync/students?limit=200&quot; -H &quot;X-DE-API-KEY: $DE_AP
     </table>
   </div>
   <p>즉 GOV-AI는 우리가 준 값을 받아만 두고 <strong>주간 리포트에는 반영하지 않는다.</strong> 출결이 <code>100.0</code>인 것도 원천이 없어서가 아니라 집계 단계에서 쓰이지 않기 때문이다.</p>
-  <h3>5.6 화면 설계상으로는 이미 갈라져 있다</h3>
+  <h3>4.6 화면 설계상으로는 이미 갈라져 있다</h3>
   <p><code>LMS-DOCS/30_설계/60_기능/기능_명세/P0_12_수강생_과정별_역량_리포트.md</code>가 원천을 나눠 놓았다.</p>
   <div class="callout"><strong>P0-STU-DIAG-004 완료 기준</strong> — "지표는 퀴즈·과제 점수가 아니라 <strong>실습 행동 로그</strong>(정체·에러율·힌트 의존·재시도 간격) 기반임"</div>
   <p>같은 문서가 구 <code>competency</code> 화면과의 차이를 <strong>데이터 원천</strong>으로 구분한다 — 구 화면은 "퀴즈·과제·출결·기록 집계", 진단 리포트는 "실습 단계 진행·에러·힌트·재시도 지표"다. 실제 API 응답이 이 구분과 일치한다. 출결·과제·퀴즈는 교육과정 허브의 <code>출결/태도</code>·<code>과제</code>·<code>퀴즈</code> 전용 탭이 담당한다. 진단 리포트에 넣는다면 그 탭들과 같은 원천(<code>/sync/students</code> 또는 LMS 직접 조회)을 써야 값이 어긋나지 않는다.</p>
-  <h3>5.7 GOV-AI 팀 확인 요청</h3>
+  <h3>4.7 GOV-AI 팀 확인 요청</h3>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:5%"><col style="width:30%"><col style="width:65%"></colgroup>
       <thead><tr><th>No.</th><th>항목</th><th>근거</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td>출결 집계 미동작</td><td><code>attendance_rate</code>가 학생 5명·주차 4개 전부 <code>100.0</code>. <code>/sync/students</code>에는 결석·지각 상세가 살아 있다 (5.3)</td></tr>
-        <tr><td>2</td><td>과제 미수집</td><td><code>missing_fields: ["assignments"]</code>. LMS는 <code>data-ingest-api</code>로 제공 중이다 (5.5)</td></tr>
-        <tr><td>3</td><td>퀴즈 필드 부재</td><td>5개 API와 명세서 필드 사전 모두에 없음. <code>/sync/students</code>에만 존재 (5.1)</td></tr>
+        <tr><td>1</td><td>출결 집계 미동작</td><td><code>attendance_rate</code>가 학생 5명·주차 4개 전부 <code>100.0</code>. <code>/sync/students</code>에는 결석·지각 상세가 살아 있다 (4.3)</td></tr>
+        <tr><td>2</td><td>과제 미수집</td><td><code>missing_fields: ["assignments"]</code>. LMS는 <code>data-ingest-api</code>로 제공 중이다 (4.5)</td></tr>
+        <tr><td>3</td><td>퀴즈 필드 부재</td><td>5개 API와 명세서 필드 사전 모두에 없음. <code>/sync/students</code>에만 존재 (4.1)</td></tr>
         <tr><td>4</td><td><code>/sync/students</code>의 위치</td><td>명세서 밖이라 계속 호출해도 되는지, 값의 갱신 주기가 어떻게 되는지 확인이 필요하다 (2장)</td></tr>
         <tr><td>5</td><td>과거 주차 지표 축약</td><td>W33·W34의 <code>metrics_snapshot</code>이 7필드. 힌트·재시도·에러 유형이 사라진다 (4.1)</td></tr>
         <tr><td>6</td><td><code>total_steps</code> 부재</td><td>진도의 분모가 API 2에만 있어 화면이 상수 <code>10</code>을 쓰고 있다 (4.4)</td></tr>

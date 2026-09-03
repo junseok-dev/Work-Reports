@@ -1,0 +1,21 @@
+<section id="contents">
+  <h2>3. 안에 무엇을 넣는가 — 식별자만 바꾸고 지표는 그대로</h2>
+  <p>원본은 명세서 예시와 같은 <strong>29기 정승</strong>(<code>100030029410</code>)이다. LMS-FE 데모 로그인 계정과 맞추려고 <strong>식별자와 이름만</strong> 34기 황수빈으로 바꿨다. 지표는 한 자리도 건드리지 않았다.</p>
+  <div class="table-wrap">
+    <table class="index-table">
+      <colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup>
+      <thead><tr><th>항목</th><th>원본</th><th>mock</th></tr></thead>
+      <tbody>
+        <tr><td><code>studentUuid</code></td><td><code>100030029410</code></td><td><code>100051503818</code></td></tr>
+        <tr><td><code>userId</code></td><td><code>fd0ba10e-d94e-43c2-…</code></td><td><code>f074a93b-5ad7-4234-…</code></td></tr>
+        <tr><td><code>cohortId</code></td><td><code>0baacbd9-02d4-4f42-…</code></td><td><code>f34c88f3-7cd2-4543-…</code></td></tr>
+        <tr><td><code>name</code></td><td>정승</td><td>황수빈</td></tr>
+        <tr><td><code>cohort</code></td><td>29기</td><td>34기</td></tr>
+        <tr><td><strong>그 외 전부</strong></td><td>—</td><td><strong>원본 값 그대로</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><code>ext-sync-students.json</code>만 예외다. 치환본이 아니라 <strong>실제 황수빈 레코드</strong>다. <code>/sync/students</code>가 123명 전원을 주므로 황수빈을 그대로 뽑아 쓸 수 있었다. 그래서 이 파일의 과제 <code>10/9/1</code>·퀴즈 <code>7/6/91.0</code>은 실제 LMS 값이다.</div>
+  <h3>뺀 것</h3>
+  <p><code>markdown_content</code>를 제거했다. 주차당 약 2,900자이고 <code>api4-history.json</code>이 4주치라 그대로 두면 파일이 세 배가 되는데, 화면은 이 필드를 읽지 않는다. 문서 형태가 필요하면 <code>api1-weekly.md</code>가 같은 내용을 담고 있다.</p>
+</section>
