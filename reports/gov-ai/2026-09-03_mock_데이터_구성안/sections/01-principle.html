@@ -4,7 +4,7 @@
   <div class="callout"><strong>값을 지어내지 않는다.</strong> 응답이 비어 있거나 필드가 없으면 비어 있는 채로 둔다. 화면이 허전하다고 그럴듯한 숫자를 채우면, 실연동으로 바꾸는 날 화면이 전혀 다른 모습이 되고 그때는 무엇이 달라졌는지 가릴 수 없다.</div>
   <h3>1.1 형식은 JSON, 자르는 단위는 호출</h3>
   <p>API가 JSON을 준다. 받은 것을 그대로 저장하면 <strong>응답과 mock이 1:1로 대응</strong>하고, 실연동으로 바꿀 때 파일을 지우고 fetch로 갈아 끼우면 끝난다. 화면 기준으로 자르면 "이 값이 어느 호출에서 왔는지"를 잃는다.</p>
-  <pre><code>api4-history.json  ←  curl -X GET "$B/reports/history/$U?limit=30" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <pre><code>api4-history.json  ←  curl -X GET "$B/reports/history/$U?limit=5" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:16%"><col style="width:38%"><col style="width:46%"></colgroup>

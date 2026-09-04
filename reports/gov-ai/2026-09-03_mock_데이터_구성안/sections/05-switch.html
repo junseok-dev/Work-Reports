@@ -5,13 +5,13 @@
 export const DATALAKE_HISTORY = { [DEMO_USER_ID]: history }
 
 // 실연동
-GET $B/reports/history/{studentUuid}?limit=30   →  같은 배열</code></pre>
+GET $B/reports/history/{studentUuid}?limit=5   →  같은 배열</code></pre>
   <div class="table-wrap">
     <table class="index-table">
       <colgroup><col style="width:30%"><col style="width:34%"><col style="width:36%"></colgroup>
       <thead><tr><th>mock 파일</th><th>대체할 호출</th><th>주의</th></tr></thead>
       <tbody>
-        <tr><td><code>api4-history.json</code></td><td><code>GET /reports/history/{uuid}?limit=30</code></td><td>화면이 쓰는 유일한 호출. 여기만 바꾸면 화면이 산다</td></tr>
+        <tr><td><code>api4-history.json</code></td><td><code>GET /reports/history/{uuid}?limit=5</code></td><td>화면이 쓰는 유일한 호출. 여기만 바꾸면 화면이 산다</td></tr>
         <tr><td><code>api2-certificate.json</code></td><td><code>GET /certificate/{uuid}</code></td><td><code>total_steps</code>가 필요하면 함께 호출해야 한다. 지금은 상수 10</td></tr>
         <tr><td>나머지 7개</td><td>—</td><td>대조·회귀 검증용이라 화면 전환과 무관하다. 스키마가 바뀌면 다시 수집한다</td></tr>
       </tbody>

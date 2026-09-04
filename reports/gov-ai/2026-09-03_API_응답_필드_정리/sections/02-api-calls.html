@@ -56,19 +56,20 @@ recommendations_for_instructor · suggested_feedback_draft · analyzed_at · mod
 2026-W36  metrics_snapshot  24개 필드</code></pre>
   <p>과거 두 주차는 <code>steps_completed · current_step · total_runs · total_errors · error_per_run · active_days_count · attendance_rate</code> 7개로 축약된다. 힌트·재시도·정체·에러 유형과 신원 필드가 사라진다.</p>
 
-  <h3>API 5. 강사 피드백 승인</h3>
+  <h3>API 5. 강사 피드백 승인 및 학생 발송</h3>
   <pre><code>cat &gt; payload.json &lt;&lt;'EOF'
 {
   "studentUuid": "100030029410",
-  "approved_by": "[TEST] 필드 확인",
-  "feedback_text": "[TEST] API 5 응답 필드 확인용",
+  "approved_by": "강사 이정훈",
+  "feedback_text": "정승님, 이번 주 5단계 완주를 축하합니다! 메모리 관리에 대해 추가 가이드 드릴 게요.",
   "status": "APPROVED"
 }
 EOF
 
 curl -X POST "$B/feedback/approve" -H "X-DE-API-KEY: $DE_API_KEY"   -H "Content-Type: application/json" --data-binary @payload.json</code></pre>
-  <pre><code>{"status": "SUCCESS", "log_id": "fb_20260903103059_100030029410", "approved_by": "[TEST] 필드 확인"}</code></pre>
-  <p>응답은 3필드뿐이다. 승인 로그가 <strong>누적 생성</strong>되고 삭제 API가 없으므로, 검증 호출에는 <code>[TEST]</code> 표기를 붙여 나중에 골라낼 수 있게 했다.</p>
-  <div class="note"><code>log_id</code>의 시각 <code>103059</code>는 <strong>KST</strong>다. 같은 순간 다른 응답의 <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 UTC로 온다. 한 서비스 안에서 타임존이 섞여 있다.</p></div>
+  <pre><code>{"status": "SUCCESS", "log_id": "fb_20260902093622_100030029410", "approved_by": "강사 이정훈"}</code></pre>
+  <p>응답은 3필드뿐이다. 요청 본문은 명세서 예시 문구를 그대로 썼다.</p>
+  <div class="callout"><strong>검증 과정에서 10회 호출됐다.</strong> 한글 본문이 CP949로 변환돼 <code>400</code>이 나는 것을 잡느라 재시도했고, 2026-09-01에 8회·09-02에 2회 들어갔다. 승인 로그는 <strong>누적 생성만 되고 삭제 API가 없어</strong> 정승(<code>100030029410</code>) 계정에 <code>APPROVED</code> 10건이 그대로 남아 있다. <code>/feedback/export/csv</code>로 확인했다. 명세서가 이 API를 "승인 <strong>및 학생 발송</strong>"이라 적고 있어, 이 10건이 실제로 발송됐는지 확인이 필요하다.</div>
+  <div class="note"><code>log_id</code>의 시각 <code>093622</code>는 <strong>KST</strong>다(같은 레코드의 <code>Approved At</code>은 <code>2026-09-02T00:36:22</code>로 9시간 차). 같은 순간 다른 응답의 <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 UTC로 온다. 한 서비스 안에서 타임존이 섞여 있다.</p></div>
 
 </section>

@@ -72,14 +72,15 @@ API 2  정승                                        attendance_rate  100.0</cod
         <tr><td>1</td><td>출결 집계 미동작</td><td><code>attendance_rate</code>가 학생 5명·주차 4개·API 3종 전부 <code>100.0</code>이다 (5.3)</td></tr>
         <tr><td>2</td><td>과제 미수집</td><td><code>missing_fields: ["assignments"]</code>. LMS는 <code>data-ingest-api</code>로 제공 중이다 (5.3)</td></tr>
         <tr><td>3</td><td>퀴즈 필드 부재</td><td>다섯 응답과 명세서 §4 필드 사전 모두에 없다 (5.1)</td></tr>
-        <tr><td>4</td><td>과거 주차 지표 축약</td><td>W33·W34의 <code>metrics_snapshot</code>이 7필드. 힌트·재시도·에러 유형이 사라진다</td></tr>
-        <tr><td>5</td><td><code>total_steps</code> 부재</td><td>진도의 분모가 API 2에만 있어 화면이 상수 <code>10</code>을 쓰고 있다</td></tr>
-        <tr><td>6</td><td>주차별 승인 상태 필드 부재</td><td>승인 게이트가 화면에 있는데 승인 여부를 주는 필드가 API 4에 없다. API 2의 <code>human_in_the_loop</code>은 증명서 단위다</td></tr>
-        <tr><td>7</td><td><code>language</code> 값 고정</td><td>학생을 가리지 않고 <code>python</code>이 온다. 값 범위가 명세에 없다</td></tr>
-        <tr><td>8</td><td>주차 간 실행량 급증</td><td>W35→W36에 <code>total_runs</code>가 <code>264 → 4,946</code>(18.7배). 활동일은 1.75배만 늘었다</td></tr>
-        <tr><td>9</td><td>재시도 횟수 미제공</td><td><code>avg_retry_gap_min</code>은 간격만 준다. 평균을 계산했다면 건수를 갖고 있다는 뜻이다</td></tr>
-        <tr><td>10</td><td>타임존 혼재</td><td><code>log_id</code>는 KST, <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 표기가 없다 (4.3)</td></tr>
-        <tr><td>11</td><td>승인 로그 삭제 수단 없음</td><td><code>/feedback/approve</code>가 누적 생성만 하고 삭제 API가 없다. 검증 호출분에 <code>[TEST]</code> 표기를 남겼다</td></tr>
+        <tr><td>4</td><td><strong>실습 단계의 정의</strong></td><td><code>steps_completed</code>·<code>current_step</code>·<code>total_steps</code>가 <strong>무엇의 단계인지 명세에 없다.</strong> 커리큘럼 단원인지 실습 도구의 챕터인지 알 수 없다. <code>api1-weekly.md</code>는 "진도 단계 10/10 단계 완료(현재 진행: Step 10)"로 적고 <code>grade_rationale</code>은 "10단계를 완주하여 해결사의 진도 기준을 충족"이라며 <strong>등급 판정의 축으로 쓰고 있다.</strong> 정의가 확정될 때까지 개인 화면에서 뺐다</td></tr>
+        <tr><td>5</td><td>과거 주차 지표 축약</td><td>W33·W34의 <code>metrics_snapshot</code>이 7필드. 힌트·재시도·에러 유형이 사라진다</td></tr>
+        <tr><td>6</td><td><code>total_steps</code> 부재</td><td>진도의 분모가 API 2에만 있어 화면이 상수 <code>10</code>을 쓰고 있다</td></tr>
+        <tr><td>7</td><td>주차별 승인 상태 필드 부재</td><td>승인 게이트가 화면에 있는데 승인 여부를 주는 필드가 API 4에 없다. API 2의 <code>human_in_the_loop</code>은 증명서 단위다</td></tr>
+        <tr><td>8</td><td><code>language</code> 값 고정</td><td>학생을 가리지 않고 <code>python</code>이 온다. 값 범위가 명세에 없다</td></tr>
+        <tr><td>9</td><td>주차 간 실행량 급증</td><td>W35→W36에 <code>total_runs</code>가 <code>264 → 4,946</code>(18.7배). 활동일은 1.75배만 늘었다</td></tr>
+        <tr><td>10</td><td>재시도 횟수 미제공</td><td><code>avg_retry_gap_min</code>은 간격만 준다. 평균을 계산했다면 건수를 갖고 있다는 뜻이다</td></tr>
+        <tr><td>11</td><td>타임존 혼재</td><td><code>log_id</code>는 KST, <code>analyzed_at</code>·<code>data_freshness</code>·<code>issue_timestamp</code>는 표기가 없다 (4.3)</td></tr>
+        <tr><td>12</td><td>승인 로그 삭제 수단 없음</td><td><code>/feedback/approve</code>가 누적 생성만 하고 삭제 API가 없다. <strong>검증 과정에서 10회 호출돼 정승(<code>100030029410</code>) 계정에 <code>APPROVED</code> 10건이 남아 있다</strong> — 지워달라고 요청해야 한다. 명세서가 "승인 및 학생 발송"이라 적고 있어 실제 발송 여부도 확인이 필요하다</td></tr>
       </tbody>
     </table>
   </div>

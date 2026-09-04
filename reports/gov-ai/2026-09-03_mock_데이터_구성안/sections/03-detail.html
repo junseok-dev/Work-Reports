@@ -3,7 +3,7 @@
   <p class="lead">mock 7종을 하나씩 편다. <strong>무엇을 나타내는가</strong> → <strong>안에 어떤 값이 있는가</strong> → <strong>주간 진단 리포트의 어느 항목이 되는가</strong> 순서다. 화면에 가까운 순으로 놓았다. 값은 데모 계정 황수빈(<code>100051503818</code>) 기준 실응답이다.</p>
   <h3>3.1 <code>api4-history.json</code></h3>
   <p><strong>주차별 리포트 이력 — 화면이 소비하는 유일한 파일</strong> · 12,114 bytes</p>
-  <pre><code>curl -X GET "$B/reports/history/$U?limit=30" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
+  <pre><code>curl -X GET "$B/reports/history/$U?limit=5" -H "X-DE-API-KEY: $DE_API_KEY"</code></pre>
   <p><strong>4주가 배열로</strong> 온다. 배열 하나가 곧 주차 브라우저가 되므로 주차를 넘길 때 추가 호출이 없다. 행마다 최상위 20키 + <code>metrics_snapshot</code>이다.</p>
   <h4>주차별로 오는 값</h4>
   <div class="table-wrap">
@@ -188,5 +188,5 @@
       </tbody>
     </table>
   </div>
-  <div class="callout"><strong>응답 형태는 실호출로 확인했고 값은 데모용이다.</strong> 검증 호출에는 <code>approved_by</code>에 <code>[TEST] 필드 확인</code>을 넣어 나중에 골라낼 수 있게 했다. 승인 로그가 누적되고 삭제 API가 없어 재호출하지 않았다. 지금 화면은 이 파일을 읽지 않고 <em>마지막 주차만 미승인</em>이라는 임시 규칙을 쓴다 — <strong>주차별 승인 상태를 주는 필드가 어디에도 없기 때문</strong>이다.</div>
+  <div class="callout"><strong>실호출 응답이다.</strong> 검증 과정에서 10회 호출됐고 마지막 응답의 <code>log_id</code>가 <code>fb_20260902093622_100030029410</code>다. <code>request</code>는 <strong>명세서 요청 예시 문구</strong>를 학생만 치환해 쓴 것이고 <code>response</code>는 받은 그대로다. 승인 로그에 삭제 API가 없어 정승 계정에 10건이 남아 있다. 지금 화면은 이 파일을 읽지 않고 <em>마지막 주차만 미승인</em>이라는 임시 규칙을 쓴다 — <strong>주차별 승인 상태를 주는 필드가 어디에도 없기 때문</strong>이다.</div>
 </section>
