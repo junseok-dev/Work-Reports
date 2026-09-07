@@ -92,6 +92,17 @@ pre{font-family:"IBM Plex Mono",monospace; font-size:.78rem; line-height:1.75; c
 ul{margin:.4rem 0 .9rem; padding-left:1.1rem; color:var(--ink-2); font-size:.92rem; max-width:42rem}
 li{margin:.3rem 0}
 
+/* 화면 캡처 — 절 단위로 잘라 넣는다. 창 전체가 아니라 그 절만. */
+figure{margin:1.1rem 0 1.4rem; max-width:42rem}
+figure img{
+  display:block; width:100%; height:auto;
+  border:1px solid var(--rule); border-radius:3px; background:var(--panel);
+}
+figcaption{
+  margin-top:.5rem; font-size:.8rem; color:var(--muted); line-height:1.6;
+}
+figcaption b{color:var(--ink-2); font-weight:600}
+
 footer{margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--rule); font-size:.78rem; color:var(--muted)}
 footer p{margin:.25rem 0; font-size:inherit; color:inherit}
 </style>
@@ -118,8 +129,8 @@ footer p{margin:.25rem 0; font-size:inherit; color:inherit}
   </div>
   <div class="card todo">
     <span class="card-k">정해야 할 것</span>
-    <span class="card-v">등급 판정 기준</span>
-    <span class="card-s">원천에 기준표 없음</span>
+    <span class="card-v">등급 구간</span>
+    <span class="card-s">LMS 자체 판정 · 경계 미정</span>
   </div>
 </div>
 
@@ -130,9 +141,8 @@ footer p{margin:.25rem 0; font-size:inherit; color:inherit}
   이름만 보고는 어느 쪽이 무엇을 주는지 알 수 없습니다. 첫 절에서 그것을 가릅니다.
 </p>
 <p>
-  두 번째는 등급입니다. <b>입문 · 초급 · 중급 · 해결사</b> 를 무엇으로 나누는지가 명세에 없고,
-  단계에 기대던 근거를 걷어내면서 판정을 설명할 수단도 사라졌습니다. 기준을 우리가 정해야 하는 상황과,
-  정한 뒤 화면 어디에 어떻게 보여줄지를 함께 적었습니다.
+  두 번째는 등급입니다. <b>판정을 LMS 가 자체적으로</b> 하는 방향이라 <b>입문 · 초급 · 중급 · 해결사</b> 를
+  나누는 기준을 우리가 정해야 합니다. 어떤 축으로 나눌지와, 그 근거를 화면 어디에 어떻게 보여줄지를 적었습니다.
 </p>
 
 <div class="note">
@@ -206,20 +216,86 @@ atmux      실습 시간 · CPU 사용률 · 텔레메트리      →  리포트
     학습 수준의 근거로 쓰기에는 신호가 약합니다.</p>
 </div>
 
-<h3>정리 — 어느 수집기가 어느 칸을 채우나</h3>
+<h3>리포트 항목별로 — 어떤 데이터가 들어가나</h3>
+
+<p>
+  <code>playlang</code> 이 주는 것은 <b>카운트뿐</b>입니다. "며칠 접속 안 했다" · "재시도가 짧아졌다" 같은 값은
+  주간 집계에서 만들어지고, 문장은 화면이 만듭니다.
+</p>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/01-metrics.png" alt="이번 주 학습 기록 절 — 지표 여섯 칸">
+  <figcaption>
+    <b>지표 여섯 칸.</b> <code>152회/610회</code> 가 <code>errors_count</code> 와 <code>runs_count</code> 이고,
+    <code>96회</code> 가 <code>hints_count</code> 다. <b>에러당 힌트 0.63 은 화면이 나눈 값</b>으로 원천에 없다.
+  </figcaption>
+</figure>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>리포트 항목</th><th>수집기</th><th>비고</th></tr></thead>
+  <thead><tr><th>리포트 항목</th><th>쓰는 지표</th><th>playlang 원천</th></tr></thead>
   <tbody>
-    <tr><td class="k">활동일</td><td>playlang</td><td>주간 집계에서 산출</td></tr>
-    <tr><td class="k">최근 미접속</td><td>playlang</td><td>마지막 이벤트 기준</td></tr>
-    <tr><td class="k">실행당 에러</td><td>playlang</td><td><code>errors_count ÷ runs_count</code></td></tr>
-    <tr><td class="k">힌트 요청</td><td>playlang</td><td><code>hints_count</code></td></tr>
-    <tr><td class="k">에러 후 재시도 간격</td><td>playlang</td><td>주간 집계에서 산출</td></tr>
-    <tr><td class="k">에러당 힌트</td><td>playlang</td><td>화면이 계산</td></tr>
-    <tr><td class="k">주요 에러 top3</td><td>playlang</td><td>예외별 빈도 집계</td></tr>
-    <tr><td class="k">등급 · 확신도 · 보완점</td><td>—</td><td>위 지표를 LLM 이 읽고 판정</td></tr>
+    <tr class="grp"><td colspan="3">요약</td></tr>
+    <tr><td class="k">등급 · 확신도</td><td>—</td><td>아래 지표를 판정에 넣는다</td></tr>
+    <tr><td class="k">등급 변화</td><td>두 주의 등급</td><td>—</td></tr>
+
+    <tr class="grp"><td colspan="3">1 이번 주 학습 기록 — 지표 여섯 칸</td></tr>
+    <tr><td class="k">활동일</td><td>활동일</td><td>이벤트가 있는 날 수 (집계)</td></tr>
+    <tr><td class="k">최근 미접속</td><td>최근 미접속</td><td>마지막 이벤트 시각 (집계)</td></tr>
+    <tr><td class="k">실행당 에러</td><td>실행당 에러</td><td><code>errors_count</code> ÷ <code>runs_count</code></td></tr>
+    <tr><td class="k">힌트 요청</td><td>힌트 요청</td><td><code>hints_count</code></td></tr>
+    <tr><td class="k">에러 후 재시도 간격</td><td>재시도 간격</td><td>이벤트 간격 집계</td></tr>
+    <tr><td class="k">에러당 힌트</td><td>힌트 ÷ 에러</td><td><code>hints_count</code> · <code>errors_count</code></td></tr>
+
+    <tr class="grp"><td colspan="3">2~4 변화와 근거</td></tr>
+    <tr><td class="k">지난주와 비교</td><td>활동일 · 코드 실행 · 활동일당 힌트</td><td><code>runs_count</code> · <code>hints_count</code></td></tr>
+    <tr><td class="k">실행당 에러 추세</td><td>주차별 실행당 에러</td><td><code>error_rate_pct</code></td></tr>
+    <tr><td class="k">주요 에러 top3</td><td>예외 이름 · 횟수</td><td>예외별 빈도 집계</td></tr>
+
+    <tr class="grp"><td colspan="3">5~8 해석과 제안 — 전부 화면이 문장을 만든다</td></tr>
+    <tr><td class="k">문제를 푸는 방식</td><td>활동일당 힌트 × 재시도 간격 (두 주)</td><td><code>hints_count</code> · 이벤트 간격</td></tr>
+    <tr><td class="k">잘하고 있는 점</td><td>실행당 에러 · 활동일당 힌트 · 활동일</td><td>세 카운트 전부</td></tr>
+    <tr><td class="k">보완하면 좋은 점</td><td>—</td><td><b>원천 서술 그대로</b>. 지표를 쓰지 않는다</td></tr>
+    <tr><td class="k">이번 주 학습 제안</td><td>아래 표 참조</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/04-errors.png" alt="주요 에러 top3 절 — 예외 세 종과 발생 횟수">
+  <figcaption>
+    <b>예외별 집계.</b> 원천은 예외 이름과 횟수만 준다.
+    영역 표기(<b>데이터베이스 · 비동기 · 네트워크</b>)와 한 줄 설명은 화면이 붙인 것이고,
+    맨 아래 커버리지 문장(<b>59% · 나머지 41% 는 확인할 수 없어요</b>)도 화면이 계산한다.
+  </figcaption>
+</figure>
+
+<h3>이번 주 학습 제안 — 문장마다 어떤 데이터</h3>
+
+<p>
+  제안은 원천이 문장을 주지 않습니다. <b>지표가 조건에 걸릴 때만</b> 그 지표로 문장을 만듭니다.
+</p>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/08-tips.png" alt="이번 주 학습 제안 절 — 재시도 간격 단축을 짚는 한 문장">
+  <figcaption>
+    <b>카운트가 문장이 되는 지점.</b> 이 주차는 재시도 간격이 <code>0.9분 → 0.6분</code> 으로 짧아진 것 하나만
+    조건에 걸려 제안이 한 줄이다. 나머지 지표가 전부 기준 안쪽이면 <b>제안 자리가 비고</b>,
+    그때는 지금 방식을 이어가라는 한 줄만 남는다.
+  </figcaption>
+</figure>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>나오는 문장</th><th>쓰는 지표</th><th>playlang 원천</th></tr></thead>
+  <tbody>
+    <tr><td class="k">N일간 접속이 없었어요</td><td>최근 미접속</td><td>마지막 이벤트 시각</td></tr>
+    <tr><td class="k">실행 N회 중 M%에서 에러가 났어요</td><td>실행당 에러 · 총 실행</td><td><code>errors_count</code> · <code>runs_count</code></td></tr>
+    <tr><td class="k">실행당 에러가 X→Y로 늘었어요</td><td>실행당 에러 (두 주)</td><td><code>error_rate_pct</code></td></tr>
+    <tr><td class="k">힌트를 하루 X→Y회로 더 열었어요</td><td>활동일당 힌트 (두 주)</td><td><code>hints_count</code> ÷ 활동일</td></tr>
+    <tr><td class="k">다시 실행하기까지가 X→Y분으로 짧아졌어요</td><td>재시도 간격 (두 주)</td><td>이벤트 간격 집계</td></tr>
+    <tr><td class="k">학습한 날이 X→Y일로 줄었어요</td><td>활동일 (두 주)</td><td>이벤트가 있는 날 수</td></tr>
+    <tr><td class="k">지금 방식을 이어가 보세요</td><td>위 어느 것도 안 걸림</td><td>—</td></tr>
   </tbody>
 </table>
 </div>
@@ -229,36 +305,42 @@ atmux      실습 시간 · CPU 사용률 · 텔레메트리      →  리포트
   리포트가 통째로 비고, 그 사실이 화면에 "기록이 수집되지 않았어요"로 나타납니다.
 </p>
 
-<h2>등급 기준 — 지금 왜 설명할 수 없나</h2>
+<h2>등급 기준 — LMS 가 정해야 합니다</h2>
 
 <p>
-  화면은 <b>입문 · 초급 · 중급 · 해결사</b> 를 눈금에 올려 보여줍니다. 그런데 <b>왜 그 등급인지는
-  어디에도 없습니다.</b> 학생 입장에서는 결과만 통보받는 셈입니다.
+  화면은 <b>입문 · 초급 · 중급 · 해결사</b> 를 눈금에 올려 보여줍니다. 지금은 그 값이 원천에서 오지만,
+  <b>판정은 LMS 가 자체적으로 하는 방향</b>입니다. 그러려면 기준을 우리가 정해야 합니다.
 </p>
 
-<p>막힌 곳이 둘입니다.</p>
+<h3>지금 원천 등급을 그대로 못 쓰는 이유</h3>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>막힌 것</th><th>내용</th></tr></thead>
+  <thead><tr><th>이유</th><th>내용</th></tr></thead>
   <tbody>
     <tr>
-      <td class="k">기준표가 없다</td>
-      <td>원천이 주는 것은 등급과 서술형 근거뿐이다. "어떤 조건이면 어느 등급"이라는 규칙은 명세 어디에도 없다</td>
+      <td class="k">기준을 모른다</td>
+      <td>원천이 주는 것은 등급과 서술형 근거뿐이다. "어떤 조건이면 어느 등급"이라는 규칙은 명세 어디에도 없어,
+        학생에게 왜 그 등급인지 설명할 수 없다</td>
     </tr>
     <tr>
-      <td class="k">서술이 단계를 인용한다</td>
-      <td>원천의 판정 근거가 <b>"10단계를 완주하여 해결사의 진도 기준을 충족"</b> 같은 문장이다.
-        단계의 정의가 확정되지 않아 화면에서 진행 단계를 뺐는데, 근거 문장에는 그대로 남아 있다</td>
+      <td class="k">같은 주차가 다시 판정되면 바뀐다</td>
+      <td>재분석 시 <b>초급 ↔ 해결사</b> 로 흔들린 적이 있다. 고정 계산식이 아니라 LLM 판단이라 그렇다.
+        화면이 확신도를 등급 옆에 붙여 두는 것도 그 때문이다</td>
+    </tr>
+    <tr>
+      <td class="k">근거가 단계를 인용한다</td>
+      <td><b>"10단계를 완주하여 해결사의 진도 기준을 충족"</b> 같은 문장이다.
+        단계 정의가 확정되지 않아 화면에서 진행 단계를 뺐는데, 근거에는 그대로 남아 있다</td>
     </tr>
   </tbody>
 </table>
 </div>
 
-<div class="note">
-  <p><b>같은 주차를 다시 분석하면 등급이 바뀐 적이 있습니다</b>(초급 ↔ 해결사).
-    고정 계산식이 아니라 LLM 판단이라 그렇습니다. 화면이 확신도를 등급 옆에 붙여 두는 것도 그 때문입니다.</p>
-</div>
+<p>
+  <b>LMS 가 정하면 셋이 한 번에 풀립니다.</b> 기준을 우리가 쥐고 있으니 설명할 수 있고,
+  계산식이라 같은 값이면 같은 등급이 나오며, 단계에 기대지 않는 축으로 짤 수 있습니다.
+</p>
 
 <h2>기준을 정하는 방법</h2>
 
@@ -286,6 +368,22 @@ atmux      실습 시간 · CPU 사용률 · 텔레메트리      →  리포트
   이 값으로 경계를 잡으면 다른 기수에서 그대로 무너집니다 — 서술 파생에서 이미 겪었습니다.
 </p>
 
+<h3>이미 하나는 화면에 나와 있습니다</h3>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/03-trend.png" alt="실행당 에러 추세 절 — 0.5 기준선과 주차별 막대">
+  <figcaption>
+    <b>실행당 에러 축은 경계가 이미 그려져 있습니다.</b> 점선 <code>0.5</code> 가 그것인데,
+    이 값은 원천의 판정 근거 서술에서 인용한 것입니다 — 우리가 정한 기준이 아닙니다.
+    LMS 자체 판정으로 가면 <b>이 값도 다시 볼 항목</b>입니다.
+  </figcaption>
+</figure>
+
+<p>
+  네 축 중 <b>정확도 하나는 이미 눈금과 경계가 있습니다.</b> 나머지 셋(자립도 · 사고 깊이 · 지속성)에
+  같은 형태를 채우면 판정 근거가 완성됩니다. 새로 만드는 것이 아니라 <b>있는 것을 넓히는 일</b>입니다.
+</p>
+
 <h3>절대 기준이냐 상대 기준이냐</h3>
 
 <div class="tbl">
@@ -302,18 +400,20 @@ atmux      실습 시간 · CPU 사용률 · 텔레메트리      →  리포트
 
 <h3>단계적으로 가는 안</h3>
 
-<pre>1단계  원천에 기준표를 요청한다
-       └ 받으면 그대로 쓴다. 우리가 만들 이유가 없다
+<pre>1단계  잠정 구간을 정해 LMS 가 판정한다
+       └ 근거가 약한 구간이므로 화면에 "잠정 기준" 이라고 밝힌다
 
-2단계  못 받으면 잠정 구간을 쓴다
-       └ 화면에 "잠정 기준" 이라고 밝힌다. 숨기지 않는다
+2단계  원천 등급과 대조한다
+       └ 크게 어긋나면 축이나 구간을 손본다. 참고값으로만 쓴다
 
 3단계  기수 하나가 끝나면 실제 분포로 다시 잡는다
        └ 그때 절대 · 상대 중 어느 쪽인지도 결정된다</pre>
 
 <div class="note">
-  <p><b>원천에 기준표를 먼저 요청하는 쪽을 권합니다.</b>
-    우리가 기준을 세워도 원천 등급과 어긋나면 어느 쪽을 보여줄지 다시 정해야 합니다. 순서상 그것이 먼저입니다.</p>
+  <p><b>원천 기준표는 받아 두면 좋지만 기다릴 필요는 없습니다.</b>
+    LMS 가 자체 판정하기로 하면 그 표는 우리 기준을 검증할 참고값이지 전제 조건이 아닙니다.</p>
+  <p>다만 <b>등급을 우리가 매기는 순간 원천의 등급과 두 값이 공존</b>합니다.
+    화면에 무엇을 보여줄지, 원천 값을 어디까지 남길지 먼저 정해야 합니다.</p>
 </div>
 
 <h2>판정 근거를 화면 어디에 둘까</h2>
@@ -331,6 +431,14 @@ atmux      실습 시간 · CPU 사용률 · 텔레메트리      →  리포트
 2 지난주와 비교
 3 실행당 에러 추세
 ...</pre>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/summary.png" alt="요약 블록 — 등급·확신도·등급 변화">
+  <figcaption>
+    <b>이 블록 바로 아래가 근거 자리입니다.</b> 지금은 <code>중급 · 4단계 중 3번째</code> 와
+    <code>초급 → 중급 1단계 올랐어요</code> 까지만 있고, <b>왜 중급인지가 없습니다.</b>
+  </figcaption>
+</figure>
 
 <p>
   <b>결론 → 근거 → 상세</b> 순서가 됩니다. 지금은 결론 다음에 바로 상세가 와서 그 사이가 비어 있습니다.
@@ -373,43 +481,43 @@ atmux      실습 시간 · CPU 사용률 · 텔레메트리      →  리포트
 
 <div class="tbl">
 <table>
-  <thead><tr><th>안</th><th>지금 가능한가</th><th>선결 조건</th></tr></thead>
+  <thead><tr><th>안</th><th>필요한 것</th><th>판단</th></tr></thead>
   <tbody>
     <tr>
       <td class="k">축별 눈금</td>
-      <td>아니오</td>
-      <td>기준표 — 구간 경계가 있어야 눈금을 그린다</td>
+      <td>우리가 정한 구간 경계</td>
+      <td><b>이쪽으로 간다.</b> LMS 가 판정하므로 경계도 우리 것이다</td>
     </tr>
     <tr>
       <td class="k">원천 서술</td>
-      <td>계약 추가만 하면 가능</td>
       <td>단계 정의 — 문장이 단계를 인용한다</td>
+      <td>우리 등급과 원천 서술이 어긋날 수 있어 맞지 않는다</td>
     </tr>
   </tbody>
 </table>
 </div>
 
 <p>
-  <b>두 안 모두 원천에서 무언가를 받아야 시작됩니다.</b> 기준표와 단계 정의,
-  둘 중 무엇이 먼저 오느냐에 따라 어느 안으로 갈지가 갈립니다.
+  <b>LMS 가 등급을 매기면 근거도 LMS 것이어야 합니다.</b> 우리 기준으로 중급을 준 옆에
+  원천이 쓴 "해결사의 진도 기준을 충족" 이 붙으면 학생이 어느 쪽을 믿을지 알 수 없습니다.
 </p>
 
 <h2>진행 순서</h2>
 
-<pre>① 원천에 두 가지를 묻는다
-     · 등급 판정 기준표
-     · 단계(current_step)의 정의 — 무엇의 몇 단계인가
+<pre>① 축과 구간을 정한다
+     └ 잠정이라도 정해야 눈금을 그릴 수 있다
 
-② 먼저 오는 것으로 시작한다
-     기준표가 오면   → 축별 눈금
-     단계 정의가 오면 → 원천 서술을 그 자리에 싣는다
-     둘 다 오면       → 눈금 + 서술 한 줄
+② 판정 근거 블록을 붙인다
+     └ 축별 눈금 + 종합 한 줄. 화면에 "잠정 기준" 표기
 
-③ 기수 하나가 끝나면 분포로 구간을 다시 잡는다</pre>
+③ 원천 등급과 대조한다
+     └ 참고값. 크게 어긋나면 축이나 구간을 손본다
+
+④ 기수 하나가 끝나면 분포로 구간을 다시 잡는다</pre>
 
 <div class="note">
-  <p><b>둘 다 못 받으면</b> 그 자리를 비워 두는 편이 낫습니다.
-    근거 없는 설명을 만들어 넣으면 등급보다 더 틀린 말이 됩니다.</p>
+  <p><b>먼저 정할 것은 축과 구간입니다.</b> 원천에서 받아야 시작되는 일이 아닙니다.
+    구간이 없으면 눈금을 못 그리고, 눈금이 없으면 근거를 보여줄 자리만 비어 있게 됩니다.</p>
 </div>
 
 <h2>정리</h2>
@@ -420,9 +528,10 @@ atmux      실습 시간 · CPU 사용률 · 텔레메트리      →  리포트
   <tbody>
     <tr><td class="k">데이터 출처</td><td>진단 리포트 지표는 전부 <code>playlang</code></td><td>확인</td></tr>
     <tr><td class="k">atmux</td><td>시간·CPU 라 리포트에 쓰지 않음</td><td>의도된 미사용</td></tr>
-    <tr><td class="k">등급 기준</td><td>원천에 기준표 없음. 축 넷은 초안</td><td>원천 문의</td></tr>
+    <tr><td class="k">등급 판정</td><td><b>LMS 가 자체적으로</b>. 원천 등급은 참고값</td><td>방향 확정</td></tr>
+    <tr><td class="k">등급 기준</td><td>축 넷은 초안. 구간 경계는 미정</td><td>정해야 함</td></tr>
     <tr><td class="k">근거 자리</td><td>요약과 「이번 주 학습 기록」 사이</td><td>확정</td></tr>
-    <tr><td class="k">근거 형태</td><td>축별 눈금 또는 원천 서술</td><td>선결 조건 대기</td></tr>
+    <tr><td class="k">근거 형태</td><td>축별 눈금 + 종합 한 줄</td><td>구간 확정 후</td></tr>
   </tbody>
 </table>
 </div>
