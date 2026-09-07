@@ -1,0 +1,87 @@
+<h2>LMS 데이터는 어디에 담겨 오나</h2>
+
+<p>
+  <b>우리가 보낸 데이터가 그대로 돌아옵니다.</b> LMS 가 <code>POST /connectors/lms/sync</code> 로
+  학생 마스터를 올리면 GOV-AI 가 그것을 보관하고, <b>주간 리포트 응답의 <code>metrics</code> 안에 함께 실어</b> 줍니다.
+</p>
+
+<pre>LMS  ──sync──▶  GOV-AI  ──저장──▶  주간 리포트 응답
+                   │                    │
+                   └── playlang/atmux ──┘</pre>
+
+<h3>우리가 올려 보내는 것</h3>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>블록</th><th>필드</th></tr></thead>
+  <tbody>
+    <tr><td class="k">신원</td><td><code>user_id</code> <code>name</code> <code>student_uuid</code></td></tr>
+    <tr><td class="k">소속</td><td><code>cohort_id</code> <code>cohort_label</code> <code>education_title</code> <code>training_status</code></td></tr>
+    <tr><td class="k">과제</td><td><code>assignments.total</code> <code>.submitted</code> <code>.not_submitted</code></td></tr>
+    <tr><td class="k">퀴즈</td><td><code>quizzes.total</code> <code>.attempted</code> <code>.avg_score_pct</code></td></tr>
+    <tr><td class="k">출결</td><td><code>attendance.present</code> <code>.late</code> <code>.early_leave</code> <code>.absent</code> <code>.excused</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>주간 응답에 되돌아오는 것</h3>
+
+<p><code>metrics</code> 블록 안에 <b>playlang 지표와 나란히</b> 섞여 있습니다.</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>응답 필드</th><th>실제 값</th><th>출처</th><th>리포트에서</th></tr></thead>
+  <tbody>
+    <tr><td class="k"><code>metrics.userId</code></td><td><code>fd0ba10e-…</code></td><td>LMS 계정 UUID</td><td>학생 대조</td></tr>
+    <tr><td class="k"><code>metrics.name</code></td><td><code>정승</code></td><td>LMS 학생명</td><td><span class="tag off">미사용</span></td></tr>
+    <tr><td class="k"><code>metrics.cohortId</code></td><td><code>0baacbd9-…</code></td><td>LMS 기수 ID</td><td><b>기수 시작일 조회 → 주차 환산</b></td></tr>
+    <tr><td class="k"><code>metrics.cohort</code></td><td><code>29기</code></td><td>LMS 기수 표기</td><td><span class="tag off">미사용</span></td></tr>
+    <tr><td class="k"><code>metrics.group</code></td><td><code>A</code></td><td>LMS 반 구분</td><td><span class="tag off">미사용</span></td></tr>
+    <tr><td class="k"><code>metrics.assignments_completed</code></td><td><code>0</code></td><td><b>LMS 과제 제출 수</b></td><td><span class="tag off">미사용</span></td></tr>
+    <tr><td class="k"><code>metrics.attendance_rate</code></td><td><code>100.0</code></td><td><b>LMS 출결률</b></td><td><span class="tag off">미사용</span></td></tr>
+    <tr><td class="k"><code>risk.status</code></td><td><code>completed_waiting</code> · <code>정상 훈련</code></td><td>LMS <code>training_status</code> 반영</td><td><span class="tag off">미사용</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>화면이 쓰는 것은 <code>cohortId</code> 하나입니다.</b> 원천이 <code>2026-W36</code> 같은 ISO 주차만 주므로,
+    그 ID 로 LMS 에서 기수 시작일을 조회해 <b><code>11주차</code> 로 환산</b>합니다.
+    기수 시작일은 GOV-AI 응답에 없습니다.</p>
+</div>
+
+<h3>다만 판정 서술에는 인용됩니다</h3>
+
+<p>
+  <b>화면이 안 쓴다고 영향이 없는 것은 아닙니다.</b> GOV-AI 가 등급을 판정할 때
+  우리가 올린 값을 프롬프트에 함께 넣기 때문에, 서술에 그대로 나옵니다.
+</p>
+
+<div class="note">
+  <p><i>"훈련생은 현재 10단계를 완수한 완주 대기 상태입니다. 그러나 <b>과제 제출 수(assignments_completed)가 0</b>으로
+    확인되므로, 실제 과제 제출이 누락되었는지 확인하고 이를 독려해야 합니다."</i>
+    — <code>recommendations_for_instructor</code></p>
+</div>
+
+<p>
+  <b>원천이 우리 데이터를 되짚어 묻고 있습니다.</b> 이 학생은 출결률 <code>100%</code> 인데
+  과제 제출이 <code>0</code> 입니다. 동기화가 실제 상태를 옮기지 못했을 가능성이 있고,
+  그렇다면 <b>진단 근거 문장이 사실과 다르게 나갑니다.</b>
+</p>
+
+<div class="note">
+  <p><b>짚어 둘 것.</b> 이 문장은 강사용이라 수강생 화면에는 나오지 않습니다. 다만
+    같은 값이 등급 판정 프롬프트에도 들어가므로, <b>과제·출결 동기화가 틀리면 등급도 흔들립니다.</b></p>
+</div>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>구분</th><th>LMS 데이터</th></tr></thead>
+  <tbody>
+    <tr><td class="k">올려 보냄</td><td>신원 · 소속 · 과제 · 퀴즈 · 출결 <b>5블록</b></td></tr>
+    <tr><td class="k">응답에 돌아옴</td><td>신원 · 기수 · 반 · 과제 제출 수 · 출결률 · 훈련 상태</td></tr>
+    <tr><td class="k">리포트가 씀</td><td><code>cohortId</code> <b>하나</b> — 주차 환산</td></tr>
+    <tr><td class="k">간접 영향</td><td><b>등급 판정과 근거 서술에 인용됨</b></td></tr>
+  </tbody>
+</table>
+</div>

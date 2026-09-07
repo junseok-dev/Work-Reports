@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>원천 데이터원과 등급 기준</title>
+<title>진단 리포트 항목별 데이터원</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap">
@@ -112,421 +112,775 @@ footer p{margin:.25rem 0; font-size:inherit; color:inherit}
 
 <header class="masthead">
   <p class="eyebrow">GOV-AI · 주간 진단 리포트</p>
-  <h1>원천 데이터원과 등급 기준</h1>
-  <p class="lede">리포트의 숫자가 어느 수집기에서 오는지, 그리고 수준 등급을 무엇으로 판정할지.</p>
+  <h1>진단 리포트 항목별 데이터원</h1>
+  <p class="lede">항목마다 playlang · atmux · LMS 중 어느 데이터가 들어가고, 화면에 어떻게 나타나는지.</p>
 </header>
 
 <div class="status">
   <div class="card done">
-    <span class="card-k">지표 출처</span>
-    <span class="card-v">playlang</span>
-    <span class="card-s">실행 · 에러 · 힌트 전부</span>
-  </div>
-  <div class="card data">
-    <span class="card-k">atmux</span>
-    <span class="card-v">미사용</span>
-    <span class="card-s">리포트에 한 칸도 없음</span>
+    <span class="card-k">playlang</span>
+    <span class="card-v">지표 전부</span>
+    <span class="card-s">코드 실행 · 에러 · 힌트</span>
   </div>
   <div class="card todo">
-    <span class="card-k">등급 축</span>
-    <span class="card-v">에러 영역 × 에러율</span>
-    <span class="card-s">LMS 자체 판정 · 경계는 잠정</span>
+    <span class="card-k">atmux</span>
+    <span class="card-v">미사용</span>
+    <span class="card-s">한 항목도 쓰지 않음</span>
+  </div>
+  <div class="card data">
+    <span class="card-k">LMS</span>
+    <span class="card-v">올렸다 돌아옴</span>
+    <span class="card-s">쓰는 건 기수 하나</span>
   </div>
 </div>
 
 <h2 class="first">이 보고서가 답하는 것</h2>
 
 <p>
-  주간 진단 리포트의 숫자는 GOV-AI 데이터레이크에서 옵니다. 그 안에 <b>수집기가 둘</b> 있는데,
-  이름만 보고는 어느 쪽이 무엇을 주는지 알 수 없습니다. 첫 절에서 그것을 가릅니다.
-</p>
-<p>
-  두 번째는 등급입니다. <b>판정을 LMS 가 자체적으로</b> 하는 방향이라 <b>입문 · 초급 · 중급 · 해결사</b> 를
-  나누는 기준을 우리가 정해야 합니다. 관측치에 대 보니 <b>쓸 수 있는 축은 둘</b>이었고,
-  그 둘로 넷을 다 설명할 수 있었습니다. 근거를 화면 어디에 어떻게 보여줄지까지 적었습니다.
+  주간 진단 리포트에 <b>항목이 열 몇 개</b> 있습니다. 각 항목이
+  <b>어느 수집기의 어떤 필드로 만들어지고, 화면에 어떻게 나타나는지</b>를 항목 단위로 정리했습니다.
 </p>
 
-<div class="note">
-  <p><b>전제 하나.</b> <code>playlang</code> · <code>atmux</code> 전용 엔드포인트는 <b>직접 호출한 적이 없습니다.</b>
-    문서화된 5개 API 밖이라 수집 대상에서 제외했기 때문입니다.</p>
-  <p>여기 적은 필드 구성은 <code>/sync/students</code> 응답에 <b>블록으로 박혀 있던 것</b>을 옮긴 것입니다.
-    실제 엔드포인트가 더 주는 값이 있을 수 있습니다.</p>
-</div>
-
-<h2>데이터가 어디서 오나</h2>
+<h2>데이터원 셋</h2>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>수집기</th><th>주는 것</th><th>리포트에서</th></tr></thead>
+  <thead><tr><th>데이터원</th><th>필드</th><th>리포트</th></tr></thead>
   <tbody>
     <tr>
       <td class="k">playlang</td>
-      <td>코드 실행 · 에러 · 힌트 카운트</td>
-      <td><b>지표 전부</b></td>
+      <td>
+        <code>runs_count</code> <code>errors_count</code> <code>hints_count</code>
+        <code>error_rate_pct</code> <code>total_events</code>
+        <code>course</code> <code>language</code> <code>current_step</code>
+      </td>
+      <td><span class="tag src">전부 여기서</span></td>
     </tr>
     <tr>
       <td class="k">atmux</td>
-      <td>실습 시간 · CPU 사용률</td>
-      <td><b>한 칸도 쓰지 않음</b></td>
+      <td>
+        <code>total_duration_sec</code> <code>total_duration_hours</code>
+        <code>weekly_daily_avg_hours</code> <code>avg_cpu_util</code>
+        <code>telemetry_count</code>
+      </td>
+      <td><span class="tag off">한 항목도 안 씀</span></td>
     </tr>
     <tr>
       <td class="k">LMS</td>
-      <td>기수 시작일 · 계정</td>
-      <td>주차 번호 환산 · 학생 식별</td>
+      <td>학생 신원 · 기수 · 과제 · 퀴즈 · 출결</td>
+      <td><span class="tag calc">주차 환산에만</span> 나머지는 실려만 옴</td>
     </tr>
   </tbody>
 </table>
 </div>
 
 <div class="note">
-  <p><b>atmux 는 쓰지 않는 것이 맞습니다.</b> 오래 켜 두는 것과 잘 푸는 것은 다릅니다.
-    환경을 열어 두고 다른 일을 해도 시간은 쌓입니다.</p>
-  <p><b>LMS 는 지표를 주지 않습니다.</b> 원천이 ISO 주차만 주므로 기수 주차로 바꾸는 데만 쓰입니다.
-    출결·과제·퀴즈는 LMS 에 있지만 리포트에 넣지 않았습니다.</p>
+  <p><b>atmux 를 안 쓰는 이유.</b> 주는 값이 사용 시간과 CPU 사용률뿐입니다.
+    환경을 열어 두고 다른 일을 해도 시간은 쌓이므로, 오래 켜 둔 것과 잘 푼 것을 가릴 수 없습니다.</p>
+  <p><b>LMS 데이터는 GOV-AI 로 올라갔다가 응답에 되돌아옵니다.</b> 우리가 보낸 이름·기수·과제·출결이
+    그대로 실려 오는데, 진단 리포트는 그중 <b>기수 하나만</b> 씁니다. 아래 「LMS 데이터는 어디에 담겨 오나」 참조.</p>
 </div>
 
-<h2>항목별로 어떤 데이터가 들어가나</h2>
+<h2>주간 응답이 주는 지표</h2>
 
-<p><code>playlang</code> 이 주는 것은 <b>카운트뿐</b>입니다. 나머지는 주간 집계와 화면 계산에서 나옵니다.</p>
+<p>
+  진단 리포트가 받는 것은 위 원본 카운터가 아니라 <b>주 단위로 집계된 응답</b>입니다.
+  <b>지표는 아래가 전부</b>이고, 다음 절의 모든 항목이 이 목록 안에서 만들어집니다.
+  응답에는 이 밖에 <b>LMS 가 올려 보낸 신원·기수·과제·출결</b>도 함께 실려 옵니다.
+</p>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>리포트 항목</th><th>playlang</th><th>비고</th></tr></thead>
+  <thead><tr><th>응답 필드</th><th>뜻</th><th>playlang 원본</th></tr></thead>
   <tbody>
-    <tr class="grp"><td colspan="3">1 이번 주 학습 기록</td></tr>
-    <tr><td class="k">활동일</td><td>이벤트가 있는 날</td><td>주간 집계</td></tr>
-    <tr><td class="k">최근 미접속</td><td>마지막 이벤트 시각</td><td>주간 집계</td></tr>
-    <tr><td class="k">실행당 에러</td><td><code>errors_count</code> ÷ <code>runs_count</code></td><td>원천 값</td></tr>
-    <tr><td class="k">힌트 요청</td><td><code>hints_count</code></td><td>원천 값</td></tr>
-    <tr><td class="k">에러 후 재시도 간격</td><td>이벤트 간격</td><td>주간 집계</td></tr>
-    <tr><td class="k">에러당 힌트</td><td><code>hints_count</code> ÷ <code>errors_count</code></td><td><b>화면이 계산</b></td></tr>
+    <tr class="grp"><td colspan="3">주차 · 진단</td></tr>
+    <tr><td class="k"><code>year_week</code> <code>week_range</code></td><td>ISO 주차 · 구간</td><td>이벤트 시각</td></tr>
+    <tr><td class="k"><code>diagnosis.grade</code></td><td>등급 4종</td><td>지표를 넣어 판정</td></tr>
+    <tr><td class="k"><code>diagnosis.confidence</code></td><td>확신도 0~1</td><td>〃</td></tr>
+    <tr><td class="k"><code>diagnosis.weak_patterns</code></td><td>보완점 서술</td><td>〃</td></tr>
 
-    <tr class="grp"><td colspan="3">2~4 변화와 근거</td></tr>
-    <tr><td class="k">지난주와 비교</td><td>두 주의 실행 · 힌트 · 활동일</td><td>화면이 델타 계산</td></tr>
-    <tr><td class="k">실행당 에러 추세</td><td>주차별 <code>error_rate_pct</code></td><td>원천 값</td></tr>
-    <tr><td class="k">주요 에러 top3</td><td>예외 이름 · 횟수</td><td>영역·설명은 화면이 붙임</td></tr>
-
-    <tr class="grp"><td colspan="3">5~8 해석과 제안</td></tr>
-    <tr><td class="k">문제를 푸는 방식</td><td>두 주의 힌트 × 재시도 간격</td><td><b>화면이 문장 생성</b></td></tr>
-    <tr><td class="k">잘하고 있는 점</td><td>두 주의 에러율 · 힌트 · 활동일</td><td><b>화면이 문장 생성</b></td></tr>
-    <tr><td class="k">보완하면 좋은 점</td><td>—</td><td><b>원천 서술 그대로</b></td></tr>
-    <tr><td class="k">이번 주 학습 제안</td><td>아래 표</td><td><b>화면이 문장 생성</b></td></tr>
-
-    <tr class="grp"><td colspan="3">요약</td></tr>
-    <tr><td class="k">등급 · 확신도</td><td>위 지표를 판정에 넣음</td><td>원천 값</td></tr>
+    <tr class="grp"><td colspan="3">지표</td></tr>
+    <tr><td class="k"><code>active_days_count</code></td><td>활동일</td><td>이벤트가 있는 날</td></tr>
+    <tr><td class="k"><code>days_since_last_activity</code></td><td>최근 미접속</td><td>마지막 이벤트 시각</td></tr>
+    <tr><td class="k"><code>total_runs</code></td><td>코드 실행</td><td><code>runs_count</code></td></tr>
+    <tr><td class="k"><code>total_errors</code></td><td>에러 실행</td><td><code>errors_count</code></td></tr>
+    <tr><td class="k"><code>error_per_run</code></td><td>실행당 에러</td><td><code>error_rate_pct</code> ÷ 100</td></tr>
+    <tr><td class="k"><code>hint_requests_count</code></td><td>힌트 요청</td><td><code>hints_count</code></td></tr>
+    <tr><td class="k"><code>hint_per_active_day</code></td><td>활동일당 힌트</td><td>위 둘의 몫</td></tr>
+    <tr><td class="k"><code>avg_retry_gap_min</code></td><td>재시도 간격 평균</td><td>에러 → 다음 실행 간격</td></tr>
+    <tr><td class="k"><code>max_retry_gap_min</code></td><td>재시도 간격 최대</td><td>〃</td></tr>
+    <tr><td class="k"><code>top_error_types[]</code></td><td>주요 에러 top3</td><td>예외 이름 · 횟수</td></tr>
+    <tr><td class="k"><code>data_freshness</code></td><td>관측 시각</td><td>스냅샷 시각</td></tr>
   </tbody>
 </table>
 </div>
 
+<div class="note">
+  <p><b>응답에 있으나 쓰지 않는 것이 셋 있습니다</b> — <code>steps_completed</code> ·
+    <code>current_step</code> · <code>stalled_days_on_current_step</code>.
+    단계의 정의가 확정되지 않아 화면에서 뺐습니다.</p>
+</div>
+
+<p>
+  이 목록은 <b>한 덩어리가 아닙니다.</b> 세어서 나온 수, 주 단위로 나눠서 나온 수,
+  AI 가 읽고 쓴 문장이 섞여 있습니다. 다음 절에서 층으로 갈라 봅니다.
+</p>
+
+<h2>값이 만들어지는 다섯 층</h2>
+
+<p>
+  화면의 숫자와 문장은 <b>한 곳에서 오지 않습니다.</b> 층이 다섯이고, 층마다 성격이 다릅니다.
+  <b>원천이 세 층을 주고, 화면이 두 층을 얹습니다.</b>
+</p>
+
+<pre>원천이 주는 것
+  ① 센 것    playlang 이 행동을 하나씩 센 수
+  ② 묶은 것  GOV-AI 가 주 단위로 자르고 나눈 수
+  ③ 읽은 것  AI 가 ①②를 보고 내린 판정과 문장
+
+화면이 얹는 것
+  ④ 나눈 것  응답 값으로 만든 새 숫자
+  ⑤ 쓴 것    지표를 조건에 걸어 만든 문장</pre>
+
+<h3>힌트 하나를 다섯 층으로 따라가면</h3>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>층</th><th>값</th><th>어떻게 나왔나</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="k">① 센 것</td>
+      <td><code>96회</code></td>
+      <td>학생이 힌트를 열 때마다 <code>hints_count</code> 가 <b>+1</b></td>
+    </tr>
+    <tr>
+      <td class="k">② 묶은 것</td>
+      <td><code>일 16.00회</code></td>
+      <td><code>96 ÷ 활동일 6</code> — <b>GOV-AI 가 나눠서 준다</b></td>
+    </tr>
+    <tr>
+      <td class="k">③ 읽은 것</td>
+      <td>"높은 힌트 의존도"</td>
+      <td>AI 가 그 수를 보고 <code>weak_patterns</code> 에 적음</td>
+    </tr>
+    <tr>
+      <td class="k">④ 나눈 것</td>
+      <td><code>0.63</code></td>
+      <td><code>96 ÷ 에러 152</code> — <b>화면이 나눈다</b></td>
+    </tr>
+    <tr>
+      <td class="k">⑤ 쓴 것</td>
+      <td>"힌트를 덜 열고 풀었어요"</td>
+      <td>지난주 <code>17.6</code> → 이번 주 <code>16.0</code> 이라 화면이 문장으로</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+  <b>같은 힌트 하나가 다섯 얼굴로 화면에 나옵니다.</b>
+  <code>96회</code>·<code>일 16.00회</code> 는 응답에 그 모양 그대로 있고,
+  <code>0.63</code> 과 문장은 응답에 없습니다.
+</p>
+
+<h3>층마다 믿을 수 있는 정도가 다릅니다</h3>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>층</th><th>만드는 곳</th><th>다시 불러도 같은가</th><th>식을 볼 수 있나</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="k">① 센 것</td>
+      <td>playlang</td>
+      <td><b>같다</b> — 주가 끝나면 고정</td>
+      <td>셈이라 볼 것이 없음</td>
+    </tr>
+    <tr>
+      <td class="k">② 묶은 것</td>
+      <td>GOV-AI</td>
+      <td><b>같다</b></td>
+      <td><b>못 본다</b> — 아래 참조</td>
+    </tr>
+    <tr>
+      <td class="k">③ 읽은 것</td>
+      <td>GOV-AI · LLM</td>
+      <td><b>달라진다</b></td>
+      <td>못 본다</td>
+    </tr>
+    <tr>
+      <td class="k">④ 나눈 것</td>
+      <td>화면</td>
+      <td>같다</td>
+      <td><b>우리 코드에 있다</b></td>
+    </tr>
+    <tr>
+      <td class="k">⑤ 쓴 것</td>
+      <td>화면</td>
+      <td>같다</td>
+      <td><b>우리 코드에 있다</b></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>② 는 계산식을 우리가 모릅니다.</b> <code>활동일</code> 이 몇 시를 하루 경계로 세는지,
+    <code>재시도 간격</code> 이 어느 이벤트와 어느 이벤트 사이인지 명세에 없습니다.
+    <b>완성된 수만 옵니다.</b> ① 은 단순한 셈이라 의심할 것이 없지만 ② 는 다릅니다.</p>
+  <p><b>③ 은 다시 부르면 달라집니다.</b> 같은 학생 같은 주차를 재분석했더니
+    보완점이 <b>2건에서 3건으로</b> 늘고 문장이 통째로 바뀌었습니다.
+    등급 자체가 <b>초급 ↔ 해결사</b> 로 흔들린 적도 있습니다. 화면이 등급 옆에
+    <b>확신도</b>를 붙여 두는 것이 그 때문입니다.</p>
+</div>
+
+<h3>층별로 몇 개씩인가</h3>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>층</th><th>개수</th><th>무엇</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="k">① 센 것</td>
+      <td class="n">4</td>
+      <td>코드 실행 · 에러 실행 · 힌트 요청 · 주요 에러 횟수</td>
+    </tr>
+    <tr>
+      <td class="k">② 묶은 것</td>
+      <td class="n">6</td>
+      <td>활동일 · 최근 미접속 · 실행당 에러 · 활동일당 힌트 · 재시도 평균 · 재시도 최대</td>
+    </tr>
+    <tr>
+      <td class="k">③ 읽은 것</td>
+      <td class="n">3</td>
+      <td>등급 · 확신도 · <b>보완하면 좋은 점</b></td>
+    </tr>
+    <tr>
+      <td class="k">④ 나눈 것</td>
+      <td class="n">7</td>
+      <td>에러당 힌트 · 확신도 3단계 · 커버리지 % · 등급 변화 단계 · 추세 감소율 · 지난주 델타 · 영역 태그</td>
+    </tr>
+    <tr>
+      <td class="k">⑤ 쓴 것</td>
+      <td class="n">3</td>
+      <td>문제를 푸는 방식 · 잘하고 있는 점 · <b>이번 주 학습 제안</b></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>①②③ 은 응답에 그 모양 그대로 있습니다.</b> 화면은 소수 자리와 단위만 붙입니다 —
+    <code>0.25</code>, <code>610회</code>, <code>0.6분</code>.</p>
+  <p><b>④⑤ 는 응답에 없습니다.</b> 화면이 만들어 낸 것이고, 식과 조건이 전부 우리 코드에 있습니다.</p>
+</div>
+
+<h3>흔한 오해 하나</h3>
+
+<p>
+  <b>비율은 화면이 나눈 값이 아닙니다.</b> <code>실행당 에러 0.25</code> 옆에
+  <code>152회/610회</code> 가 붙어 있어 화면이 나눈 것처럼 보이지만,
+  <b><code>0.25</code> 는 응답에 그대로 있는 ② 층 값</b>입니다.
+  옆의 <code>152회/610회</code> 는 학생이 되짚어 볼 수 있게 <b>① 층 값을 나란히 보여준 것</b>입니다.
+</p>
+
+<div class="note">
+  <p><b>화면이 응답에 없는 숫자를 새로 만든 것은 「에러당 힌트」 하나뿐입니다.</b>
+    이것만 <code>0.63</code> 이라는 값이 응답 어디에도 없습니다.</p>
+</div>
+
+<h2>항목별 한눈표</h2>
+
+<p>
+  리포트에 보이는 순서 그대로입니다. <b>층</b> 칸은 앞 절의 다섯 층 번호입니다 —
+  <code>①</code> 센 것 · <code>②</code> 묶은 것 · <code>③</code> 읽은 것 ·
+  <code>④</code> 화면이 나눈 것 · <code>⑤</code> 화면이 쓴 것.
+</p>
+
+<p><b><code>atmux</code> 열은 전부 <span class="tag off">—</span> 이라 넣지 않았습니다.</b> 모든 항목이 playlang 하나에서 나옵니다.</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>항목</th><th>층</th><th>playlang 데이터</th><th>화면에 어떻게</th></tr></thead>
+  <tbody>
+    <tr class="grp"><td colspan="4">요약 블록</td></tr>
+    <tr>
+      <td class="k">분석 기간</td>
+      <td class="n">②</td>
+      <td><code>week_range</code></td>
+      <td><code>2026. 08.31 ~ 09.06</code></td>
+    </tr>
+    <tr>
+      <td class="k">수준 등급</td>
+      <td class="n">③</td>
+      <td><code>diagnosis.grade</code></td>
+      <td>4칸 눈금 위 현재 위치 + <code>4단계 중 3번째</code></td>
+    </tr>
+    <tr>
+      <td class="k">확신도</td>
+      <td class="n">③→④</td>
+      <td><code>diagnosis.confidence</code> 0~1</td>
+      <td>화면이 3단계로 접어 <b>점 색</b>으로만. 막대는 주지 않음</td>
+    </tr>
+    <tr>
+      <td class="k">등급 변화</td>
+      <td class="n">④</td>
+      <td>이번 주 + 직전 주 <code>grade</code></td>
+      <td>눈금 인덱스 차 → <code>초급 → 중급 1단계 올랐어요</code></td>
+    </tr>
+
+    <tr class="grp"><td colspan="4">1 이번 주 학습 기록 — 여섯 칸</td></tr>
+    <tr>
+      <td class="k">활동일</td>
+      <td class="n">②</td>
+      <td><code>active_days_count</code></td>
+      <td><code>6일</code></td>
+    </tr>
+    <tr>
+      <td class="k">최근 미접속</td>
+      <td class="n">②</td>
+      <td><code>days_since_last_activity</code></td>
+      <td><code>0일</code></td>
+    </tr>
+    <tr>
+      <td class="k">실행당 에러</td>
+      <td class="n">② + ①</td>
+      <td><code>error_per_run</code> · <code>total_errors</code> · <code>total_runs</code></td>
+      <td><code>0.25</code> 아래 <b>센 값을 나란히</b> <code>152회/610회</code></td>
+    </tr>
+    <tr>
+      <td class="k">힌트 요청</td>
+      <td class="n">① + ②</td>
+      <td><code>hint_requests_count</code> · <code>hint_per_active_day</code></td>
+      <td><code>96회</code> 아래 <code>일 16.00회</code></td>
+    </tr>
+    <tr>
+      <td class="k">에러당 힌트</td>
+      <td class="n"><b>④</b></td>
+      <td><b>응답에 없음</b></td>
+      <td>화면이 <code>96 ÷ 152</code> = <code>0.63</code></td>
+    </tr>
+    <tr>
+      <td class="k">에러 후 재시도 간격</td>
+      <td class="n">②</td>
+      <td><code>avg_retry_gap_min</code> · <code>max_retry_gap_min</code></td>
+      <td><code>0.6분</code> 아래 <code>최대 3.2분</code></td>
+    </tr>
+
+    <tr class="grp"><td colspan="4">2 지난주와 비교 — 세 행</td></tr>
+    <tr>
+      <td class="k">활동일</td>
+      <td class="n">④</td>
+      <td>두 주의 <code>active_days_count</code></td>
+      <td><code>5일 → 6일</code> · 늘면 초록</td>
+    </tr>
+    <tr>
+      <td class="k">코드 실행</td>
+      <td class="n">④</td>
+      <td>두 주의 <code>total_runs</code></td>
+      <td><code>480회 → 610회</code> · 늘면 초록</td>
+    </tr>
+    <tr>
+      <td class="k">활동일당 힌트</td>
+      <td class="n">④</td>
+      <td>두 주의 <code>hint_per_active_day</code></td>
+      <td><code>17.6회 → 16.0회</code> · <b>줄면</b> 초록</td>
+    </tr>
+
+    <tr class="grp"><td colspan="4">3~4 근거</td></tr>
+    <tr>
+      <td class="k">실행당 에러 추세</td>
+      <td class="n">② + ④</td>
+      <td>주차 목록의 <code>error_per_run</code> 전부</td>
+      <td>막대는 응답 값. <b>감소율 <code>48%</code> 만 화면 계산</b></td>
+    </tr>
+    <tr>
+      <td class="k">주요 에러 top3</td>
+      <td class="n">① + ④</td>
+      <td><code>top_error_types[].type</code> · <code>.count</code></td>
+      <td>이름·횟수는 응답. <b>영역 태그·설명·커버리지는 화면이 붙임</b></td>
+    </tr>
+
+    <tr class="grp"><td colspan="4">5~8 서술</td></tr>
+    <tr>
+      <td class="k">문제를 푸는 방식</td>
+      <td class="n"><b>⑤</b></td>
+      <td>두 주의 <code>hint_per_active_day</code> × <code>avg_retry_gap_min</code></td>
+      <td>두 지표의 증감 조합으로 <b>화면이 문장</b></td>
+    </tr>
+    <tr>
+      <td class="k">잘하고 있는 점</td>
+      <td class="n"><b>⑤</b></td>
+      <td>두 주의 <code>error_per_run</code> · 힌트 · 활동일</td>
+      <td>나아진 것만, <b>최대 3개</b></td>
+    </tr>
+    <tr>
+      <td class="k">보완하면 좋은 점</td>
+      <td class="n"><b>③</b></td>
+      <td><code>diagnosis.weak_patterns</code></td>
+      <td><b>AI 문장 그대로</b> — 화면이 손대지 않는 유일한 절</td>
+    </tr>
+    <tr>
+      <td class="k">이번 주 학습 제안</td>
+      <td class="n"><b>⑤</b></td>
+      <td>미접속 · 에러율 · 두 주 델타</td>
+      <td>조건에 걸린 것만, <b>최대 3개</b></td>
+    </tr>
+
+    <tr class="grp"><td colspan="4">하단</td></tr>
+    <tr>
+      <td class="k">학습 기록 반영</td>
+      <td class="n">②</td>
+      <td><code>data_freshness</code></td>
+      <td><code>2026. 09. 07. 04:00</code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>서술 넷 중 셋이 <code>⑤</code> 입니다.</b> 원천이 문장을 주는 항목은
+    「보완하면 좋은 점」 하나뿐이고, 나머지는 지표에서 화면이 만듭니다.
+    <b>근거 없는 격려 문구는 만들지 않는 것이 원칙</b>이라 조건에 걸리는 지표가 없으면 절이 비고,
+    왜 비었는지를 대신 적습니다.</p>
+</div>
+
+<h3>주차 번호는 BE 가 환산합니다</h3>
+
+<p>
+  원천은 <code>2026-W36</code> 같은 ISO 주차만 줍니다. 화면이 쓰는 <code>11주차</code> 는
+  <b>LMS-BE 가 기수 시작일과 견줘 바꿔 준 값</b>입니다. FE 는 받은 번호를 그대로 씁니다.
+</p>
+
+<h2>화면에서 확인</h2>
+
+<h3>요약 블록</h3>
+
 <figure>
-  <img src="../../../assets/gov-ai/2026-09-07/01-metrics.png" alt="이번 주 학습 기록 절 — 지표 여섯 칸">
+  <img src="../../../assets/gov-ai/2026-09-07/summary.png" alt="요약 블록 — 등급 눈금·확신도·등급 변화">
+  <figcaption>
+    <b>세 값이 전부 원천 것이다.</b> <code>중급</code> 은 <code>diagnosis.grade</code>,
+    <code>확신도 중간</code> 은 <code>confidence</code> 실수를 화면이 3구간으로 나눈 것,
+    <code>초급 → 중급</code> 은 이번 주와 직전 주 <code>grade</code> 를 견준 것이다.
+  </figcaption>
+</figure>
+
+<h3>1 이번 주 학습 기록</h3>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/01-metrics.png" alt="이번 주 학습 기록 — 지표 여섯 칸">
   <figcaption>
     <b>여섯 칸 전부 playlang.</b>
-    활동일 <code>6일</code> · 최근 미접속 <code>0일</code> 은 집계,
-    <code>152회/610회</code> 는 <code>errors_count</code>·<code>runs_count</code>,
-    <code>96회</code> 는 <code>hints_count</code>,
-    <code>0.6분</code> 은 이벤트 간격.
-    <b>에러당 힌트 0.63 만 화면이 나눈 값</b>이다.
+    <code>152회/610회</code> 는 <code>total_errors</code>·<code>total_runs</code>,
+    <code>96회</code> 는 <code>hint_requests_count</code>,
+    <code>0.6분</code> 은 <code>avg_retry_gap_min</code>.
+    <b>에러당 힌트 <code>0.63</code> 만 화면이 나눈 값</b>이다.
   </figcaption>
 </figure>
+
+<p>
+  큰 숫자가 값, 뒤의 작은 글씨가 <b>그 값이 어디서 나왔는지</b>입니다.
+  <code>0.25</code> 뒤에 <code>152회/610회</code> 가 분자·분모로 붙어 학생이 되짚어 볼 수 있습니다.
+</p>
+
+<h3>3 실행당 에러 추세</h3>
 
 <figure>
-  <img src="../../../assets/gov-ai/2026-09-07/04-errors.png" alt="주요 에러 top3 절">
+  <img src="../../../assets/gov-ai/2026-09-07/03-trend.png" alt="실행당 에러 추세 — 막대와 0.5 기준선">
   <figcaption>
-    <b>playlang 은 예외 이름과 횟수만</b> 준다 — <code>IntegrityError 38회</code> 처럼.
-    영역 표기(<b>데이터베이스 · 비동기 · 네트워크</b>)와 한 줄 설명, 커버리지 <code>59%</code> 는 화면이 붙인다.
+    <b>주차 목록 API 가 주는 <code>error_per_run</code> 만으로 그린다</b> — 상세 응답이 아니다.
+    점선 <code>0.5</code> 는 원천 판정 근거 서술에서 인용한 값이고, 아래면 초록 · 위면 주황이다.
   </figcaption>
 </figure>
 
-<h2>이번 주 학습 제안 — 문장마다</h2>
+<h3>4 주요 에러 top3</h3>
 
-<p>원천이 문장을 주지 않습니다. <b>지표가 조건에 걸릴 때만</b> 그 지표로 문장을 만듭니다.</p>
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/04-errors.png" alt="주요 에러 top3 — 예외 이름·영역 태그·설명·횟수">
+  <figcaption>
+    <b>playlang 이 주는 것은 예외 이름과 횟수뿐</b>이다 — <code>IntegrityError 38회</code> 처럼.
+    영역 태그(<code>데이터베이스</code> <code>비동기</code> <code>네트워크</code>)와 한 줄 설명,
+    커버리지 <code>59%</code> 는 화면이 붙인다.
+  </figcaption>
+</figure>
+
+<p>
+  원천 값은 <code>[PYTHON] requests.exceptions.ConnectionError: Max retries…</code> 같은 한 줄입니다.
+  화면이 <b>모듈 경로와 클래스명을 갈라</b> 이름을 앞에 세우고, 예외 이름을 사전에 대 영역과 설명을 붙입니다.
+  사전에 없는 예외는 이름만 두고 설명을 지어내지 않습니다.
+</p>
+
+<div class="note">
+  <p><b>커버리지를 적는 이유.</b> 원천이 상위 3종만 주므로 그 주 에러의 전부가 아닙니다.
+    <b>나머지 41% 가 어떤 에러인지는 확인할 수 없다</b>는 것을 화면에 남깁니다.</p>
+</div>
+
+<h3>5 문제를 푸는 방식</h3>
+
+<p>두 지표를 <b>함께</b> 읽는 유일한 절입니다. 두 주의 증감 조합이 문장을 고릅니다.</p>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>나오는 문장</th><th>playlang</th></tr></thead>
+  <thead><tr><th><code>hint_per_active_day</code></th><th><code>avg_retry_gap_min</code></th><th>나오는 문장</th></tr></thead>
   <tbody>
-    <tr><td class="k">N일간 접속이 없었어요</td><td>마지막 이벤트 시각</td></tr>
-    <tr><td class="k">실행 N회 중 M%에서 에러가 났어요</td><td><code>errors_count</code> · <code>runs_count</code></td></tr>
-    <tr><td class="k">실행당 에러가 X→Y로 늘었어요</td><td>두 주의 <code>error_rate_pct</code></td></tr>
-    <tr><td class="k">힌트를 하루 X→Y회로 더 열었어요</td><td>두 주의 <code>hints_count</code></td></tr>
-    <tr><td class="k">다시 실행하기까지가 X→Y분으로 짧아졌어요</td><td>두 주의 이벤트 간격</td></tr>
-    <tr><td class="k">학습한 날이 X→Y일로 줄었어요</td><td>두 주의 활동일</td></tr>
-    <tr><td class="k">지금 방식을 이어가 보세요</td><td>어느 것도 안 걸림</td></tr>
+    <tr><td class="k">줄었다</td><td>늘었다</td><td>스스로 원인을 짚는 쪽으로 옮겨가고 있어요</td></tr>
+    <tr><td class="k">줄었다</td><td>줄었다</td><td>익숙한 에러가 늘었다는 뜻이에요</td></tr>
+    <tr><td class="k">늘었다</td><td>줄었다</td><td>답은 빨리 찾지만 원인이 남지 않습니다</td></tr>
+    <tr><td class="k">늘었다</td><td>늘었다</td><td>새로운 유형을 만나고 있는 것으로 보여요</td></tr>
+    <tr><td class="k">그대로</td><td>그대로</td><td>지난주와 비슷한 방식으로 풀었어요</td></tr>
   </tbody>
 </table>
 </div>
 
+<div class="note">
+  <p><b>한쪽만 결측이어도 절을 만들지 않습니다.</b> 두 지표를 함께 봐야 나오는 문장이라
+    하나만으로는 "많다 / 빠르다"에서 끝납니다.</p>
+</div>
+
+<h3>7 보완하면 좋은 점 — 유일하게 원천이 문장을 주는 절</h3>
+
+<p>
+  <code>diagnosis.weak_patterns</code> 를 <b>손대지 않고 그대로</b> 싣습니다.
+  GOV-AI 가 <code>gemini-3.5-flash</code> 로 쓴 문장이고, <b>근거 수치가 문장 안에 박혀</b> 옵니다.
+</p>
+
+<div class="note">
+  <p><i>"네트워크 및 비동기 처리 취약: <b>asyncio.exceptions.TimeoutError(123회)</b>,
+    <b>ConnectionError(119회)</b> 다수 발생으로 미루어 보아, 외부 API 호출이나 비동기 IO 흐름 제어에서
+    타임아웃 예외 처리가 미흡함."</i></p>
+</div>
+
+<p>
+  <b>다만 문장의 품질이 주차마다 다릅니다.</b> 같은 학생 같은 주차인데도 재분석하면 달라집니다.
+</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>주차</th><th>건수</th><th>실제 문장</th></tr></thead>
+  <tbody>
+    <tr><td class="k">W36 최초</td><td class="n">2</td><td>예외 이름 + 횟수만. 처방 없음</td></tr>
+    <tr><td class="k">W36 재분석</td><td class="n">3</td><td>원인 추정 + 처방까지. 힌트 의존 항목이 새로 생김</td></tr>
+    <tr><td class="k">W34</td><td class="n">2</td><td><code>타입 변환 미숙</code> · <code>예외 처리 구문 작성 미흡</code> — <b>근거 수치 없음</b></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>화면이 손볼 수 없는 부분입니다.</b> 원천 서술이라 길이도 톤도 원천이 정합니다.
+    과거 주차는 <b>네 글자짜리 어구</b>만 오기도 합니다.</p>
+</div>
+
+<h3>8 이번 주 학습 제안 — 원천에 대응 필드가 없습니다</h3>
+
+<p>
+  원천도 처방성 문장을 만들기는 합니다. <b>셋 다 수강생 화면에 실을 수 없어</b> 화면이 지표로 만듭니다.
+</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>원천 필드</th><th>내용</th><th>못 쓰는 이유</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="k"><code>recommendations_for_instructor</code></td>
+      <td>"…확인하고 <b>이를 독려해야 합니다</b>"</td>
+      <td><b>강사에게 하는 말</b>이다</td>
+    </tr>
+    <tr>
+      <td class="k"><code>suggested_feedback_draft</code></td>
+      <td>"정승 님, 7일 동안 무려 5,781번의…"</td>
+      <td><b>강사가 검토할 초안.</b> 승인 흐름이 미확정이라 미승인 문장을 학생에게 노출할 수 없다</td>
+    </tr>
+    <tr>
+      <td class="k"><code>weakness.recommended_focus_areas</code></td>
+      <td>W36 최초 응답에서 <b><code>weak_patterns</code> 와 글자까지 동일</b>. 재분석하면 <code>"고급 리팩토링 및 클린 코드 심화 문제집"</code> 한 줄로 바뀜</td>
+      <td>같은 내용이 두 절에 겹치거나, 근거 없는 교재 추천이 된다</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>그래서 8절만 화면이 만듭니다.</b> 근거는 전부 수치이고, 조건에 걸리는 지표가 없으면
+    문장을 만들지 않습니다 — <b>근거 없는 제안은 넣지 않는 것이 원칙</b>입니다.</p>
+</div>
+
 <figure>
-  <img src="../../../assets/gov-ai/2026-09-07/08-tips.png" alt="이번 주 학습 제안 절">
+  <img src="../../../assets/gov-ai/2026-09-07/08-tips.png" alt="이번 주 학습 제안 — 한 줄">
   <figcaption>
     <b>재시도 간격 하나가 문장이 된 것.</b> <code>0.9분 → 0.6분</code> 만 조건에 걸려 제안이 한 줄이다.
-    두 주의 이벤트 간격을 견줘 화면이 만든다.
   </figcaption>
 </figure>
 
-<p>
-  <b>진단 리포트는 사실상 playlang 하나로 만들어집니다.</b> 실습 플랫폼에 활동이 없는 주차는
-  리포트가 통째로 비고, 화면에 "기록이 수집되지 않았어요"로 나타납니다.
-</p>
-
-<h2>등급 기준 — LMS 가 정합니다</h2>
-
-<p>
-  판정을 LMS 가 자체적으로 하는 방향입니다. 기준을 우리가 쥐고 있어야
-  <b>왜 그 등급인지 학생에게 설명</b>할 수 있습니다.
-</p>
-
-<h3>관측치 넷을 축에 대보면</h3>
+<p>어떤 지표가 걸리면 어떤 문장이 되는지입니다. 걸린 것이 없으면 그대로 두라고만 합니다.</p>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>주차</th><th>에러율</th><th>힌트/일</th><th>재시도(분)</th><th>활동일</th><th>판정</th></tr></thead>
+  <thead><tr><th>playlang 데이터</th><th>걸리는 조건</th><th>나오는 문장</th></tr></thead>
   <tbody>
-    <tr><td class="k">샘플 1주</td><td class="n">0.48</td><td class="n">14.0</td><td class="n">1.2</td><td class="n">3</td><td>입문</td></tr>
-    <tr><td class="k">샘플 2주</td><td class="n">0.36</td><td class="n">17.6</td><td class="n">0.9</td><td class="n">5</td><td>초급</td></tr>
-    <tr><td class="k">샘플 3주</td><td class="n">0.25</td><td class="n">16.0</td><td class="n">0.6</td><td class="n">6</td><td>중급</td></tr>
-    <tr><td class="k">황수빈 W36</td><td class="n">0.10</td><td class="n">47.0</td><td class="n">0.2</td><td class="n">7</td><td>해결사</td></tr>
+    <tr><td class="k"><code>days_since_last_activity</code></td><td>3일 이상</td><td>N일간 접속이 없었어요</td></tr>
+    <tr><td class="k"><code>error_per_run</code></td><td>0.4 이상</td><td>실행 N회 중 M%에서 에러가 났어요</td></tr>
+    <tr><td class="k">두 주의 <code>error_per_run</code></td><td>늘었다</td><td>어디서 달라졌는지 짚어보세요</td></tr>
+    <tr><td class="k">두 주의 <code>hint_per_active_day</code></td><td>늘었다</td><td>열기 전에 에러 메시지를 한 번 더 읽어보세요</td></tr>
+    <tr><td class="k">두 주의 <code>avg_retry_gap_min</code></td><td>짧아졌다</td><td>원인을 1분만 생각해 본 뒤 고쳐보세요</td></tr>
+    <tr><td class="k">두 주의 <code>active_days_count</code></td><td>줄었다</td><td>짧게라도 매일 이어가 보세요</td></tr>
+    <tr><td class="k">—</td><td>어느 것도 안 걸림</td><td>지금 방식을 이어가 보세요</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>LMS 데이터는 어디에 담겨 오나</h2>
+
+<p>
+  <b>우리가 보낸 데이터가 그대로 돌아옵니다.</b> LMS 가 <code>POST /connectors/lms/sync</code> 로
+  학생 마스터를 올리면 GOV-AI 가 그것을 보관하고, <b>주간 리포트 응답의 <code>metrics</code> 안에 함께 실어</b> 줍니다.
+</p>
+
+<pre>LMS  ──sync──▶  GOV-AI  ──저장──▶  주간 리포트 응답
+                   │                    │
+                   └── playlang/atmux ──┘</pre>
+
+<h3>우리가 올려 보내는 것</h3>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>블록</th><th>필드</th></tr></thead>
+  <tbody>
+    <tr><td class="k">신원</td><td><code>user_id</code> <code>name</code> <code>student_uuid</code></td></tr>
+    <tr><td class="k">소속</td><td><code>cohort_id</code> <code>cohort_label</code> <code>education_title</code> <code>training_status</code></td></tr>
+    <tr><td class="k">과제</td><td><code>assignments.total</code> <code>.submitted</code> <code>.not_submitted</code></td></tr>
+    <tr><td class="k">퀴즈</td><td><code>quizzes.total</code> <code>.attempted</code> <code>.avg_score_pct</code></td></tr>
+    <tr><td class="k">출결</td><td><code>attendance.present</code> <code>.late</code> <code>.early_leave</code> <code>.absent</code> <code>.excused</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>주간 응답에 되돌아오는 것</h3>
+
+<p><code>metrics</code> 블록 안에 <b>playlang 지표와 나란히</b> 섞여 있습니다.</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>응답 필드</th><th>실제 값</th><th>출처</th><th>리포트에서</th></tr></thead>
+  <tbody>
+    <tr><td class="k"><code>metrics.userId</code></td><td><code>fd0ba10e-…</code></td><td>LMS 계정 UUID</td><td>학생 대조</td></tr>
+    <tr><td class="k"><code>metrics.name</code></td><td><code>정승</code></td><td>LMS 학생명</td><td><span class="tag off">미사용</span></td></tr>
+    <tr><td class="k"><code>metrics.cohortId</code></td><td><code>0baacbd9-…</code></td><td>LMS 기수 ID</td><td><b>기수 시작일 조회 → 주차 환산</b></td></tr>
+    <tr><td class="k"><code>metrics.cohort</code></td><td><code>29기</code></td><td>LMS 기수 표기</td><td><span class="tag off">미사용</span></td></tr>
+    <tr><td class="k"><code>metrics.group</code></td><td><code>A</code></td><td>LMS 반 구분</td><td><span class="tag off">미사용</span></td></tr>
+    <tr><td class="k"><code>metrics.assignments_completed</code></td><td><code>0</code></td><td><b>LMS 과제 제출 수</b></td><td><span class="tag off">미사용</span></td></tr>
+    <tr><td class="k"><code>metrics.attendance_rate</code></td><td><code>100.0</code></td><td><b>LMS 출결률</b></td><td><span class="tag off">미사용</span></td></tr>
+    <tr><td class="k"><code>risk.status</code></td><td><code>completed_waiting</code> · <code>정상 훈련</code></td><td>LMS <code>training_status</code> 반영</td><td><span class="tag off">미사용</span></td></tr>
   </tbody>
 </table>
 </div>
 
 <div class="note">
-  <p><b>힌트는 등급과 관계가 없습니다.</b> 해결사가 제일 많이 씁니다(47회/일). 어려운 것을 하고 있다는 뜻으로 읽힙니다.</p>
-  <p><b>재시도 간격은 짧을수록 높은 등급입니다.</b> <code>1.2 → 0.2분</code>. "원인 없이 다시 돌린다"가 아니라
-    <b>익숙해서 빠르다</b>는 신호였습니다.</p>
+  <p><b>화면이 쓰는 것은 <code>cohortId</code> 하나입니다.</b> 원천이 <code>2026-W36</code> 같은 ISO 주차만 주므로,
+    그 ID 로 LMS 에서 기수 시작일을 조회해 <b><code>11주차</code> 로 환산</b>합니다.
+    기수 시작일은 GOV-AI 응답에 없습니다.</p>
 </div>
 
-<p>등급과 같이 움직인 것은 <b>에러율</b>과 <b>활동일</b> 둘뿐입니다.</p>
-
-<h3>강한 신호는 에러의 종류였습니다</h3>
-
-<div class="tbl">
-<table>
-  <thead><tr><th>주차</th><th>주요 에러 top3</th><th>영역</th></tr></thead>
-  <tbody>
-    <tr><td class="k">1주 · 입문</td><td><code>IndentationError</code> <code>TypeError</code> <code>NameError</code></td><td>문법 · 타입 · 스코프</td></tr>
-    <tr><td class="k">2주 · 초급</td><td><code>ValueError</code> <code>TypeError</code> <code>KeyError</code></td><td>값 · 자료구조</td></tr>
-    <tr><td class="k">3주 · 중급</td><td><code>IntegrityError</code> <code>TimeoutError</code> <code>ConnectionError</code></td><td>DB · 비동기 · 네트워크</td></tr>
-    <tr><td class="k">W36 · 해결사</td><td><code>TimeoutError</code> <code>ConnectionError</code> <code>IntegrityError</code></td><td>같음</td></tr>
-  </tbody>
-</table>
-</div>
+<h3>다만 판정 서술에는 인용됩니다</h3>
 
 <p>
-  <b>에러의 양이 아니라 질이 등급을 말합니다.</b> 원천의 판정 근거도 같은 것을 인용합니다 —
-  <i>"주요 에러 유형이 고급 백엔드 및 아키텍처 수준의 예외들에 집중되어 있어 해결사 역량을 보인다."</i>
-</p>
-
-<h2>2축 기준안</h2>
-
-<pre>가로 — 무엇을 다루는가     주요 에러의 영역
-세로 — 얼마나 잘 다루는가   실행당 에러율
-
-               문법·스코프   값·자료구조   데이터·DB   시스템·비동기
-  0.4 이상        입문         입문         초급         초급
-  0.2 ~ 0.4       입문         초급         중급         중급
-  0.2 미만        초급         중급         중급         해결사</pre>
-
-<div class="tbl">
-<table>
-  <thead><tr><th>관측</th><th>영역</th><th>에러율</th><th>격자</th><th>원천 판정</th></tr></thead>
-  <tbody>
-    <tr><td class="k">1주</td><td>문법·스코프</td><td class="n">0.48</td><td>입문</td><td>입문</td></tr>
-    <tr><td class="k">2주</td><td>값·자료구조</td><td class="n">0.36</td><td>초급</td><td>초급</td></tr>
-    <tr><td class="k">3주</td><td>시스템·비동기</td><td class="n">0.25</td><td>중급</td><td>중급</td></tr>
-    <tr><td class="k">W36</td><td>시스템·비동기</td><td class="n">0.10</td><td>해결사</td><td>해결사</td></tr>
-  </tbody>
-</table>
-</div>
-
-<p>
-  <b>넷이 다 맞습니다.</b> 3주차와 W36 은 같은 열인데 등급이 갈립니다.
-  <b>에러율 0.25 대 0.10</b> 이 그 차이입니다. 두 축이 있어야 넷이 모두 설명됩니다.
-</p>
-
-<h3>입문의 정의</h3>
-
-<div class="note">
-  <p>주요 에러가 <b>문법 · 타입 · 스코프 영역</b>에 몰려 있고, 실행당 에러가 <b>0.2 이상</b>.
-    영역이 값·자료구조까지 올라와도 에러율이 <b>0.4 이상</b>이면 아직 입문입니다.</p>
-</div>
-
-<p>
-  언어 문법을 아직 손에 익히는 단계입니다. <code>IndentationError</code> 는 들여쓰기,
-  <code>NameError</code> 는 오타나 스코프, <code>TypeError</code> 는 타입을 아직 의식하지 않는 상태입니다.
-  <b>무엇을 만드느냐보다 어떻게 쓰느냐가 먼저인 구간</b>입니다.
-</p>
-
-<h3>영역 분류는 이미 있습니다</h3>
-
-<p>
-  화면의 <b>주요 에러 top3</b> 가 이미 예외를 영역으로 나눕니다.
-  그 영역을 <b>네 열로 묶기만</b> 하면 됩니다.
-</p>
-
-<div class="tbl">
-<table>
-  <thead><tr><th>격자 열</th><th>화면의 영역</th><th>예외</th></tr></thead>
-  <tbody>
-    <tr><td class="k">문법·스코프</td><td>문법 · 타입 · 스코프</td><td><code>SyntaxError</code> <code>IndentationError</code> <code>NameError</code> <code>TypeError</code></td></tr>
-    <tr><td class="k">값·자료구조</td><td>값 · 자료구조</td><td><code>ValueError</code> <code>KeyError</code> <code>IndexError</code> <code>AttributeError</code></td></tr>
-    <tr><td class="k">데이터·DB</td><td>데이터검증 · 데이터베이스</td><td><code>ValidationError</code> <code>IntegrityError</code></td></tr>
-    <tr><td class="k">시스템·비동기</td><td>네트워크 · 비동기 · 메모리</td><td><code>ConnectionError</code> <code>TimeoutError</code> <code>MemoryError</code></td></tr>
-  </tbody>
-</table>
-</div>
-
-<p>
-  <b>새로 만들 사전이 없습니다.</b> 열의 값은 top3 중 <b>가장 오른쪽 영역</b>으로 잡습니다 —
-  그 주에 손댄 가장 어려운 것이 기준입니다.
-</p>
-
-<figure>
-  <img src="../../../assets/gov-ai/2026-09-07/04-errors.png" alt="주요 에러 top3 절 — 예외별 영역 표기">
-  <figcaption>
-    <code>데이터베이스</code> · <code>비동기</code> · <code>네트워크</code> 가 가로축 값이다.
-    이 주차는 <b>시스템·비동기</b> 구간에 있다.
-  </figcaption>
-</figure>
-
-<h3>에러율 경계도 하나는 있습니다</h3>
-
-<figure>
-  <img src="../../../assets/gov-ai/2026-09-07/03-trend.png" alt="실행당 에러 추세 절 — 0.5 기준선">
-  <figcaption>
-    점선 <code>0.5</code> 는 원천 서술에서 인용한 값이다.
-    <b>우리가 정한 기준이 아니므로 LMS 판정으로 가면 다시 볼 항목</b>이다.
-  </figcaption>
-</figure>
-
-<div class="note">
-  <p><b>관측 넷만으로는 가로축 하나로도 설명됩니다.</b> 열이 오른쪽으로 갈수록 등급이 올라가니까요.
-    그래도 세로축을 두는 이유는, <b>같은 영역을 다루면서 에러가 잦은 경우</b>를 열만으로는
-    해결사로 올려 보내기 때문입니다. 3주차와 W36 이 그 경우입니다.</p>
-</div>
-
-<div class="note">
-  <p><b>남은 것은 세로축 경계 둘입니다.</b> 위 격자는 <code>0.4</code> · <code>0.2</code> 로 잡았지만
-    관측치가 학생 두 명분이라 근거가 약합니다. <b>기수 하나가 끝나면 분포로 다시 잡습니다.</b></p>
-  <p>그때까지는 화면에 <b>잠정 기준</b>이라고 밝힙니다.</p>
-</div>
-
-<h2>판정 근거를 화면 어디에 둘까</h2>
-
-<h3>자리 — 요약과 「이번 주 학습 기록」 사이</h3>
-
-<p>등급을 말한 직후에 근거가 와야 합니다.</p>
-
-<pre>[요약]          중급 · 확신도 중간 · 등급 변화        결론
-[판정 근거]     ← 신설                               왜 그 등급인가
-1 이번 주 학습 기록                                  지표 여섯 칸
-2 지난주와 비교
-3 실행당 에러 추세
-...</pre>
-
-<figure>
-  <img src="../../../assets/gov-ai/2026-09-07/summary.png" alt="요약 블록 — 등급·확신도·등급 변화">
-  <figcaption>
-    <b>이 블록 바로 아래가 근거 자리입니다.</b> 지금은 <code>중급 · 4단계 중 3번째</code> 와
-    <code>초급 → 중급 1단계 올랐어요</code> 까지만 있고, <b>왜 중급인지가 없습니다.</b>
-  </figcaption>
-</figure>
-
-<h3>형태 — 두 줄이면 끝납니다</h3>
-
-<pre>판정 근거
-
-다루는 영역   데이터베이스 · 비동기 · 네트워크
-실행당 에러   0.25   ────── 0.4 ──────
-
-시스템·비동기 영역의 에러를 다루면서 실행당 에러가 0.4 아래입니다.
-0.2 아래로 내려가면 해결사입니다.</pre>
-
-<p>
-  마지막 줄이 핵심입니다. <b>다음 등급까지 무엇이 남았는지</b>를 말해 주면 근거가 목표가 됩니다.
-  축만 나열하면 학생이 다시 해석해야 합니다.
+  <b>화면이 안 쓴다고 영향이 없는 것은 아닙니다.</b> GOV-AI 가 등급을 판정할 때
+  우리가 올린 값을 프롬프트에 함께 넣기 때문에, 서술에 그대로 나옵니다.
 </p>
 
 <div class="note">
-  <p><b>축이 둘이라 짧습니다.</b> 네 축을 눈금 넷으로 늘어놓으면 학생이 종합 방법을 다시 물어야 합니다.
-    영역 한 줄 · 에러율 한 줄이면 격자 위 어디인지가 그대로 보입니다.</p>
+  <p><i>"훈련생은 현재 10단계를 완수한 완주 대기 상태입니다. 그러나 <b>과제 제출 수(assignments_completed)가 0</b>으로
+    확인되므로, 실제 과제 제출이 누락되었는지 확인하고 이를 독려해야 합니다."</i>
+    — <code>recommendations_for_instructor</code></p>
 </div>
 
-<h3>다른 안 — 원천 서술을 그대로 싣기</h3>
-
 <p>
-  원천은 이미 판정 근거를 문장으로 줍니다(<code>grade_rationale</code>).
-  계약에 넣기만 하면 <b>기준표 없이도 오늘 바로</b> 그 자리를 채울 수 있습니다.
+  <b>원천이 우리 데이터를 되짚어 묻고 있습니다.</b> 이 학생은 출결률 <code>100%</code> 인데
+  과제 제출이 <code>0</code> 입니다. 동기화가 실제 상태를 옮기지 못했을 가능성이 있고,
+  그렇다면 <b>진단 근거 문장이 사실과 다르게 나갑니다.</b>
 </p>
 
 <div class="note">
-  <p><b>다만 그 문장이 단계를 인용합니다.</b> "10단계를 완주하여 해결사의 진도 기준을 충족" 같은 식입니다.</p>
-  <p>화면에서 진행 단계를 뺐는데 근거에만 단계가 나오면 <b>학생이 볼 수 없는 단위로 설명하는 셈</b>입니다.
-    그대로 실으려면 단계 정의를 먼저 받아야 합니다.</p>
+  <p><b>짚어 둘 것.</b> 이 문장은 강사용이라 수강생 화면에는 나오지 않습니다. 다만
+    같은 값이 등급 판정 프롬프트에도 들어가므로, <b>과제·출결 동기화가 틀리면 등급도 흔들립니다.</b></p>
 </div>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>안</th><th>필요한 것</th><th>판단</th></tr></thead>
+  <thead><tr><th>구분</th><th>LMS 데이터</th></tr></thead>
   <tbody>
-    <tr>
-      <td class="k">2축 표기</td>
-      <td>에러율 경계 하나</td>
-      <td><b>이쪽으로 간다.</b> 영역은 화면에 이미 있다</td>
-    </tr>
-    <tr>
-      <td class="k">원천 서술</td>
-      <td>단계 정의 — 문장이 단계를 인용한다</td>
-      <td>우리 등급과 원천 서술이 어긋날 수 있어 맞지 않는다</td>
-    </tr>
+    <tr><td class="k">올려 보냄</td><td>신원 · 소속 · 과제 · 퀴즈 · 출결 <b>5블록</b></td></tr>
+    <tr><td class="k">응답에 돌아옴</td><td>신원 · 기수 · 반 · 과제 제출 수 · 출결률 · 훈련 상태</td></tr>
+    <tr><td class="k">리포트가 씀</td><td><code>cohortId</code> <b>하나</b> — 주차 환산</td></tr>
+    <tr><td class="k">간접 영향</td><td><b>등급 판정과 근거 서술에 인용됨</b></td></tr>
   </tbody>
 </table>
 </div>
 
+<h2>값이 없을 때</h2>
+
 <p>
-  <b>LMS 가 등급을 매기면 근거도 LMS 것이어야 합니다.</b> 우리 기준으로 중급을 준 옆에
-  원천이 쓴 "해결사의 진도 기준을 충족" 이 붙으면 학생이 어느 쪽을 믿을지 알 수 없습니다.
+  <code>2026-W35</code> 이전 주차는 원천 스키마 확장 전이라 <b>일곱 필드가 아예 없습니다.</b>
+  서버가 0으로 채우지 않고 <code>null</code> 로 주면서 무엇이 없는지 함께 알려줍니다 —
+  <b>"활동이 없었다"와 "기록이 없다"는 다르기 때문</b>입니다.
 </p>
 
-<h2>진행 순서</h2>
-
-<pre>① 에러 영역을 등급 축으로 확정한다
-     └ 예외 → 영역 사전은 화면에 이미 있다. 영역 → 열 묶음만 정하면 된다
-
-② 에러율 경계를 잠정으로 잡는다
-     └ 0.4 · 0.2. 근거가 약하므로 화면에 "잠정 기준" 표기
-
-③ 원천 등급과 대조한다
-     └ 참고값. 크게 어긋나면 경계를 손본다
-
-④ 기수 하나가 끝나면 분포로 경계를 다시 잡는다</pre>
+<div class="tbl">
+<table>
+  <thead><tr><th>없는 playlang 데이터</th><th>비는 항목</th></tr></thead>
+  <tbody>
+    <tr><td class="k">마지막 이벤트 시각</td><td>최근 미접속</td></tr>
+    <tr><td class="k"><code>hints_count</code></td><td>힌트 요청 · 에러당 힌트 · 힌트 비교 행 · <b>5 문제를 푸는 방식</b></td></tr>
+    <tr><td class="k">이벤트 간격</td><td>재시도 간격 · <b>5 문제를 푸는 방식</b></td></tr>
+    <tr><td class="k">예외 집계</td><td><b>4 주요 에러 top3</b></td></tr>
+  </tbody>
+</table>
+</div>
 
 <div class="note">
-  <p><b>①은 오늘 할 수 있습니다.</b> 원천에서 무언가를 더 받아야 시작되는 일이 아닙니다.
-    막히는 것은 ②의 경계 하나뿐이고, 그것도 잠정으로 두면 화면은 완성됩니다.</p>
+  <p><b>절을 지우지 않습니다.</b> 지우면 "원래 없는 항목"처럼 보입니다.
+    무엇이 없어서 못 만들었는지 적어야 학생이 화면이 고장난 줄 알지 않습니다.</p>
+  <p><b>실습 플랫폼에 활동이 없는 주차는 리포트가 통째로 빕니다.</b> playlang 하나에 전부 매여 있다는 뜻입니다.</p>
 </div>
 
 <h2>정리</h2>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>구분</th><th>내용</th><th>상태</th></tr></thead>
+  <thead><tr><th>데이터원</th><th>리포트에서</th></tr></thead>
   <tbody>
-    <tr><td class="k">데이터 출처</td><td>진단 리포트 지표는 전부 <code>playlang</code></td><td>확인</td></tr>
-    <tr><td class="k">atmux</td><td>시간·CPU 라 리포트에 쓰지 않음</td><td>의도된 미사용</td></tr>
-    <tr><td class="k">LMS</td><td>기수 시작일 · 계정. 지표는 주지 않음</td><td>확인</td></tr>
-    <tr><td class="k">등급 판정</td><td><b>LMS 가 자체적으로</b>. 원천 등급은 참고값</td><td>방향 확정</td></tr>
-    <tr><td class="k">등급 축</td><td>에러 영역 × 에러율. 힌트·재시도는 무효</td><td>관측으로 확인</td></tr>
-    <tr><td class="k">에러율 경계</td><td>0.4 · 0.2 잠정. 기수 분포로 재조정</td><td>정해야 함</td></tr>
-    <tr><td class="k">근거 자리</td><td>요약과 「이번 주 학습 기록」 사이 · 두 줄</td><td>확정</td></tr>
+    <tr>
+      <td class="k">playlang</td>
+      <td><b>모든 항목.</b> 코드 실행 · 에러 · 힌트 카운트와 그 주간 집계</td>
+    </tr>
+    <tr>
+      <td class="k">atmux</td>
+      <td><b>한 항목도 쓰지 않음.</b> 사용 시간 · CPU 는 학습의 질을 말하지 못함</td>
+    </tr>
+    <tr>
+      <td class="k">LMS</td>
+      <td><b><code>cohortId</code> 하나</b> — 주차 환산. 나머지는 실려만 오고,
+        <b>등급 판정 서술에는 인용됨</b></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>구분</th><th>내용</th></tr></thead>
+  <tbody>
+    <tr><td class="k">원천이 주는 서술 <code>③</code></td><td><b>「보완하면 좋은 점」 하나뿐.</b> 나머지 서술 셋은 지표에서 화면이 생성 <code>⑤</code></td></tr>
+    <tr><td class="k">응답에 없는 숫자 <code>④</code></td><td><b>에러당 힌트 하나뿐.</b> 나머지 숫자는 응답 값 그대로 <code>①②</code></td></tr>
+    <tr><td class="k">다시 부르면 달라지는 층</td><td><code>③</code> <b>등급 · 확신도 · 보완점</b> — LLM 판정이라 재분석하면 바뀜</td></tr>
+    <tr><td class="k">식을 못 보는 층</td><td><code>②</code> 활동일 · 재시도 간격 등 — GOV-AI 가 계산해 완성된 수만 옴</td></tr>
+    <tr><td class="k">쓰지 않는 응답 필드</td><td><code>steps_completed</code> · <code>current_step</code> · <code>stalled_days_on_current_step</code> — 단계 정의 미확정</td></tr>
+    <tr><td class="k">확인이 필요한 것</td><td>LMS 과제·출결 동기화 정확성 — <b>등급 판정에 들어감</b></td></tr>
   </tbody>
 </table>
 </div>
 
 <footer>
   <p>필드 구성은 2026-09-01 datalake 조사 기록 기준입니다. playlang · atmux 전용 엔드포인트는 직접 호출하지 않았습니다.</p>
-  <p>등급 기준안은 확정이 아니라 논의를 위한 초안입니다.</p>
+  <p>등급 판정 기준은 별도 보고서에서 다룹니다.</p>
 </footer>
 
 </div>

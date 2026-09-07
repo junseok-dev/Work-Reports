@@ -1,0 +1,109 @@
+<div class="status">
+  <div class="card done">
+    <span class="card-k">playlang</span>
+    <span class="card-v">지표 전부</span>
+    <span class="card-s">코드 실행 · 에러 · 힌트</span>
+  </div>
+  <div class="card todo">
+    <span class="card-k">atmux</span>
+    <span class="card-v">미사용</span>
+    <span class="card-s">한 항목도 쓰지 않음</span>
+  </div>
+  <div class="card data">
+    <span class="card-k">LMS</span>
+    <span class="card-v">올렸다 돌아옴</span>
+    <span class="card-s">쓰는 건 기수 하나</span>
+  </div>
+</div>
+
+<h2 class="first">이 보고서가 답하는 것</h2>
+
+<p>
+  주간 진단 리포트에 <b>항목이 열 몇 개</b> 있습니다. 각 항목이
+  <b>어느 수집기의 어떤 필드로 만들어지고, 화면에 어떻게 나타나는지</b>를 항목 단위로 정리했습니다.
+</p>
+
+<h2>데이터원 셋</h2>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>데이터원</th><th>필드</th><th>리포트</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="k">playlang</td>
+      <td>
+        <code>runs_count</code> <code>errors_count</code> <code>hints_count</code>
+        <code>error_rate_pct</code> <code>total_events</code>
+        <code>course</code> <code>language</code> <code>current_step</code>
+      </td>
+      <td><span class="tag src">전부 여기서</span></td>
+    </tr>
+    <tr>
+      <td class="k">atmux</td>
+      <td>
+        <code>total_duration_sec</code> <code>total_duration_hours</code>
+        <code>weekly_daily_avg_hours</code> <code>avg_cpu_util</code>
+        <code>telemetry_count</code>
+      </td>
+      <td><span class="tag off">한 항목도 안 씀</span></td>
+    </tr>
+    <tr>
+      <td class="k">LMS</td>
+      <td>학생 신원 · 기수 · 과제 · 퀴즈 · 출결</td>
+      <td><span class="tag calc">주차 환산에만</span> 나머지는 실려만 옴</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>atmux 를 안 쓰는 이유.</b> 주는 값이 사용 시간과 CPU 사용률뿐입니다.
+    환경을 열어 두고 다른 일을 해도 시간은 쌓이므로, 오래 켜 둔 것과 잘 푼 것을 가릴 수 없습니다.</p>
+  <p><b>LMS 데이터는 GOV-AI 로 올라갔다가 응답에 되돌아옵니다.</b> 우리가 보낸 이름·기수·과제·출결이
+    그대로 실려 오는데, 진단 리포트는 그중 <b>기수 하나만</b> 씁니다. 아래 「LMS 데이터는 어디에 담겨 오나」 참조.</p>
+</div>
+
+<h2>주간 응답이 주는 지표</h2>
+
+<p>
+  진단 리포트가 받는 것은 위 원본 카운터가 아니라 <b>주 단위로 집계된 응답</b>입니다.
+  <b>지표는 아래가 전부</b>이고, 다음 절의 모든 항목이 이 목록 안에서 만들어집니다.
+  응답에는 이 밖에 <b>LMS 가 올려 보낸 신원·기수·과제·출결</b>도 함께 실려 옵니다.
+</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>응답 필드</th><th>뜻</th><th>playlang 원본</th></tr></thead>
+  <tbody>
+    <tr class="grp"><td colspan="3">주차 · 진단</td></tr>
+    <tr><td class="k"><code>year_week</code> <code>week_range</code></td><td>ISO 주차 · 구간</td><td>이벤트 시각</td></tr>
+    <tr><td class="k"><code>diagnosis.grade</code></td><td>등급 4종</td><td>지표를 넣어 판정</td></tr>
+    <tr><td class="k"><code>diagnosis.confidence</code></td><td>확신도 0~1</td><td>〃</td></tr>
+    <tr><td class="k"><code>diagnosis.weak_patterns</code></td><td>보완점 서술</td><td>〃</td></tr>
+
+    <tr class="grp"><td colspan="3">지표</td></tr>
+    <tr><td class="k"><code>active_days_count</code></td><td>활동일</td><td>이벤트가 있는 날</td></tr>
+    <tr><td class="k"><code>days_since_last_activity</code></td><td>최근 미접속</td><td>마지막 이벤트 시각</td></tr>
+    <tr><td class="k"><code>total_runs</code></td><td>코드 실행</td><td><code>runs_count</code></td></tr>
+    <tr><td class="k"><code>total_errors</code></td><td>에러 실행</td><td><code>errors_count</code></td></tr>
+    <tr><td class="k"><code>error_per_run</code></td><td>실행당 에러</td><td><code>error_rate_pct</code> ÷ 100</td></tr>
+    <tr><td class="k"><code>hint_requests_count</code></td><td>힌트 요청</td><td><code>hints_count</code></td></tr>
+    <tr><td class="k"><code>hint_per_active_day</code></td><td>활동일당 힌트</td><td>위 둘의 몫</td></tr>
+    <tr><td class="k"><code>avg_retry_gap_min</code></td><td>재시도 간격 평균</td><td>에러 → 다음 실행 간격</td></tr>
+    <tr><td class="k"><code>max_retry_gap_min</code></td><td>재시도 간격 최대</td><td>〃</td></tr>
+    <tr><td class="k"><code>top_error_types[]</code></td><td>주요 에러 top3</td><td>예외 이름 · 횟수</td></tr>
+    <tr><td class="k"><code>data_freshness</code></td><td>관측 시각</td><td>스냅샷 시각</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>응답에 있으나 쓰지 않는 것이 셋 있습니다</b> — <code>steps_completed</code> ·
+    <code>current_step</code> · <code>stalled_days_on_current_step</code>.
+    단계의 정의가 확정되지 않아 화면에서 뺐습니다.</p>
+</div>
+
+<p>
+  이 목록은 <b>한 덩어리가 아닙니다.</b> 세어서 나온 수, 주 단위로 나눠서 나온 수,
+  AI 가 읽고 쓴 문장이 섞여 있습니다. 다음 절에서 층으로 갈라 봅니다.
+</p>

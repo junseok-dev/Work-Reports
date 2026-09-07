@@ -1,0 +1,175 @@
+<h2>화면에서 확인</h2>
+
+<h3>요약 블록</h3>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/summary.png" alt="요약 블록 — 등급 눈금·확신도·등급 변화">
+  <figcaption>
+    <b>세 값이 전부 원천 것이다.</b> <code>중급</code> 은 <code>diagnosis.grade</code>,
+    <code>확신도 중간</code> 은 <code>confidence</code> 실수를 화면이 3구간으로 나눈 것,
+    <code>초급 → 중급</code> 은 이번 주와 직전 주 <code>grade</code> 를 견준 것이다.
+  </figcaption>
+</figure>
+
+<h3>1 이번 주 학습 기록</h3>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/01-metrics.png" alt="이번 주 학습 기록 — 지표 여섯 칸">
+  <figcaption>
+    <b>여섯 칸 전부 playlang.</b>
+    <code>152회/610회</code> 는 <code>total_errors</code>·<code>total_runs</code>,
+    <code>96회</code> 는 <code>hint_requests_count</code>,
+    <code>0.6분</code> 은 <code>avg_retry_gap_min</code>.
+    <b>에러당 힌트 <code>0.63</code> 만 화면이 나눈 값</b>이다.
+  </figcaption>
+</figure>
+
+<p>
+  큰 숫자가 값, 뒤의 작은 글씨가 <b>그 값이 어디서 나왔는지</b>입니다.
+  <code>0.25</code> 뒤에 <code>152회/610회</code> 가 분자·분모로 붙어 학생이 되짚어 볼 수 있습니다.
+</p>
+
+<h3>3 실행당 에러 추세</h3>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/03-trend.png" alt="실행당 에러 추세 — 막대와 0.5 기준선">
+  <figcaption>
+    <b>주차 목록 API 가 주는 <code>error_per_run</code> 만으로 그린다</b> — 상세 응답이 아니다.
+    점선 <code>0.5</code> 는 원천 판정 근거 서술에서 인용한 값이고, 아래면 초록 · 위면 주황이다.
+  </figcaption>
+</figure>
+
+<h3>4 주요 에러 top3</h3>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/04-errors.png" alt="주요 에러 top3 — 예외 이름·영역 태그·설명·횟수">
+  <figcaption>
+    <b>playlang 이 주는 것은 예외 이름과 횟수뿐</b>이다 — <code>IntegrityError 38회</code> 처럼.
+    영역 태그(<code>데이터베이스</code> <code>비동기</code> <code>네트워크</code>)와 한 줄 설명,
+    커버리지 <code>59%</code> 는 화면이 붙인다.
+  </figcaption>
+</figure>
+
+<p>
+  원천 값은 <code>[PYTHON] requests.exceptions.ConnectionError: Max retries…</code> 같은 한 줄입니다.
+  화면이 <b>모듈 경로와 클래스명을 갈라</b> 이름을 앞에 세우고, 예외 이름을 사전에 대 영역과 설명을 붙입니다.
+  사전에 없는 예외는 이름만 두고 설명을 지어내지 않습니다.
+</p>
+
+<div class="note">
+  <p><b>커버리지를 적는 이유.</b> 원천이 상위 3종만 주므로 그 주 에러의 전부가 아닙니다.
+    <b>나머지 41% 가 어떤 에러인지는 확인할 수 없다</b>는 것을 화면에 남깁니다.</p>
+</div>
+
+<h3>5 문제를 푸는 방식</h3>
+
+<p>두 지표를 <b>함께</b> 읽는 유일한 절입니다. 두 주의 증감 조합이 문장을 고릅니다.</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th><code>hint_per_active_day</code></th><th><code>avg_retry_gap_min</code></th><th>나오는 문장</th></tr></thead>
+  <tbody>
+    <tr><td class="k">줄었다</td><td>늘었다</td><td>스스로 원인을 짚는 쪽으로 옮겨가고 있어요</td></tr>
+    <tr><td class="k">줄었다</td><td>줄었다</td><td>익숙한 에러가 늘었다는 뜻이에요</td></tr>
+    <tr><td class="k">늘었다</td><td>줄었다</td><td>답은 빨리 찾지만 원인이 남지 않습니다</td></tr>
+    <tr><td class="k">늘었다</td><td>늘었다</td><td>새로운 유형을 만나고 있는 것으로 보여요</td></tr>
+    <tr><td class="k">그대로</td><td>그대로</td><td>지난주와 비슷한 방식으로 풀었어요</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>한쪽만 결측이어도 절을 만들지 않습니다.</b> 두 지표를 함께 봐야 나오는 문장이라
+    하나만으로는 "많다 / 빠르다"에서 끝납니다.</p>
+</div>
+
+<h3>7 보완하면 좋은 점 — 유일하게 원천이 문장을 주는 절</h3>
+
+<p>
+  <code>diagnosis.weak_patterns</code> 를 <b>손대지 않고 그대로</b> 싣습니다.
+  GOV-AI 가 <code>gemini-3.5-flash</code> 로 쓴 문장이고, <b>근거 수치가 문장 안에 박혀</b> 옵니다.
+</p>
+
+<div class="note">
+  <p><i>"네트워크 및 비동기 처리 취약: <b>asyncio.exceptions.TimeoutError(123회)</b>,
+    <b>ConnectionError(119회)</b> 다수 발생으로 미루어 보아, 외부 API 호출이나 비동기 IO 흐름 제어에서
+    타임아웃 예외 처리가 미흡함."</i></p>
+</div>
+
+<p>
+  <b>다만 문장의 품질이 주차마다 다릅니다.</b> 같은 학생 같은 주차인데도 재분석하면 달라집니다.
+</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>주차</th><th>건수</th><th>실제 문장</th></tr></thead>
+  <tbody>
+    <tr><td class="k">W36 최초</td><td class="n">2</td><td>예외 이름 + 횟수만. 처방 없음</td></tr>
+    <tr><td class="k">W36 재분석</td><td class="n">3</td><td>원인 추정 + 처방까지. 힌트 의존 항목이 새로 생김</td></tr>
+    <tr><td class="k">W34</td><td class="n">2</td><td><code>타입 변환 미숙</code> · <code>예외 처리 구문 작성 미흡</code> — <b>근거 수치 없음</b></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>화면이 손볼 수 없는 부분입니다.</b> 원천 서술이라 길이도 톤도 원천이 정합니다.
+    과거 주차는 <b>네 글자짜리 어구</b>만 오기도 합니다.</p>
+</div>
+
+<h3>8 이번 주 학습 제안 — 원천에 대응 필드가 없습니다</h3>
+
+<p>
+  원천도 처방성 문장을 만들기는 합니다. <b>셋 다 수강생 화면에 실을 수 없어</b> 화면이 지표로 만듭니다.
+</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>원천 필드</th><th>내용</th><th>못 쓰는 이유</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="k"><code>recommendations_for_instructor</code></td>
+      <td>"…확인하고 <b>이를 독려해야 합니다</b>"</td>
+      <td><b>강사에게 하는 말</b>이다</td>
+    </tr>
+    <tr>
+      <td class="k"><code>suggested_feedback_draft</code></td>
+      <td>"정승 님, 7일 동안 무려 5,781번의…"</td>
+      <td><b>강사가 검토할 초안.</b> 승인 흐름이 미확정이라 미승인 문장을 학생에게 노출할 수 없다</td>
+    </tr>
+    <tr>
+      <td class="k"><code>weakness.recommended_focus_areas</code></td>
+      <td>W36 최초 응답에서 <b><code>weak_patterns</code> 와 글자까지 동일</b>. 재분석하면 <code>"고급 리팩토링 및 클린 코드 심화 문제집"</code> 한 줄로 바뀜</td>
+      <td>같은 내용이 두 절에 겹치거나, 근거 없는 교재 추천이 된다</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>그래서 8절만 화면이 만듭니다.</b> 근거는 전부 수치이고, 조건에 걸리는 지표가 없으면
+    문장을 만들지 않습니다 — <b>근거 없는 제안은 넣지 않는 것이 원칙</b>입니다.</p>
+</div>
+
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/08-tips.png" alt="이번 주 학습 제안 — 한 줄">
+  <figcaption>
+    <b>재시도 간격 하나가 문장이 된 것.</b> <code>0.9분 → 0.6분</code> 만 조건에 걸려 제안이 한 줄이다.
+  </figcaption>
+</figure>
+
+<p>어떤 지표가 걸리면 어떤 문장이 되는지입니다. 걸린 것이 없으면 그대로 두라고만 합니다.</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>playlang 데이터</th><th>걸리는 조건</th><th>나오는 문장</th></tr></thead>
+  <tbody>
+    <tr><td class="k"><code>days_since_last_activity</code></td><td>3일 이상</td><td>N일간 접속이 없었어요</td></tr>
+    <tr><td class="k"><code>error_per_run</code></td><td>0.4 이상</td><td>실행 N회 중 M%에서 에러가 났어요</td></tr>
+    <tr><td class="k">두 주의 <code>error_per_run</code></td><td>늘었다</td><td>어디서 달라졌는지 짚어보세요</td></tr>
+    <tr><td class="k">두 주의 <code>hint_per_active_day</code></td><td>늘었다</td><td>열기 전에 에러 메시지를 한 번 더 읽어보세요</td></tr>
+    <tr><td class="k">두 주의 <code>avg_retry_gap_min</code></td><td>짧아졌다</td><td>원인을 1분만 생각해 본 뒤 고쳐보세요</td></tr>
+    <tr><td class="k">두 주의 <code>active_days_count</code></td><td>줄었다</td><td>짧게라도 매일 이어가 보세요</td></tr>
+    <tr><td class="k">—</td><td>어느 것도 안 걸림</td><td>지금 방식을 이어가 보세요</td></tr>
+  </tbody>
+</table>
+</div>

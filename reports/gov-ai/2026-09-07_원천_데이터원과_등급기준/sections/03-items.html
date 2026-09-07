@@ -1,0 +1,162 @@
+<h2>항목별 한눈표</h2>
+
+<p>
+  리포트에 보이는 순서 그대로입니다. <b>층</b> 칸은 앞 절의 다섯 층 번호입니다 —
+  <code>①</code> 센 것 · <code>②</code> 묶은 것 · <code>③</code> 읽은 것 ·
+  <code>④</code> 화면이 나눈 것 · <code>⑤</code> 화면이 쓴 것.
+</p>
+
+<p><b><code>atmux</code> 열은 전부 <span class="tag off">—</span> 이라 넣지 않았습니다.</b> 모든 항목이 playlang 하나에서 나옵니다.</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>항목</th><th>층</th><th>playlang 데이터</th><th>화면에 어떻게</th></tr></thead>
+  <tbody>
+    <tr class="grp"><td colspan="4">요약 블록</td></tr>
+    <tr>
+      <td class="k">분석 기간</td>
+      <td class="n">②</td>
+      <td><code>week_range</code></td>
+      <td><code>2026. 08.31 ~ 09.06</code></td>
+    </tr>
+    <tr>
+      <td class="k">수준 등급</td>
+      <td class="n">③</td>
+      <td><code>diagnosis.grade</code></td>
+      <td>4칸 눈금 위 현재 위치 + <code>4단계 중 3번째</code></td>
+    </tr>
+    <tr>
+      <td class="k">확신도</td>
+      <td class="n">③→④</td>
+      <td><code>diagnosis.confidence</code> 0~1</td>
+      <td>화면이 3단계로 접어 <b>점 색</b>으로만. 막대는 주지 않음</td>
+    </tr>
+    <tr>
+      <td class="k">등급 변화</td>
+      <td class="n">④</td>
+      <td>이번 주 + 직전 주 <code>grade</code></td>
+      <td>눈금 인덱스 차 → <code>초급 → 중급 1단계 올랐어요</code></td>
+    </tr>
+
+    <tr class="grp"><td colspan="4">1 이번 주 학습 기록 — 여섯 칸</td></tr>
+    <tr>
+      <td class="k">활동일</td>
+      <td class="n">②</td>
+      <td><code>active_days_count</code></td>
+      <td><code>6일</code></td>
+    </tr>
+    <tr>
+      <td class="k">최근 미접속</td>
+      <td class="n">②</td>
+      <td><code>days_since_last_activity</code></td>
+      <td><code>0일</code></td>
+    </tr>
+    <tr>
+      <td class="k">실행당 에러</td>
+      <td class="n">② + ①</td>
+      <td><code>error_per_run</code> · <code>total_errors</code> · <code>total_runs</code></td>
+      <td><code>0.25</code> 아래 <b>센 값을 나란히</b> <code>152회/610회</code></td>
+    </tr>
+    <tr>
+      <td class="k">힌트 요청</td>
+      <td class="n">① + ②</td>
+      <td><code>hint_requests_count</code> · <code>hint_per_active_day</code></td>
+      <td><code>96회</code> 아래 <code>일 16.00회</code></td>
+    </tr>
+    <tr>
+      <td class="k">에러당 힌트</td>
+      <td class="n"><b>④</b></td>
+      <td><b>응답에 없음</b></td>
+      <td>화면이 <code>96 ÷ 152</code> = <code>0.63</code></td>
+    </tr>
+    <tr>
+      <td class="k">에러 후 재시도 간격</td>
+      <td class="n">②</td>
+      <td><code>avg_retry_gap_min</code> · <code>max_retry_gap_min</code></td>
+      <td><code>0.6분</code> 아래 <code>최대 3.2분</code></td>
+    </tr>
+
+    <tr class="grp"><td colspan="4">2 지난주와 비교 — 세 행</td></tr>
+    <tr>
+      <td class="k">활동일</td>
+      <td class="n">④</td>
+      <td>두 주의 <code>active_days_count</code></td>
+      <td><code>5일 → 6일</code> · 늘면 초록</td>
+    </tr>
+    <tr>
+      <td class="k">코드 실행</td>
+      <td class="n">④</td>
+      <td>두 주의 <code>total_runs</code></td>
+      <td><code>480회 → 610회</code> · 늘면 초록</td>
+    </tr>
+    <tr>
+      <td class="k">활동일당 힌트</td>
+      <td class="n">④</td>
+      <td>두 주의 <code>hint_per_active_day</code></td>
+      <td><code>17.6회 → 16.0회</code> · <b>줄면</b> 초록</td>
+    </tr>
+
+    <tr class="grp"><td colspan="4">3~4 근거</td></tr>
+    <tr>
+      <td class="k">실행당 에러 추세</td>
+      <td class="n">② + ④</td>
+      <td>주차 목록의 <code>error_per_run</code> 전부</td>
+      <td>막대는 응답 값. <b>감소율 <code>48%</code> 만 화면 계산</b></td>
+    </tr>
+    <tr>
+      <td class="k">주요 에러 top3</td>
+      <td class="n">① + ④</td>
+      <td><code>top_error_types[].type</code> · <code>.count</code></td>
+      <td>이름·횟수는 응답. <b>영역 태그·설명·커버리지는 화면이 붙임</b></td>
+    </tr>
+
+    <tr class="grp"><td colspan="4">5~8 서술</td></tr>
+    <tr>
+      <td class="k">문제를 푸는 방식</td>
+      <td class="n"><b>⑤</b></td>
+      <td>두 주의 <code>hint_per_active_day</code> × <code>avg_retry_gap_min</code></td>
+      <td>두 지표의 증감 조합으로 <b>화면이 문장</b></td>
+    </tr>
+    <tr>
+      <td class="k">잘하고 있는 점</td>
+      <td class="n"><b>⑤</b></td>
+      <td>두 주의 <code>error_per_run</code> · 힌트 · 활동일</td>
+      <td>나아진 것만, <b>최대 3개</b></td>
+    </tr>
+    <tr>
+      <td class="k">보완하면 좋은 점</td>
+      <td class="n"><b>③</b></td>
+      <td><code>diagnosis.weak_patterns</code></td>
+      <td><b>AI 문장 그대로</b> — 화면이 손대지 않는 유일한 절</td>
+    </tr>
+    <tr>
+      <td class="k">이번 주 학습 제안</td>
+      <td class="n"><b>⑤</b></td>
+      <td>미접속 · 에러율 · 두 주 델타</td>
+      <td>조건에 걸린 것만, <b>최대 3개</b></td>
+    </tr>
+
+    <tr class="grp"><td colspan="4">하단</td></tr>
+    <tr>
+      <td class="k">학습 기록 반영</td>
+      <td class="n">②</td>
+      <td><code>data_freshness</code></td>
+      <td><code>2026. 09. 07. 04:00</code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>서술 넷 중 셋이 <code>⑤</code> 입니다.</b> 원천이 문장을 주는 항목은
+    「보완하면 좋은 점」 하나뿐이고, 나머지는 지표에서 화면이 만듭니다.
+    <b>근거 없는 격려 문구는 만들지 않는 것이 원칙</b>이라 조건에 걸리는 지표가 없으면 절이 비고,
+    왜 비었는지를 대신 적습니다.</p>
+</div>
+
+<h3>주차 번호는 BE 가 환산합니다</h3>
+
+<p>
+  원천은 <code>2026-W36</code> 같은 ISO 주차만 줍니다. 화면이 쓰는 <code>11주차</code> 는
+  <b>LMS-BE 가 기수 시작일과 견줘 바꿔 준 값</b>입니다. FE 는 받은 번호를 그대로 씁니다.
+</p>
