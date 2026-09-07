@@ -1,110 +1,141 @@
-<h2>등급 기준 — LMS 가 정해야 합니다</h2>
+<h2>등급 기준 — LMS 가 정합니다</h2>
 
 <p>
-  화면은 <b>입문 · 초급 · 중급 · 해결사</b> 를 눈금에 올려 보여줍니다. 지금은 그 값이 원천에서 오지만,
-  <b>판정은 LMS 가 자체적으로 하는 방향</b>입니다. 그러려면 기준을 우리가 정해야 합니다.
+  판정을 LMS 가 자체적으로 하는 방향입니다. 기준을 우리가 쥐고 있어야
+  <b>왜 그 등급인지 학생에게 설명</b>할 수 있습니다.
 </p>
 
-<h3>지금 원천 등급을 그대로 못 쓰는 이유</h3>
+<h3>관측치 넷을 축에 대보면</h3>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>이유</th><th>내용</th></tr></thead>
+  <thead><tr><th>주차</th><th>에러율</th><th>힌트/일</th><th>재시도(분)</th><th>활동일</th><th>판정</th></tr></thead>
   <tbody>
-    <tr>
-      <td class="k">기준을 모른다</td>
-      <td>원천이 주는 것은 등급과 서술형 근거뿐이다. "어떤 조건이면 어느 등급"이라는 규칙은 명세 어디에도 없어,
-        학생에게 왜 그 등급인지 설명할 수 없다</td>
-    </tr>
-    <tr>
-      <td class="k">같은 주차가 다시 판정되면 바뀐다</td>
-      <td>재분석 시 <b>초급 ↔ 해결사</b> 로 흔들린 적이 있다. 고정 계산식이 아니라 LLM 판단이라 그렇다.
-        화면이 확신도를 등급 옆에 붙여 두는 것도 그 때문이다</td>
-    </tr>
-    <tr>
-      <td class="k">근거가 단계를 인용한다</td>
-      <td><b>"10단계를 완주하여 해결사의 진도 기준을 충족"</b> 같은 문장이다.
-        단계 정의가 확정되지 않아 화면에서 진행 단계를 뺐는데, 근거에는 그대로 남아 있다</td>
-    </tr>
+    <tr><td class="k">샘플 1주</td><td class="n">0.48</td><td class="n">14.0</td><td class="n">1.2</td><td class="n">3</td><td>입문</td></tr>
+    <tr><td class="k">샘플 2주</td><td class="n">0.36</td><td class="n">17.6</td><td class="n">0.9</td><td class="n">5</td><td>초급</td></tr>
+    <tr><td class="k">샘플 3주</td><td class="n">0.25</td><td class="n">16.0</td><td class="n">0.6</td><td class="n">6</td><td>중급</td></tr>
+    <tr><td class="k">황수빈 W36</td><td class="n">0.10</td><td class="n">47.0</td><td class="n">0.2</td><td class="n">7</td><td>해결사</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <p><b>힌트는 등급과 관계가 없습니다.</b> 해결사가 제일 많이 씁니다(47회/일). 어려운 것을 하고 있다는 뜻으로 읽힙니다.</p>
+  <p><b>재시도 간격은 짧을수록 높은 등급입니다.</b> <code>1.2 → 0.2분</code>. "원인 없이 다시 돌린다"가 아니라
+    <b>익숙해서 빠르다</b>는 신호였습니다.</p>
+</div>
+
+<p>등급과 같이 움직인 것은 <b>에러율</b>과 <b>활동일</b> 둘뿐입니다.</p>
+
+<h3>강한 신호는 에러의 종류였습니다</h3>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>주차</th><th>주요 에러 top3</th><th>영역</th></tr></thead>
+  <tbody>
+    <tr><td class="k">1주 · 입문</td><td><code>IndentationError</code> <code>TypeError</code> <code>NameError</code></td><td>문법 · 타입 · 스코프</td></tr>
+    <tr><td class="k">2주 · 초급</td><td><code>ValueError</code> <code>TypeError</code> <code>KeyError</code></td><td>값 · 자료구조</td></tr>
+    <tr><td class="k">3주 · 중급</td><td><code>IntegrityError</code> <code>TimeoutError</code> <code>ConnectionError</code></td><td>DB · 비동기 · 네트워크</td></tr>
+    <tr><td class="k">W36 · 해결사</td><td><code>TimeoutError</code> <code>ConnectionError</code> <code>IntegrityError</code></td><td>같음</td></tr>
   </tbody>
 </table>
 </div>
 
 <p>
-  <b>LMS 가 정하면 셋이 한 번에 풀립니다.</b> 기준을 우리가 쥐고 있으니 설명할 수 있고,
-  계산식이라 같은 값이면 같은 등급이 나오며, 단계에 기대지 않는 축으로 짤 수 있습니다.
+  <b>에러의 양이 아니라 질이 등급을 말합니다.</b> 원천의 판정 근거도 같은 것을 인용합니다 —
+  <i>"주요 에러 유형이 고급 백엔드 및 아키텍처 수준의 예외들에 집중되어 있어 해결사 역량을 보인다."</i>
 </p>
 
-<h2>기준을 정하는 방법</h2>
+<h2>2축 기준안</h2>
 
-<h3>축은 넷이 남았습니다</h3>
+<pre>가로 — 무엇을 다루는가     주요 에러의 영역
+세로 — 얼마나 잘 다루는가   실행당 에러율
 
-<p>
-  단계에 기대는 지표를 모두 뺐으므로 <b>진도로 수준을 말할 수단이 없습니다.</b>
-  남은 지표로 축을 잡으면 진도 대신 <b>어떻게 푸는가</b>가 기준이 됩니다.
-</p>
+               문법·스코프   값·자료구조   데이터·DB   시스템·비동기
+  0.4 이상        입문         입문         초급         초급
+  0.2 ~ 0.4       입문         초급         중급         중급
+  0.2 미만        초급         중급         중급         해결사</pre>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>축 (초안)</th><th>지표</th><th>읽는 방향</th><th>관측 범위</th></tr></thead>
+  <thead><tr><th>관측</th><th>영역</th><th>에러율</th><th>격자</th><th>원천 판정</th></tr></thead>
   <tbody>
-    <tr><td class="k">정확도</td><td>실행당 에러</td><td>낮을수록 한 번에 맞게 씀</td><td class="n">0.10 ~ 0.48</td></tr>
-    <tr><td class="k">자립도</td><td>활동일당 힌트</td><td>낮을수록 스스로 해결</td><td class="n">4.5 ~ 50.9</td></tr>
-    <tr><td class="k">사고 깊이</td><td>재시도 간격(분)</td><td>너무 짧으면 원인 없이 재시도</td><td class="n">0.2 ~ 1.2</td></tr>
-    <tr><td class="k">지속성</td><td>활동일 · 최근 미접속</td><td>꾸준함</td><td class="n">3 ~ 7일</td></tr>
+    <tr><td class="k">1주</td><td>문법·스코프</td><td class="n">0.48</td><td>입문</td><td>입문</td></tr>
+    <tr><td class="k">2주</td><td>값·자료구조</td><td class="n">0.36</td><td>초급</td><td>초급</td></tr>
+    <tr><td class="k">3주</td><td>시스템·비동기</td><td class="n">0.25</td><td>중급</td><td>중급</td></tr>
+    <tr><td class="k">W36</td><td>시스템·비동기</td><td class="n">0.10</td><td>해결사</td><td>해결사</td></tr>
   </tbody>
 </table>
 </div>
 
 <p>
-  <b>관측 범위는 학생 두 명분입니다.</b> 구간을 나눌 근거로는 턱없이 부족합니다.
-  이 값으로 경계를 잡으면 다른 기수에서 그대로 무너집니다 — 서술 파생에서 이미 겪었습니다.
+  <b>넷이 다 맞습니다.</b> 3주차와 W36 은 같은 열인데 등급이 갈립니다.
+  <b>에러율 0.25 대 0.10</b> 이 그 차이입니다. 두 축이 있어야 넷이 모두 설명됩니다.
 </p>
 
-<h3>이미 하나는 화면에 나와 있습니다</h3>
+<h3>입문의 정의</h3>
+
+<div class="note">
+  <p>주요 에러가 <b>문법 · 타입 · 스코프 영역</b>에 몰려 있고, 실행당 에러가 <b>0.2 이상</b>.
+    영역이 값·자료구조까지 올라와도 에러율이 <b>0.4 이상</b>이면 아직 입문입니다.</p>
+</div>
+
+<p>
+  언어 문법을 아직 손에 익히는 단계입니다. <code>IndentationError</code> 는 들여쓰기,
+  <code>NameError</code> 는 오타나 스코프, <code>TypeError</code> 는 타입을 아직 의식하지 않는 상태입니다.
+  <b>무엇을 만드느냐보다 어떻게 쓰느냐가 먼저인 구간</b>입니다.
+</p>
+
+<h3>영역 분류는 이미 있습니다</h3>
+
+<p>
+  화면의 <b>주요 에러 top3</b> 가 이미 예외를 영역으로 나눕니다.
+  그 영역을 <b>네 열로 묶기만</b> 하면 됩니다.
+</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>격자 열</th><th>화면의 영역</th><th>예외</th></tr></thead>
+  <tbody>
+    <tr><td class="k">문법·스코프</td><td>문법 · 타입 · 스코프</td><td><code>SyntaxError</code> <code>IndentationError</code> <code>NameError</code> <code>TypeError</code></td></tr>
+    <tr><td class="k">값·자료구조</td><td>값 · 자료구조</td><td><code>ValueError</code> <code>KeyError</code> <code>IndexError</code> <code>AttributeError</code></td></tr>
+    <tr><td class="k">데이터·DB</td><td>데이터검증 · 데이터베이스</td><td><code>ValidationError</code> <code>IntegrityError</code></td></tr>
+    <tr><td class="k">시스템·비동기</td><td>네트워크 · 비동기 · 메모리</td><td><code>ConnectionError</code> <code>TimeoutError</code> <code>MemoryError</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+  <b>새로 만들 사전이 없습니다.</b> 열의 값은 top3 중 <b>가장 오른쪽 영역</b>으로 잡습니다 —
+  그 주에 손댄 가장 어려운 것이 기준입니다.
+</p>
 
 <figure>
-  <img src="../../../assets/gov-ai/2026-09-07/03-trend.png" alt="실행당 에러 추세 절 — 0.5 기준선과 주차별 막대">
+  <img src="../../../assets/gov-ai/2026-09-07/04-errors.png" alt="주요 에러 top3 절 — 예외별 영역 표기">
   <figcaption>
-    <b>실행당 에러 축은 경계가 이미 그려져 있습니다.</b> 점선 <code>0.5</code> 가 그것인데,
-    이 값은 원천의 판정 근거 서술에서 인용한 것입니다 — 우리가 정한 기준이 아닙니다.
-    LMS 자체 판정으로 가면 <b>이 값도 다시 볼 항목</b>입니다.
+    <code>데이터베이스</code> · <code>비동기</code> · <code>네트워크</code> 가 가로축 값이다.
+    이 주차는 <b>시스템·비동기</b> 구간에 있다.
   </figcaption>
 </figure>
 
-<p>
-  네 축 중 <b>정확도 하나는 이미 눈금과 경계가 있습니다.</b> 나머지 셋(자립도 · 사고 깊이 · 지속성)에
-  같은 형태를 채우면 판정 근거가 완성됩니다. 새로 만드는 것이 아니라 <b>있는 것을 넓히는 일</b>입니다.
-</p>
+<h3>에러율 경계도 하나는 있습니다</h3>
 
-<h3>절대 기준이냐 상대 기준이냐</h3>
-
-<div class="tbl">
-<table>
-  <thead><tr><th></th><th>절대 기준</th><th>기수 내 상대 위치</th></tr></thead>
-  <tbody>
-    <tr><td class="k">방식</td><td>"에러율 0.3 미만이면 중급" 처럼 고정 경계</td><td>같은 기수 안에서 상위 몇 % 인지</td></tr>
-    <tr><td class="k">장점</td><td>학생이 목표를 알 수 있다</td><td>대역이 달라도 무너지지 않는다</td></tr>
-    <tr><td class="k">약점</td><td><b>대역이 다른 기수에서 무너진다</b></td><td>같은 수치가 기수마다 다른 등급이 된다</td></tr>
-    <tr><td class="k">필요한 것</td><td>분포 데이터 또는 교육 기준</td><td>기수 전원의 그 주차 값</td></tr>
-  </tbody>
-</table>
-</div>
-
-<h3>단계적으로 가는 안</h3>
-
-<pre>1단계  잠정 구간을 정해 LMS 가 판정한다
-       └ 근거가 약한 구간이므로 화면에 "잠정 기준" 이라고 밝힌다
-
-2단계  원천 등급과 대조한다
-       └ 크게 어긋나면 축이나 구간을 손본다. 참고값으로만 쓴다
-
-3단계  기수 하나가 끝나면 실제 분포로 다시 잡는다
-       └ 그때 절대 · 상대 중 어느 쪽인지도 결정된다</pre>
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/03-trend.png" alt="실행당 에러 추세 절 — 0.5 기준선">
+  <figcaption>
+    점선 <code>0.5</code> 는 원천 서술에서 인용한 값이다.
+    <b>우리가 정한 기준이 아니므로 LMS 판정으로 가면 다시 볼 항목</b>이다.
+  </figcaption>
+</figure>
 
 <div class="note">
-  <p><b>원천 기준표는 받아 두면 좋지만 기다릴 필요는 없습니다.</b>
-    LMS 가 자체 판정하기로 하면 그 표는 우리 기준을 검증할 참고값이지 전제 조건이 아닙니다.</p>
-  <p>다만 <b>등급을 우리가 매기는 순간 원천의 등급과 두 값이 공존</b>합니다.
-    화면에 무엇을 보여줄지, 원천 값을 어디까지 남길지 먼저 정해야 합니다.</p>
+  <p><b>관측 넷만으로는 가로축 하나로도 설명됩니다.</b> 열이 오른쪽으로 갈수록 등급이 올라가니까요.
+    그래도 세로축을 두는 이유는, <b>같은 영역을 다루면서 에러가 잦은 경우</b>를 열만으로는
+    해결사로 올려 보내기 때문입니다. 3주차와 W36 이 그 경우입니다.</p>
+</div>
+
+<div class="note">
+  <p><b>남은 것은 세로축 경계 둘입니다.</b> 위 격자는 <code>0.4</code> · <code>0.2</code> 로 잡았지만
+    관측치가 학생 두 명분이라 근거가 약합니다. <b>기수 하나가 끝나면 분포로 다시 잡습니다.</b></p>
+  <p>그때까지는 화면에 <b>잠정 기준</b>이라고 밝힙니다.</p>
 </div>

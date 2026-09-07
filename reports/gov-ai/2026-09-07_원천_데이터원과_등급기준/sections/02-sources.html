@@ -1,152 +1,116 @@
-<h2>playlang 과 atmux</h2>
-
-<p>
-  둘은 성격이 다릅니다. <b>playlang 은 코드를 어떻게 썼는지</b>를, <b>atmux 는 실습 환경을 얼마나 썼는지</b>를 봅니다.
-  진단 리포트가 쓰는 것은 앞쪽 하나뿐입니다.
-</p>
-
-<pre>playlang   코드 실행 · 에러 · 힌트 · 진도 단계     →  진단 리포트 지표 전부
-atmux      실습 시간 · CPU 사용률 · 텔레메트리      →  리포트에 한 칸도 없음</pre>
-
-<h3>playlang — 리포트 지표의 원천</h3>
-
-<p>
-  <code>GET /api/v1/metrics/playlang/history/{uuid}?days=30</code> · 코스/언어별 진도 이력.
-  학생이 실습 플랫폼에서 <b>무엇을 실행하고 어디서 막혔는지</b>가 여기 있습니다.
-</p>
+<h2>데이터가 어디서 오나</h2>
 
 <div class="tbl">
 <table>
-  <thead><tr><th>필드</th><th>무엇</th><th>리포트에서</th></tr></thead>
+  <thead><tr><th>수집기</th><th>주는 것</th><th>리포트에서</th></tr></thead>
   <tbody>
-    <tr><td class="k"><code>runs_count</code></td><td>코드 실행 횟수</td><td>실행당 에러의 분모 · 지난주와 비교</td></tr>
-    <tr><td class="k"><code>errors_count</code></td><td>에러가 난 실행 횟수</td><td>실행당 에러의 분자</td></tr>
-    <tr><td class="k"><code>error_rate_pct</code></td><td>에러 비율</td><td>실행당 에러 · 추세 그래프</td></tr>
-    <tr><td class="k"><code>hints_count</code></td><td>힌트를 연 횟수</td><td>힌트 요청 · 에러당 힌트 · 문제를 푸는 방식</td></tr>
-    <tr><td class="k"><code>current_step</code></td><td>지금 진행 중인 단계</td><td><b>미사용</b> — 단계 정의 미확정</td></tr>
-    <tr><td class="k"><code>course</code> · <code>language</code></td><td>과정 · 언어(예: python)</td><td>미사용</td></tr>
-    <tr><td class="k"><code>total_events</code></td><td>전체 이벤트 수</td><td>미사용</td></tr>
-  </tbody>
-</table>
-</div>
-
-<p>
-  주간 리포트가 쓰는 <code>avg_retry_gap_min</code> · <code>top_error_types</code> · <code>active_days_count</code> 는
-  이 목록에 없습니다. <b>주간 집계 과정에서 만들어지는 값</b>으로 보입니다 — 원천 이벤트를 주 단위로 묶으면서
-  에러 뒤 다음 실행까지의 간격, 예외 종류별 빈도, 활동한 날 수가 계산됩니다.
-</p>
-
-<h3>atmux — 리포트가 쓰지 않는 것</h3>
-
-<p>
-  <code>GET /api/v1/metrics/atmux/daily/{uuid}?days=30</code> · 일자별 실습 통계.
-  <b>실습 환경을 얼마나 오래 켜 두었는지</b>를 봅니다.
-</p>
-
-<div class="tbl">
-<table>
-  <thead><tr><th>필드</th><th>무엇</th><th>리포트에서</th></tr></thead>
-  <tbody>
-    <tr><td class="k"><code>total_duration_sec</code> · <code>_hours</code></td><td>누적 사용 시간</td><td>미사용</td></tr>
-    <tr><td class="k"><code>weekly_daily_avg_hours</code></td><td>주간 일평균 사용 시간</td><td>미사용</td></tr>
-    <tr><td class="k"><code>avg_cpu_util</code></td><td>평균 CPU 사용률</td><td>미사용</td></tr>
-    <tr><td class="k"><code>telemetry_count</code></td><td>텔레메트리 수집 건수</td><td>미사용</td></tr>
+    <tr>
+      <td class="k">playlang</td>
+      <td>코드 실행 · 에러 · 힌트 카운트</td>
+      <td><b>지표 전부</b></td>
+    </tr>
+    <tr>
+      <td class="k">atmux</td>
+      <td>실습 시간 · CPU 사용률</td>
+      <td><b>한 칸도 쓰지 않음</b></td>
+    </tr>
+    <tr>
+      <td class="k">LMS</td>
+      <td>기수 시작일 · 계정</td>
+      <td>주차 번호 환산 · 학생 식별</td>
+    </tr>
   </tbody>
 </table>
 </div>
 
 <div class="note">
-  <p><b>atmux 는 한 칸도 쓰이지 않습니다.</b> 진단 리포트의 여섯 지표 어디에도 시간·CPU 가 없습니다.</p>
-  <p>쓰지 않는 것이 맞다고 봅니다. <b>오래 켜 두는 것과 잘 푸는 것은 다릅니다.</b>
-    환경을 열어 두고 다른 일을 해도 시간은 쌓이고, 짧게 집중해 끝내면 시간은 줄어듭니다.
-    학습 수준의 근거로 쓰기에는 신호가 약합니다.</p>
+  <p><b>atmux 는 쓰지 않는 것이 맞습니다.</b> 오래 켜 두는 것과 잘 푸는 것은 다릅니다.
+    환경을 열어 두고 다른 일을 해도 시간은 쌓입니다.</p>
+  <p><b>LMS 는 지표를 주지 않습니다.</b> 원천이 ISO 주차만 주므로 기수 주차로 바꾸는 데만 쓰입니다.
+    출결·과제·퀴즈는 LMS 에 있지만 리포트에 넣지 않았습니다.</p>
 </div>
 
-<h3>리포트 항목별로 — 어떤 데이터가 들어가나</h3>
+<h2>항목별로 어떤 데이터가 들어가나</h2>
 
-<p>
-  <code>playlang</code> 이 주는 것은 <b>카운트뿐</b>입니다. "며칠 접속 안 했다" · "재시도가 짧아졌다" 같은 값은
-  주간 집계에서 만들어지고, 문장은 화면이 만듭니다.
-</p>
+<p><code>playlang</code> 이 주는 것은 <b>카운트뿐</b>입니다. 나머지는 주간 집계와 화면 계산에서 나옵니다.</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>리포트 항목</th><th>playlang</th><th>비고</th></tr></thead>
+  <tbody>
+    <tr class="grp"><td colspan="3">1 이번 주 학습 기록</td></tr>
+    <tr><td class="k">활동일</td><td>이벤트가 있는 날</td><td>주간 집계</td></tr>
+    <tr><td class="k">최근 미접속</td><td>마지막 이벤트 시각</td><td>주간 집계</td></tr>
+    <tr><td class="k">실행당 에러</td><td><code>errors_count</code> ÷ <code>runs_count</code></td><td>원천 값</td></tr>
+    <tr><td class="k">힌트 요청</td><td><code>hints_count</code></td><td>원천 값</td></tr>
+    <tr><td class="k">에러 후 재시도 간격</td><td>이벤트 간격</td><td>주간 집계</td></tr>
+    <tr><td class="k">에러당 힌트</td><td><code>hints_count</code> ÷ <code>errors_count</code></td><td><b>화면이 계산</b></td></tr>
+
+    <tr class="grp"><td colspan="3">2~4 변화와 근거</td></tr>
+    <tr><td class="k">지난주와 비교</td><td>두 주의 실행 · 힌트 · 활동일</td><td>화면이 델타 계산</td></tr>
+    <tr><td class="k">실행당 에러 추세</td><td>주차별 <code>error_rate_pct</code></td><td>원천 값</td></tr>
+    <tr><td class="k">주요 에러 top3</td><td>예외 이름 · 횟수</td><td>영역·설명은 화면이 붙임</td></tr>
+
+    <tr class="grp"><td colspan="3">5~8 해석과 제안</td></tr>
+    <tr><td class="k">문제를 푸는 방식</td><td>두 주의 힌트 × 재시도 간격</td><td><b>화면이 문장 생성</b></td></tr>
+    <tr><td class="k">잘하고 있는 점</td><td>두 주의 에러율 · 힌트 · 활동일</td><td><b>화면이 문장 생성</b></td></tr>
+    <tr><td class="k">보완하면 좋은 점</td><td>—</td><td><b>원천 서술 그대로</b></td></tr>
+    <tr><td class="k">이번 주 학습 제안</td><td>아래 표</td><td><b>화면이 문장 생성</b></td></tr>
+
+    <tr class="grp"><td colspan="3">요약</td></tr>
+    <tr><td class="k">등급 · 확신도</td><td>위 지표를 판정에 넣음</td><td>원천 값</td></tr>
+  </tbody>
+</table>
+</div>
 
 <figure>
   <img src="../../../assets/gov-ai/2026-09-07/01-metrics.png" alt="이번 주 학습 기록 절 — 지표 여섯 칸">
   <figcaption>
-    <b>지표 여섯 칸.</b> <code>152회/610회</code> 가 <code>errors_count</code> 와 <code>runs_count</code> 이고,
-    <code>96회</code> 가 <code>hints_count</code> 다. <b>에러당 힌트 0.63 은 화면이 나눈 값</b>으로 원천에 없다.
+    <b>여섯 칸 전부 playlang.</b>
+    활동일 <code>6일</code> · 최근 미접속 <code>0일</code> 은 집계,
+    <code>152회/610회</code> 는 <code>errors_count</code>·<code>runs_count</code>,
+    <code>96회</code> 는 <code>hints_count</code>,
+    <code>0.6분</code> 은 이벤트 간격.
+    <b>에러당 힌트 0.63 만 화면이 나눈 값</b>이다.
   </figcaption>
 </figure>
 
+<figure>
+  <img src="../../../assets/gov-ai/2026-09-07/04-errors.png" alt="주요 에러 top3 절">
+  <figcaption>
+    <b>playlang 은 예외 이름과 횟수만</b> 준다 — <code>IntegrityError 38회</code> 처럼.
+    영역 표기(<b>데이터베이스 · 비동기 · 네트워크</b>)와 한 줄 설명, 커버리지 <code>59%</code> 는 화면이 붙인다.
+  </figcaption>
+</figure>
+
+<h2>이번 주 학습 제안 — 문장마다</h2>
+
+<p>원천이 문장을 주지 않습니다. <b>지표가 조건에 걸릴 때만</b> 그 지표로 문장을 만듭니다.</p>
+
 <div class="tbl">
 <table>
-  <thead><tr><th>리포트 항목</th><th>쓰는 지표</th><th>playlang 원천</th></tr></thead>
+  <thead><tr><th>나오는 문장</th><th>playlang</th></tr></thead>
   <tbody>
-    <tr class="grp"><td colspan="3">요약</td></tr>
-    <tr><td class="k">등급 · 확신도</td><td>—</td><td>아래 지표를 판정에 넣는다</td></tr>
-    <tr><td class="k">등급 변화</td><td>두 주의 등급</td><td>—</td></tr>
-
-    <tr class="grp"><td colspan="3">1 이번 주 학습 기록 — 지표 여섯 칸</td></tr>
-    <tr><td class="k">활동일</td><td>활동일</td><td>이벤트가 있는 날 수 (집계)</td></tr>
-    <tr><td class="k">최근 미접속</td><td>최근 미접속</td><td>마지막 이벤트 시각 (집계)</td></tr>
-    <tr><td class="k">실행당 에러</td><td>실행당 에러</td><td><code>errors_count</code> ÷ <code>runs_count</code></td></tr>
-    <tr><td class="k">힌트 요청</td><td>힌트 요청</td><td><code>hints_count</code></td></tr>
-    <tr><td class="k">에러 후 재시도 간격</td><td>재시도 간격</td><td>이벤트 간격 집계</td></tr>
-    <tr><td class="k">에러당 힌트</td><td>힌트 ÷ 에러</td><td><code>hints_count</code> · <code>errors_count</code></td></tr>
-
-    <tr class="grp"><td colspan="3">2~4 변화와 근거</td></tr>
-    <tr><td class="k">지난주와 비교</td><td>활동일 · 코드 실행 · 활동일당 힌트</td><td><code>runs_count</code> · <code>hints_count</code></td></tr>
-    <tr><td class="k">실행당 에러 추세</td><td>주차별 실행당 에러</td><td><code>error_rate_pct</code></td></tr>
-    <tr><td class="k">주요 에러 top3</td><td>예외 이름 · 횟수</td><td>예외별 빈도 집계</td></tr>
-
-    <tr class="grp"><td colspan="3">5~8 해석과 제안 — 전부 화면이 문장을 만든다</td></tr>
-    <tr><td class="k">문제를 푸는 방식</td><td>활동일당 힌트 × 재시도 간격 (두 주)</td><td><code>hints_count</code> · 이벤트 간격</td></tr>
-    <tr><td class="k">잘하고 있는 점</td><td>실행당 에러 · 활동일당 힌트 · 활동일</td><td>세 카운트 전부</td></tr>
-    <tr><td class="k">보완하면 좋은 점</td><td>—</td><td><b>원천 서술 그대로</b>. 지표를 쓰지 않는다</td></tr>
-    <tr><td class="k">이번 주 학습 제안</td><td>아래 표 참조</td><td>—</td></tr>
+    <tr><td class="k">N일간 접속이 없었어요</td><td>마지막 이벤트 시각</td></tr>
+    <tr><td class="k">실행 N회 중 M%에서 에러가 났어요</td><td><code>errors_count</code> · <code>runs_count</code></td></tr>
+    <tr><td class="k">실행당 에러가 X→Y로 늘었어요</td><td>두 주의 <code>error_rate_pct</code></td></tr>
+    <tr><td class="k">힌트를 하루 X→Y회로 더 열었어요</td><td>두 주의 <code>hints_count</code></td></tr>
+    <tr><td class="k">다시 실행하기까지가 X→Y분으로 짧아졌어요</td><td>두 주의 이벤트 간격</td></tr>
+    <tr><td class="k">학습한 날이 X→Y일로 줄었어요</td><td>두 주의 활동일</td></tr>
+    <tr><td class="k">지금 방식을 이어가 보세요</td><td>어느 것도 안 걸림</td></tr>
   </tbody>
 </table>
 </div>
 
 <figure>
-  <img src="../../../assets/gov-ai/2026-09-07/04-errors.png" alt="주요 에러 top3 절 — 예외 세 종과 발생 횟수">
+  <img src="../../../assets/gov-ai/2026-09-07/08-tips.png" alt="이번 주 학습 제안 절">
   <figcaption>
-    <b>예외별 집계.</b> 원천은 예외 이름과 횟수만 준다.
-    영역 표기(<b>데이터베이스 · 비동기 · 네트워크</b>)와 한 줄 설명은 화면이 붙인 것이고,
-    맨 아래 커버리지 문장(<b>59% · 나머지 41% 는 확인할 수 없어요</b>)도 화면이 계산한다.
+    <b>재시도 간격 하나가 문장이 된 것.</b> <code>0.9분 → 0.6분</code> 만 조건에 걸려 제안이 한 줄이다.
+    두 주의 이벤트 간격을 견줘 화면이 만든다.
   </figcaption>
 </figure>
 
-<h3>이번 주 학습 제안 — 문장마다 어떤 데이터</h3>
-
 <p>
-  제안은 원천이 문장을 주지 않습니다. <b>지표가 조건에 걸릴 때만</b> 그 지표로 문장을 만듭니다.
-</p>
-
-<figure>
-  <img src="../../../assets/gov-ai/2026-09-07/08-tips.png" alt="이번 주 학습 제안 절 — 재시도 간격 단축을 짚는 한 문장">
-  <figcaption>
-    <b>카운트가 문장이 되는 지점.</b> 이 주차는 재시도 간격이 <code>0.9분 → 0.6분</code> 으로 짧아진 것 하나만
-    조건에 걸려 제안이 한 줄이다. 나머지 지표가 전부 기준 안쪽이면 <b>제안 자리가 비고</b>,
-    그때는 지금 방식을 이어가라는 한 줄만 남는다.
-  </figcaption>
-</figure>
-
-<div class="tbl">
-<table>
-  <thead><tr><th>나오는 문장</th><th>쓰는 지표</th><th>playlang 원천</th></tr></thead>
-  <tbody>
-    <tr><td class="k">N일간 접속이 없었어요</td><td>최근 미접속</td><td>마지막 이벤트 시각</td></tr>
-    <tr><td class="k">실행 N회 중 M%에서 에러가 났어요</td><td>실행당 에러 · 총 실행</td><td><code>errors_count</code> · <code>runs_count</code></td></tr>
-    <tr><td class="k">실행당 에러가 X→Y로 늘었어요</td><td>실행당 에러 (두 주)</td><td><code>error_rate_pct</code></td></tr>
-    <tr><td class="k">힌트를 하루 X→Y회로 더 열었어요</td><td>활동일당 힌트 (두 주)</td><td><code>hints_count</code> ÷ 활동일</td></tr>
-    <tr><td class="k">다시 실행하기까지가 X→Y분으로 짧아졌어요</td><td>재시도 간격 (두 주)</td><td>이벤트 간격 집계</td></tr>
-    <tr><td class="k">학습한 날이 X→Y일로 줄었어요</td><td>활동일 (두 주)</td><td>이벤트가 있는 날 수</td></tr>
-    <tr><td class="k">지금 방식을 이어가 보세요</td><td>위 어느 것도 안 걸림</td><td>—</td></tr>
-  </tbody>
-</table>
-</div>
-
-<p>
-  <b>진단 리포트는 사실상 playlang 하나로 만들어집니다.</b> 그래서 실습 플랫폼에 활동이 없는 주차는
-  리포트가 통째로 비고, 그 사실이 화면에 "기록이 수집되지 않았어요"로 나타납니다.
+  <b>진단 리포트는 사실상 playlang 하나로 만들어집니다.</b> 실습 플랫폼에 활동이 없는 주차는
+  리포트가 통째로 비고, 화면에 "기록이 수집되지 않았어요"로 나타납니다.
 </p>
