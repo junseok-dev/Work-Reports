@@ -19,6 +19,10 @@ LMS 프로젝트 작업 결과를 팀원에게 공유하기 위한 공개 HTML �
   - [4단계 mock 데이터 구성안](https://work-report-277d7.web.app/reports/gov-ai/2026-09-03_mock_데이터_구성안/)
   - [5단계 주간 진단 리포트 항목별 데이터](https://work-report-277d7.web.app/reports/gov-ai/2026-09-03_주간진단리포트_항목별_데이터/)
 
+### 추가 보고서 (배포 대기)
+
+- GOV-AI: [주간 진단 리포트 항목 정의](reports/gov-ai/2026-09-07_주간진단리포트_항목정의/) — 항목의 의미, 원천·계산 기준, 공통 규칙과 연동 현황
+
 
 > 최초 배포 전에는 GitHub 저장소의 `Settings → Pages → Build and deployment → Source`를 `GitHub Actions`로 선택해야 합니다.
 

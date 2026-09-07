@@ -1,0 +1,40 @@
+<h2>연동 현황</h2>
+
+<pre>GOV-AI 데이터레이크        LMS-BE                     수강생 화면
+──────────────────────    ──────────────────────    ──────────────────────
+주차 마감 후 리포트 생성  →  주 1회 스냅샷 적재      →  저장분을 한 번에 조회
+   (자동 수집 미연결)       · 기수 주차로 환산         · 임계값 해석과 시각화
+                           · 진행 중 주차 제외        · 서술 3종 생성</pre>
+
+<h3>지금 들어오는 데이터</h3>
+<p>LMS-BE 마이그레이션이 표를 만들고 시연용 데이터를 채웠습니다. <b>GOV-AI 자동 수집은 아직 붙지 않았습니다.</b></p>
+<div class="tbl">
+<table>
+  <thead><tr><th>주차</th><th>ISO</th><th>기간</th><th>등급</th><th>확신도</th></tr></thead>
+  <tbody>
+    <tr><td class="k n">1주차</td><td><code>2026-W33</code></td><td class="n">08-10 ~ 08-16</td><td>입문</td><td class="n">0.70</td></tr>
+    <tr><td class="k n">2주차</td><td><code>2026-W34</code></td><td class="n">08-17 ~ 08-23</td><td>초급</td><td class="n">0.78</td></tr>
+    <tr><td class="k n">3주차</td><td><code>2026-W35</code></td><td class="n">08-24 ~ 08-30</td><td>중급</td><td class="n">0.82</td></tr>
+  </tbody>
+</table>
+</div>
+<p>
+  <code>V63</code> 표 생성 · <code>V64</code> 3주차 시드 · <code>V65</code> 정체 일수 컬럼 제거.
+  수강생 <code>시연용 수강생</code> 한 명분이고 표 전체가 이 3행입니다.
+</p>
+
+<h3>연동 결과</h3>
+<div class="note ok">
+  <p><b>화면이 실제 서버를 부르고 데이터를 받아 그립니다.</b> FE mock 은 제거했고 MSW 가 가로채지 않습니다.</p>
+</div>
+<ul>
+  <li><code>GET /student/course/diagnosis/my-reports</code> — 구현 완료, 실호출 <code>200</code></li>
+  <li>조회는 <code>user_id</code> 하나로만 찾습니다. 기수는 조건에 없습니다</li>
+  <li>미구현 — 주 1회 자동 적재, 주차별 단건 조회, 도착 알림. <b>셋 다 화면 동작에는 영향 없습니다</b></li>
+</ul>
+<div class="note">
+  <p><b>연동하면서 걸린 것.</b> 처음에는 <code>200</code>인데 빈 배열로 왔습니다.
+    시드의 <code>user_id</code>가 원천 응답값이라 실제 로그인 계정과 달랐던 것입니다.</p>
+  <p><b>자동 수집을 붙일 때도 같은 문제가 납니다.</b> 원천의 <code>userId</code>를 그대로 저장하면 계속 0건이므로,
+    양쪽이 같은 값인 <code>student_uuid</code>로 계정을 찾아 매핑해야 합니다.</p>
+</div>

@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>주간 진단 리포트 항목 정의</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#fbfcfb; --ink:#14201f; --ink-2:#3d504d; --muted:#5f7370;
+  --rule:#dde5e3; --rule-soft:#eaf0ee; --panel:#f3f7f5;
+  --calc:#17857f; --calc-bg:#e3f2ef;
+  --src:#a8621a;  --src-bg:#f8eede;
+  --warn:#a3341f;
+  --ok:#1a7a4a;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#101817; --ink:#e6efec; --ink-2:#b3c4c0; --muted:#8ba49f;
+    --rule:#243230; --rule-soft:#1b2624; --panel:#182220;
+    --calc:#4fd0c4; --calc-bg:#12302d;
+    --src:#e0a05c;  --src-bg:#2e2113;
+    --warn:#f0836a;
+    --ok:#5ed392;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101817; --ink:#e6efec; --ink-2:#b3c4c0; --muted:#8ba49f;
+  --rule:#243230; --rule-soft:#1b2624; --panel:#182220;
+  --calc:#4fd0c4; --calc-bg:#12302d;
+  --src:#e0a05c;  --src-bg:#2e2113;
+  --warn:#f0836a;
+  --ok:#5ed392;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;
+  line-height:1.65; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:52rem; margin:0 auto; padding:3.5rem 1.5rem 5rem}
+code{
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-size:.86em;
+  background:var(--rule-soft); padding:.08rem .3rem; border-radius:2px; word-break:break-word;
+}
+
+h1{font-size:clamp(1.75rem,4vw,2.3rem); font-weight:600; line-height:1.2; letter-spacing:-.02em; margin:0 0 .6rem; text-wrap:balance}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:.7rem; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 .8rem}
+.lede{font-size:1rem; color:var(--ink-2); margin:0; max-width:42rem}
+.masthead{border-bottom:2px solid var(--ink); padding-bottom:1.5rem; margin-bottom:2rem}
+
+h2{font-size:1.15rem; font-weight:600; letter-spacing:-.015em; margin:2.75rem 0 .9rem; padding-top:1.4rem; border-top:1px solid var(--rule)}
+h2.first{border-top:0; padding-top:0; margin-top:0}
+h3{font-size:.95rem; font-weight:600; margin:1.6rem 0 .5rem; color:var(--ink)}
+p{margin:0 0 .7rem; color:var(--ink-2); font-size:.92rem; max-width:42rem}
+b{color:var(--ink); font-weight:600}
+
+.status{display:grid; gap:.75rem; grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); margin-bottom:2.25rem}
+.card{border:1px solid var(--rule); border-left-width:3px; border-radius:2px; padding:.85rem 1rem; background:var(--panel)}
+.card.done{border-left-color:var(--ok)}
+.card.data{border-left-color:var(--calc)}
+.card.todo{border-left-color:var(--warn)}
+.card-k{font-family:"IBM Plex Mono",monospace; font-size:.66rem; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:.3rem}
+.card-v{font-size:1rem; font-weight:600; color:var(--ink); display:block; line-height:1.35}
+.card-s{font-size:.8rem; color:var(--muted); display:block; margin-top:.25rem}
+
+.tag{display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:.66rem; font-weight:600; letter-spacing:.05em; padding:.1rem .4rem; border-radius:2px; white-space:nowrap; vertical-align:.05em}
+.tag.src{background:var(--src-bg); color:var(--src)}
+.tag.calc{background:var(--calc-bg); color:var(--calc)}
+.tag.off{background:var(--rule-soft); color:var(--muted)}
+
+.tbl{overflow-x:auto; margin:.8rem 0 1.1rem}
+table{border-collapse:collapse; width:100%; min-width:30rem; font-size:.88rem}
+th,td{text-align:left; padding:.5rem .9rem .5rem 0; border-bottom:1px solid var(--rule-soft); vertical-align:top}
+th{font-family:"IBM Plex Mono",monospace; font-size:.66rem; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--rule); white-space:nowrap}
+td{color:var(--ink-2)}
+td.k{color:var(--ink); font-weight:500; white-space:nowrap}
+td.n{font-variant-numeric:tabular-nums; white-space:nowrap}
+tr.grp td{background:var(--rule-soft); font-family:"IBM Plex Mono",monospace; font-size:.68rem; letter-spacing:.08em; color:var(--muted); font-weight:500}
+
+.note{padding:.75rem 1rem; margin:.9rem 0; font-size:.88rem; background:var(--panel); border-left:3px solid var(--warn); color:var(--ink-2); max-width:42rem}
+.note.ok{border-left-color:var(--ok)}
+.note p{margin:0; font-size:inherit; max-width:none}
+.note p + p{margin-top:.45rem}
+
+pre{font-family:"IBM Plex Mono",monospace; font-size:.78rem; line-height:1.75; color:var(--ink-2); margin:.7rem 0 1rem; padding:.9rem 1.1rem; background:var(--panel); border:1px solid var(--rule); border-radius:2px; overflow-x:auto}
+
+ul{margin:.4rem 0 .9rem; padding-left:1.1rem; color:var(--ink-2); font-size:.92rem; max-width:42rem}
+li{margin:.3rem 0}
+
+footer{margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--rule); font-size:.78rem; color:var(--muted)}
+footer p{margin:.25rem 0; font-size:inherit; color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">LMS · 수강생 대시보드</p>
+  <h1>주간 진단 리포트 항목 정의</h1>
+  <p class="lede">각 항목이 무엇을 말하고, 어떤 데이터에서 오고, 어떤 기준으로 그 결과가 나오는지.</p>
+</header>
+
+<div class="status">
+  <div class="card done">
+    <span class="card-k">API 연동</span>
+    <span class="card-v">완료</span>
+    <span class="card-s">실서버 호출 · 200 확인</span>
+  </div>
+  <div class="card data">
+    <span class="card-k">현재 데이터</span>
+    <span class="card-v">3주차</span>
+    <span class="card-s">BE 마이그레이션 시드</span>
+  </div>
+  <div class="card todo">
+    <span class="card-k">정해야 할 것</span>
+    <span class="card-v">수준 판정 기준</span>
+    <span class="card-s">원천에 기준표 없음</span>
+  </div>
+</div>
+
+<h2 class="first">항목 한눈에</h2>
+
+<p>
+  <span class="tag src">원천</span> 서버가 준 값 그대로 &nbsp;·&nbsp;
+  <span class="tag calc">계산</span> 서버 수치로 화면이 만듦 &nbsp;·&nbsp;
+  <span class="tag off">범위 밖</span> 계약에 없어 미표시
+</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>항목</th><th>데이터</th><th>기준</th></tr></thead>
+  <tbody>
+    <tr class="grp"><td colspan="3">요약 — 이번 주 판정</td></tr>
+    <tr>
+      <td class="k">등급</td>
+      <td><span class="tag src">원천</span> <code>level</code></td>
+      <td>입문 · 초급 · 중급 · 해결사 4단계. <b>GOV-AI 가 LLM 으로 판정</b></td>
+    </tr>
+    <tr>
+      <td class="k">확신도</td>
+      <td><span class="tag src">원천</span> <code>confidence</code></td>
+      <td>0~1 → <code>≥0.85</code> 높음 · <code>≥0.70</code> 중간 · 그 외 낮음</td>
+    </tr>
+    <tr>
+      <td class="k">등급 변화</td>
+      <td><span class="tag src">원천</span> 이번 주 · <b>직전 주차</b>의 <code>level</code></td>
+      <td>두 등급 차이만큼 올랐는지 내렸는지. 전 주차 계단은 그리지 않음</td>
+    </tr>
+
+    <tr class="grp"><td colspan="3">1 이번 주 학습 기록 — 지표 6칸 · 해석 없이 수치만</td></tr>
+    <tr>
+      <td class="k">활동일</td>
+      <td><span class="tag src">원천</span> <code>activeDays</code></td>
+      <td>그 주에 코드를 한 번이라도 실행한 날 수</td>
+    </tr>
+    <tr>
+      <td class="k">최근 미접속</td>
+      <td><span class="tag src">원천</span> <code>daysSinceLastActivity</code></td>
+      <td>마지막 활동 이후 지난 날 수</td>
+    </tr>
+    <tr>
+      <td class="k">실행당 에러</td>
+      <td><span class="tag src">원천</span> <code>errorPerRun</code></td>
+      <td>실행 중 에러가 난 비율. 보조로 <b>에러 횟수 / 총 실행 횟수</b>를 함께 표시</td>
+    </tr>
+    <tr>
+      <td class="k">힌트 요청</td>
+      <td><span class="tag src">원천</span> <code>hintRequestsCount</code></td>
+      <td>그 주에 힌트를 연 총 횟수. 보조로 <b>활동일당 평균</b></td>
+    </tr>
+    <tr>
+      <td class="k">에러 후 재시도 간격</td>
+      <td><span class="tag src">원천</span> <code>avgRetryGapMin</code></td>
+      <td>에러가 난 뒤 다시 실행하기까지 걸린 평균 시간(분)</td>
+    </tr>
+    <tr>
+      <td class="k">에러당 힌트</td>
+      <td><span class="tag calc">계산</span></td>
+      <td>에러 한 번에 힌트를 몇 번 열었는지 — <code>힌트 요청 ÷ 에러 횟수</code></td>
+    </tr>
+
+    <tr class="grp"><td colspan="3">2~4 변화와 근거</td></tr>
+    <tr>
+      <td class="k">2 지난주와 비교</td>
+      <td><span class="tag src">원천</span> 두 주의 <b>활동일 · 코드 실행 횟수 · 활동일당 힌트</b></td>
+      <td>세 값의 증감. 두 주 모두 값이 있을 때만 그리고, 한쪽이 결측이면 그 줄을 뺌</td>
+    </tr>
+    <tr>
+      <td class="k">3 실행당 에러 추세</td>
+      <td><span class="tag src">원천</span> 주차별 <code>errorPerRun</code></td>
+      <td>축 <b>0~1.0 고정</b>, 기준선 <b>0.5</b> — 아래 참조</td>
+    </tr>
+    <tr>
+      <td class="k">4 주요 에러 top3</td>
+      <td><span class="tag src">원천</span> <b>예외 이름과 발생 횟수</b> 상위 3종 <code>topErrorTypes[]</code></td>
+      <td>클래스 경로에서 이름만 잘라 영역·설명을 붙임. 모르는 예외는 이름만</td>
+    </tr>
+
+    <tr class="grp"><td colspan="3">5~8 해석과 제안</td></tr>
+    <tr>
+      <td class="k">5 문제를 푸는 방식</td>
+      <td><span class="tag calc">계산</span> 두 주의 <b>활동일당 힌트</b> × <b>재시도 간격</b></td>
+      <td>힌트에 얼마나 기대는지와 고치기 전에 얼마나 생각하는지를 <b>함께</b> 읽음 — 아래 참조</td>
+    </tr>
+    <tr>
+      <td class="k">6 잘하고 있는 점</td>
+      <td><span class="tag calc">계산</span></td>
+      <td>지난주보다 나아진 것 우선. 없으면 이번 주 상태. 최대 3개</td>
+    </tr>
+    <tr>
+      <td class="k">7 보완하면 좋은 점</td>
+      <td><span class="tag src">원천</span> <code>weakPatterns</code></td>
+      <td><b>가공 없이 원문 그대로</b></td>
+    </tr>
+    <tr>
+      <td class="k">8 이번 주 학습 제안</td>
+      <td><span class="tag calc">계산</span></td>
+      <td>위험 신호 → 지난주 대비 악화 → 없으면 유지 권고. 최대 3개</td>
+    </tr>
+
+    <tr class="grp"><td colspan="3">맨 아래</td></tr>
+    <tr>
+      <td class="k">강사 피드백</td>
+      <td><span class="tag off">범위 밖</span></td>
+      <td>승인 흐름 미확정. 화면 코드는 남아 있어 필드만 오면 살아남</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>더 봐야 하는 것</h2>
+
+<h3>등급 판정 기준이 없습니다</h3>
+<p>
+  원천이 주는 것은 <b>등급과 서술형 근거뿐</b>이고, "어떤 조건이면 어느 등급"이라는 규칙은 명세 어디에도 없습니다.
+  우리가 아는 것은 그 서술에 인용된 조각입니다 — <b>주당 3단계 이상 또는 완주</b>(해결사 진도 요건),
+  <b>실행당 에러 0.5 미만</b>(해결사 에러 요건), 대화 로그의 심화 질문.
+</p>
+<div class="note">
+  <p><b>같은 주차를 다시 분석하면 등급이 바뀐 적이 있습니다</b>(초급 ↔ 해결사). 고정 계산식이 아니라 LLM 판단이라 그렇습니다.</p>
+  <p>화면이 확신도를 등급 옆에 붙여 두는 것도 그 때문입니다. <b>원천에 기준표를 요청해야 합니다.</b></p>
+</div>
+
+<h3>수준을 나타낼 기준을 우리가 정해야 합니다</h3>
+<p>
+  단계에 기대는 지표를 모두 뺐습니다. 단계의 정의가 확정되지 않아 학생이 볼 수 없는 단위를 기준으로 삼을 수
+  없기 때문입니다. 그래서 <b>진도로 수준을 말할 수단이 없어졌습니다.</b> 원천의 판정 근거도 진도 요건에
+  기대고 있어, 그 축이 빠지면 등급이 왜 그렇게 나왔는지 설명할 수 없습니다.
+</p>
+<p>
+  남은 지표로도 수준은 말할 수 있습니다. 진도 대신 <b>어떻게 푸는가</b>를 축으로 삼는 방향입니다.
+  아래는 <b>확정안이 아니라 논의를 시작하기 위한 초안</b>입니다 — 어떤 축을 쓸지, 축마다 어디서 끊을지는
+  <b>추후 논의로 정합니다.</b>
+</p>
+<div class="tbl">
+<table>
+  <thead><tr><th>축 (초안)</th><th>지표</th><th>읽는 방향</th></tr></thead>
+  <tbody>
+    <tr><td class="k">정확도</td><td>실행당 에러 <code>errorPerRun</code></td><td>낮을수록 한 번에 맞게 씀</td></tr>
+    <tr><td class="k">자립도</td><td>활동일당 힌트 <code>hintPerActiveDay</code></td><td>낮을수록 스스로 해결</td></tr>
+    <tr><td class="k">사고 깊이</td><td>재시도 간격 <code>avgRetryGapMin</code></td><td>너무 짧으면 원인 없이 재시도</td></tr>
+    <tr><td class="k">지속성</td><td>활동일 · 최근 미접속</td><td>꾸준함</td></tr>
+  </tbody>
+</table>
+</div>
+<p><b>논의에서 정해야 할 것</b></p>
+<ul>
+  <li><b>절대 기준이냐 상대 기준이냐</b> — 절대는 대역이 다른 기수에서 무너집니다(서술 파생에서 이미 겪었습니다).
+    기수 안 상대 위치로 잡으면 대역과 무관하지만, 같은 수치가 기수마다 다른 등급이 됩니다</li>
+  <li><b>원천 등급과의 관계</b> — 원천 등급을 그대로 쓰되 근거만 우리 축으로 설명할지, 우리가 따로 산정할지</li>
+  <li><b>축과 절단점</b> — 위 네 축을 그대로 쓸지, 가중치를 둘지, 어디서 등급을 나눌지</li>
+</ul>
+<div class="note">
+  <p><b>원천에 기준표를 먼저 요청하는 쪽을 권합니다.</b> 우리 기준을 세워도 원천 등급과 어긋나면
+    어느 쪽을 보여줄지 다시 정해야 하므로, 순서상 그것이 먼저입니다.</p>
+</div>
+
+<h3>실행당 에러 추세의 축은 왜 1.0 고정인가</h3>
+<p>
+  이 지표는 비율이라 정의상 <code>1.0</code>을 넘을 수 없습니다(<code>totalErrors ÷ totalRuns</code>).
+  축을 데이터에 맞춰 늘였다 줄이면 같은 수치가 주차마다 다른 높이로 그려져 추세를 잘못 읽습니다.
+  고정하면 <b>막대 높이가 곧 에러 비율</b>이 되고, 기준선 <code>0.5</code>가 늘 한가운데 옵니다.
+</p>
+
+<h3>문제를 푸는 방식은 왜 변화로 읽는가</h3>
+<p>
+  처음에는 "힌트 하루 20회 이상이면 의존이 높다" 같은 <b>고정 임계값</b>을 썼습니다. 그 값은 학생 한 명의
+  관측 분포에서 잡은 것이라, 다른 대역(하루 14~17회)이 들어오자 어떤 분기도 걸리지 않아
+  <b>세 주가 모두 같은 문장</b>이 됐습니다.
+</p>
+<pre>힌트 ↓ · 재시도 ↑    스스로 원인을 짚는 쪽으로 옮겨가는 중
+힌트 ↓ · 재시도 ↓    익숙한 에러가 늘어 손이 빨라짐
+힌트 ↑ · 재시도 ↓    답은 빨리 찾지만 원인이 남지 않음
+힌트 ↑ · 재시도 ↑    새로운 유형을 만나고 있음
+변화 없음            지난주와 비슷한 방식</pre>
+<p>한쪽만 변한 경우도 따로 서술합니다. <b>변하지 않은 쪽을 변한 것처럼 말하지 않습니다.</b></p>
+
+<h2>모든 항목에 걸리는 규칙</h2>
+
+<h3>수집되지 않은 지표는 0이 아니라 —</h3>
+<p>
+  2026-W35 이전 주차는 원천 스키마 확장 전이라 일부 지표가 아예 없습니다. 서버는 그 자리를 <code>null</code>로 두고
+  <code>missingMetrics</code>로 무엇이 없는지 알려줍니다. <b>활동이 없었던 것과 기록이 없는 것은 다르므로</b>
+  화면은 <code>—</code>로 표시하고, 그 지표에 기대는 서술은 만들지 않습니다.
+</p>
+<div class="tbl">
+<table>
+  <thead><tr><th>missingMetrics 값</th><th>화면에서 —로 바뀌는 칸</th></tr></thead>
+  <tbody>
+    <tr><td class="k"><code>daysSinceLastActivity</code></td><td>최근 미접속</td></tr>
+    <tr><td class="k"><code>hintUsage</code></td><td>힌트 요청 · 에러당 힌트</td></tr>
+    <tr><td class="k"><code>retryGap</code></td><td>에러 후 재시도 간격</td></tr>
+    <tr><td class="k"><code>topErrors</code></td><td>주요 에러 top3 (절 전체가 안내로 바뀜)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>진행 중인 주차는 나오지 않습니다</h3>
+<p>
+  진행 중에는 지표가 계속 늘어나 판정이 확정되지 않으므로 서버가 걸러냅니다.
+  <b>10주차 진행 중이면 1~9주차만</b> 열람할 수 있고, 10주차 리포트는 11주차에 열립니다.
+  기수 1주차 중에는 빈 배열이 오는데 오류가 아닙니다.
+</p>
+
+<h3>과거 주차는 다시 계산되지 않습니다</h3>
+<p>
+  주차가 마감되면 그 시점 스냅샷으로 굳습니다. 화면은 진입할 때 전 주차를 한 번에 받고,
+  주차를 바꿀 때는 받아둔 배열에서 옮겨 다닙니다. <b>주차마다 서버를 다시 부르지 않습니다.</b>
+</p>
+
+<h3>서버와 화면의 경계</h3>
+<p>
+  서버는 <b>정규화된 수치와 원천 서술</b>까지만 내려줍니다. 임계값을 해석해 만든 문장은 화면이 만듭니다.
+  기준이 바뀌면 서버가 아니라 화면을 고칩니다.
+</p>
+
+<h2>연동 현황</h2>
+
+<pre>GOV-AI 데이터레이크        LMS-BE                     수강생 화면
+──────────────────────    ──────────────────────    ──────────────────────
+주차 마감 후 리포트 생성  →  주 1회 스냅샷 적재      →  저장분을 한 번에 조회
+   (자동 수집 미연결)       · 기수 주차로 환산         · 임계값 해석과 시각화
+                           · 진행 중 주차 제외        · 서술 3종 생성</pre>
+
+<h3>지금 들어오는 데이터</h3>
+<p>LMS-BE 마이그레이션이 표를 만들고 시연용 데이터를 채웠습니다. <b>GOV-AI 자동 수집은 아직 붙지 않았습니다.</b></p>
+<div class="tbl">
+<table>
+  <thead><tr><th>주차</th><th>ISO</th><th>기간</th><th>등급</th><th>확신도</th></tr></thead>
+  <tbody>
+    <tr><td class="k n">1주차</td><td><code>2026-W33</code></td><td class="n">08-10 ~ 08-16</td><td>입문</td><td class="n">0.70</td></tr>
+    <tr><td class="k n">2주차</td><td><code>2026-W34</code></td><td class="n">08-17 ~ 08-23</td><td>초급</td><td class="n">0.78</td></tr>
+    <tr><td class="k n">3주차</td><td><code>2026-W35</code></td><td class="n">08-24 ~ 08-30</td><td>중급</td><td class="n">0.82</td></tr>
+  </tbody>
+</table>
+</div>
+<p>
+  <code>V63</code> 표 생성 · <code>V64</code> 3주차 시드 · <code>V65</code> 정체 일수 컬럼 제거.
+  수강생 <code>시연용 수강생</code> 한 명분이고 표 전체가 이 3행입니다.
+</p>
+
+<h3>연동 결과</h3>
+<div class="note ok">
+  <p><b>화면이 실제 서버를 부르고 데이터를 받아 그립니다.</b> FE mock 은 제거했고 MSW 가 가로채지 않습니다.</p>
+</div>
+<ul>
+  <li><code>GET /student/course/diagnosis/my-reports</code> — 구현 완료, 실호출 <code>200</code></li>
+  <li>조회는 <code>user_id</code> 하나로만 찾습니다. 기수는 조건에 없습니다</li>
+  <li>미구현 — 주 1회 자동 적재, 주차별 단건 조회, 도착 알림. <b>셋 다 화면 동작에는 영향 없습니다</b></li>
+</ul>
+<div class="note">
+  <p><b>연동하면서 걸린 것.</b> 처음에는 <code>200</code>인데 빈 배열로 왔습니다.
+    시드의 <code>user_id</code>가 원천 응답값이라 실제 로그인 계정과 달랐던 것입니다.</p>
+  <p><b>자동 수집을 붙일 때도 같은 문제가 납니다.</b> 원천의 <code>userId</code>를 그대로 저장하면 계속 0건이므로,
+    양쪽이 같은 값인 <code>student_uuid</code>로 계정을 찾아 매핑해야 합니다.</p>
+</div>
+
+<footer>
+  <p>수치는 시연용 시드 데이터 기준입니다.</p>
+  <p>AI 가 학습 기록을 분석한 참고용 리포트이며, 실제 지도와 피드백은 강사·매니저가 함께합니다.</p>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<h2 class="first">항목 한눈에</h2>
+
+<p>
+  <span class="tag src">원천</span> 서버가 준 값 그대로 &nbsp;·&nbsp;
+  <span class="tag calc">계산</span> 서버 수치로 화면이 만듦 &nbsp;·&nbsp;
+  <span class="tag off">범위 밖</span> 계약에 없어 미표시
+</p>
+
+<div class="tbl">
+<table>
+  <thead><tr><th>항목</th><th>데이터</th><th>기준</th></tr></thead>
+  <tbody>
+    <tr class="grp"><td colspan="3">요약 — 이번 주 판정</td></tr>
+    <tr>
+      <td class="k">등급</td>
+      <td><span class="tag src">원천</span> <code>level</code></td>
+      <td>입문 · 초급 · 중급 · 해결사 4단계. <b>GOV-AI 가 LLM 으로 판정</b></td>
+    </tr>
+    <tr>
+      <td class="k">확신도</td>
+      <td><span class="tag src">원천</span> <code>confidence</code></td>
+      <td>0~1 → <code>≥0.85</code> 높음 · <code>≥0.70</code> 중간 · 그 외 낮음</td>
+    </tr>
+    <tr>
+      <td class="k">등급 변화</td>
+      <td><span class="tag src">원천</span> 이번 주 · <b>직전 주차</b>의 <code>level</code></td>
+      <td>두 등급 차이만큼 올랐는지 내렸는지. 전 주차 계단은 그리지 않음</td>
+    </tr>
+
+    <tr class="grp"><td colspan="3">1 이번 주 학습 기록 — 지표 6칸 · 해석 없이 수치만</td></tr>
+    <tr>
+      <td class="k">활동일</td>
+      <td><span class="tag src">원천</span> <code>activeDays</code></td>
+      <td>그 주에 코드를 한 번이라도 실행한 날 수</td>
+    </tr>
+    <tr>
+      <td class="k">최근 미접속</td>
+      <td><span class="tag src">원천</span> <code>daysSinceLastActivity</code></td>
+      <td>마지막 활동 이후 지난 날 수</td>
+    </tr>
+    <tr>
+      <td class="k">실행당 에러</td>
+      <td><span class="tag src">원천</span> <code>errorPerRun</code></td>
+      <td>실행 중 에러가 난 비율. 보조로 <b>에러 횟수 / 총 실행 횟수</b>를 함께 표시</td>
+    </tr>
+    <tr>
+      <td class="k">힌트 요청</td>
+      <td><span class="tag src">원천</span> <code>hintRequestsCount</code></td>
+      <td>그 주에 힌트를 연 총 횟수. 보조로 <b>활동일당 평균</b></td>
+    </tr>
+    <tr>
+      <td class="k">에러 후 재시도 간격</td>
+      <td><span class="tag src">원천</span> <code>avgRetryGapMin</code></td>
+      <td>에러가 난 뒤 다시 실행하기까지 걸린 평균 시간(분)</td>
+    </tr>
+    <tr>
+      <td class="k">에러당 힌트</td>
+      <td><span class="tag calc">계산</span></td>
+      <td>에러 한 번에 힌트를 몇 번 열었는지 — <code>힌트 요청 ÷ 에러 횟수</code></td>
+    </tr>
+
+    <tr class="grp"><td colspan="3">2~4 변화와 근거</td></tr>
+    <tr>
+      <td class="k">2 지난주와 비교</td>
+      <td><span class="tag src">원천</span> 두 주의 <b>활동일 · 코드 실행 횟수 · 활동일당 힌트</b></td>
+      <td>세 값의 증감. 두 주 모두 값이 있을 때만 그리고, 한쪽이 결측이면 그 줄을 뺌</td>
+    </tr>
+    <tr>
+      <td class="k">3 실행당 에러 추세</td>
+      <td><span class="tag src">원천</span> 주차별 <code>errorPerRun</code></td>
+      <td>축 <b>0~1.0 고정</b>, 기준선 <b>0.5</b> — 아래 참조</td>
+    </tr>
+    <tr>
+      <td class="k">4 주요 에러 top3</td>
+      <td><span class="tag src">원천</span> <b>예외 이름과 발생 횟수</b> 상위 3종 <code>topErrorTypes[]</code></td>
+      <td>클래스 경로에서 이름만 잘라 영역·설명을 붙임. 모르는 예외는 이름만</td>
+    </tr>
+
+    <tr class="grp"><td colspan="3">5~8 해석과 제안</td></tr>
+    <tr>
+      <td class="k">5 문제를 푸는 방식</td>
+      <td><span class="tag calc">계산</span> 두 주의 <b>활동일당 힌트</b> × <b>재시도 간격</b></td>
+      <td>힌트에 얼마나 기대는지와 고치기 전에 얼마나 생각하는지를 <b>함께</b> 읽음 — 아래 참조</td>
+    </tr>
+    <tr>
+      <td class="k">6 잘하고 있는 점</td>
+      <td><span class="tag calc">계산</span></td>
+      <td>지난주보다 나아진 것 우선. 없으면 이번 주 상태. 최대 3개</td>
+    </tr>
+    <tr>
+      <td class="k">7 보완하면 좋은 점</td>
+      <td><span class="tag src">원천</span> <code>weakPatterns</code></td>
+      <td><b>가공 없이 원문 그대로</b></td>
+    </tr>
+    <tr>
+      <td class="k">8 이번 주 학습 제안</td>
+      <td><span class="tag calc">계산</span></td>
+      <td>위험 신호 → 지난주 대비 악화 → 없으면 유지 권고. 최대 3개</td>
+    </tr>
+
+    <tr class="grp"><td colspan="3">맨 아래</td></tr>
+    <tr>
+      <td class="k">강사 피드백</td>
+      <td><span class="tag off">범위 밖</span></td>
+      <td>승인 흐름 미확정. 화면 코드는 남아 있어 필드만 오면 살아남</td>
+    </tr>
+  </tbody>
+</table>
+</div>
