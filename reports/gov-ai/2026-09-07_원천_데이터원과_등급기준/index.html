@@ -129,8 +129,8 @@ footer p{margin:.25rem 0; font-size:inherit; color:inherit}
   </div>
   <div class="card data">
     <span class="card-k">LMS</span>
-    <span class="card-v">올렸다 돌아옴</span>
-    <span class="card-s">쓰는 건 기수 하나</span>
+    <span class="card-v">기수 하나만</span>
+    <span class="card-s">보낸 값이 응답에 돌아오지만 주차 환산에만 씀</span>
   </div>
 </div>
 
@@ -168,7 +168,7 @@ footer p{margin:.25rem 0; font-size:inherit; color:inherit}
     <tr>
       <td class="k">LMS</td>
       <td>학생 신원 · 기수 · 과제 · 퀴즈 · 출결</td>
-      <td><span class="tag calc">주차 환산에만</span> 나머지는 실려만 옴</td>
+      <td><b>기수만</b> — 주차 환산에 쓴다. 나머지는 응답에 오지만 화면에 넣지 않는다</td>
     </tr>
   </tbody>
 </table>
@@ -177,8 +177,9 @@ footer p{margin:.25rem 0; font-size:inherit; color:inherit}
 <div class="note">
   <p><b>atmux 를 안 쓰는 이유.</b> 주는 값이 사용 시간과 CPU 사용률뿐입니다.
     환경을 열어 두고 다른 일을 해도 시간은 쌓이므로, 오래 켜 둔 것과 잘 푼 것을 가릴 수 없습니다.</p>
-  <p><b>LMS 데이터는 GOV-AI 로 올라갔다가 응답에 되돌아옵니다.</b> 우리가 보낸 이름·기수·과제·출결이
-    그대로 실려 오는데, 진단 리포트는 그중 <b>기수 하나만</b> 씁니다. 아래 「LMS 데이터는 어디에 담겨 오나」 참조.</p>
+  <p><b>LMS 는 GOV-AI 에 학생 정보를 보내고, 그 값이 주간 리포트 응답에 그대로 돌아옵니다.</b>
+    이름·기수·과제·출결이 다 돌아오지만 진단 리포트가 쓰는 것은 <b>기수 하나</b>뿐입니다.
+    자세한 것은 「LMS 데이터는 어디에 담겨 오나」 절에 있습니다.</p>
 </div>
 
 <h2>주간 응답이 주는 지표</h2>
