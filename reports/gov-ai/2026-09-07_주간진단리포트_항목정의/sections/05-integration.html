@@ -1,40 +1,43 @@
 <h2>연동 현황</h2>
 
-<pre>GOV-AI 데이터레이크        LMS-BE                     수강생 화면
-──────────────────────    ──────────────────────    ──────────────────────
-주차 마감 후 리포트 생성  →  주 1회 스냅샷 적재      →  저장분을 한 번에 조회
-   (자동 수집 미연결)       · 기수 주차로 환산         · 임계값 해석과 시각화
-                           · 진행 중 주차 제외        · 서술 3종 생성</pre>
+<pre>GOV-AI 데이터레이크        LMS-BE                         역할별 FE
+──────────────────────    ──────────────────────────    ─────────────────────────
+주차 마감 후 리포트 생성  →  주차 스냅샷·피드백 상태 저장  →  수강생: 목록·상세·발송본
+   (자동 수집 미연결)       · 기수 주차로 환산             · 강사: 조회·임시저장·저장
+                           · 역할·소속 권한 검사           · 운영: 수정·재분석·일괄 발송</pre>
 
-<h3>지금 들어오는 데이터</h3>
-<p>LMS-BE 마이그레이션이 표를 만들고 시연용 데이터를 채웠습니다. <b>GOV-AI 자동 수집은 아직 붙지 않았습니다.</b></p>
-<div class="tbl">
-<table>
-  <thead><tr><th>주차</th><th>ISO</th><th>기간</th><th>등급</th><th>확신도</th></tr></thead>
-  <tbody>
-    <tr><td class="k n">1주차</td><td><code>2026-W33</code></td><td class="n">08-10 ~ 08-16</td><td>입문</td><td class="n">0.70</td></tr>
-    <tr><td class="k n">2주차</td><td><code>2026-W34</code></td><td class="n">08-17 ~ 08-23</td><td>초급</td><td class="n">0.78</td></tr>
-    <tr><td class="k n">3주차</td><td><code>2026-W35</code></td><td class="n">08-24 ~ 08-30</td><td>중급</td><td class="n">0.82</td></tr>
-  </tbody>
-</table>
-</div>
-<p>
-  <code>V63</code> 표 생성 · <code>V64</code> 3주차 시드 · <code>V65</code> 정체 일수 컬럼 제거.
-  수강생 <code>시연용 수강생</code> 한 명분이고 표 전체가 이 3행입니다.
-</p>
-
-<h3>연동 결과</h3>
+<h3>수강생 본인 조회</h3>
 <div class="note ok">
-  <p><b>화면이 실제 서버를 부르고 데이터를 받아 그립니다.</b> FE mock 은 제거했고 MSW 가 가로채지 않습니다.</p>
+  <p><b>FE는 주차 목록과 선택 주차 상세를 분리해 호출합니다.</b> 상세 응답에 운영이 발송한 피드백이 있으면 맨 아래에 표시하고, 미발송 값은 숨깁니다.</p>
 </div>
 <ul>
-  <li><code>GET /student/course/diagnosis/my-reports</code> — 구현 완료, 실호출 <code>200</code></li>
-  <li>조회는 <code>user_id</code> 하나로만 찾습니다. 기수는 조건에 없습니다</li>
-  <li>미구현 — 주 1회 자동 적재, 주차별 단건 조회, 도착 알림. <b>셋 다 화면 동작에는 영향 없습니다</b></li>
+  <li><code>GET /student/course/diagnosis/my-reports</code> — 완료 주차 목록과 추세 재료</li>
+  <li><code>GET /student/course/diagnosis/my-reports/{week}</code> — 선택 주차 본문·직전 주차 비교·선택적 <code>instructorFeedback</code></li>
+  <li><code>instructorFeedback.sentAt</code>이 있어야 본문·작성자·발송 시각을 수강생에게 표시</li>
+  <li>확신도 값은 계약과 내부 화면 모델에는 유지하지만 수강생 UI에서는 숨김</li>
 </ul>
+
+<h3>강사·운영 관리</h3>
+<p>지도자용 학생 목록·학생별 주차·상세와 피드백 쓰기 API는 FE 요청 계약으로 구현되어 있으며, 실 BE 구현은 대기 중입니다.</p>
+<div class="tbl"><table>
+  <thead><tr><th>역할</th><th>조회</th><th>변경</th><th>수강생 공개</th></tr></thead>
+  <tbody>
+    <tr><td class="k">강사</td><td>담당 기수 학생·주차·상세</td><td>역할 전용 임시저장, 저장 완료 후 운영 알림</td><td>직접 공개하지 않음</td></tr>
+    <tr><td class="k">운영</td><td>운영 범위 학생·주차·상세</td><td>임시저장·저장, 현재 주차 재분석, 주차 일괄 발송</td><td>일괄 발송으로 공개본 생성</td></tr>
+    <tr><td class="k">수강생</td><td>본인 완료 주차만</td><td>없음</td><td>발송본만 열람</td></tr>
+  </tbody>
+</table></div>
+
+<h3>로컬 mock과 실서버 전환</h3>
+<p>로컬 MSW는 세 역할의 조회와 <code>임시저장 → 저장 완료 → 일괄 발송 → 수강생 공개</code> 흐름을 같은 상태로 재현합니다. 브라우저 저장소를 사용해 강사·운영의 역할별 임시저장본, 공유 저장본, 운영 알림, 발송본을 구분합니다.</p>
+<ul>
+  <li>기본 로컬 모드: 진단리포트 handler가 수강생·강사·운영 경로를 처리</li>
+  <li><code>VITE_REAL_DIAGNOSIS=true</code>: 진단 handler를 등록하지 않고 요청을 실서버로 전달</li>
+  <li>실서버 요청 실패를 mock 데이터로 대체하는 fallback은 두지 않음</li>
+</ul>
+
+<h3>남은 연동 경계</h3>
 <div class="note">
-  <p><b>연동하면서 걸린 것.</b> 처음에는 <code>200</code>인데 빈 배열로 왔습니다.
-    시드의 <code>user_id</code>가 원천 응답값이라 실제 로그인 계정과 달랐던 것입니다.</p>
-  <p><b>자동 수집을 붙일 때도 같은 문제가 납니다.</b> 원천의 <code>userId</code>를 그대로 저장하면 계속 0건이므로,
-    양쪽이 같은 값인 <code>student_uuid</code>로 계정을 찾아 매핑해야 합니다.</p>
+  <p>GOV-AI 자동 수집, 지도자용 전용 API, 저장·발송 영속화, 수강생별 알림 fan-out은 BE 후속 작업입니다. 로컬 mock 성공은 이 서버 기능들의 완료 증거가 아닙니다.</p>
 </div>
+<p>원천의 <code>userId</code>와 LMS 로그인 계정이 다를 수 있으므로 자동 수집 시 공통 식별자인 <code>student_uuid</code>로 계정을 매핑해야 합니다.</p>

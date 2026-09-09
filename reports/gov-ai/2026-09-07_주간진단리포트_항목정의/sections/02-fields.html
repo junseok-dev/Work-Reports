@@ -1,9 +1,8 @@
 <h2 class="first">항목 한눈에</h2>
 
 <p>
-  <span class="tag src">원천</span> 서버가 준 값 그대로 &nbsp;·&nbsp;
-  <span class="tag calc">계산</span> 서버 수치로 화면이 만듦 &nbsp;·&nbsp;
-  <span class="tag off">범위 밖</span> 계약에 없어 미표시
+  <span class="tag src">원천·LMS</span> 서버가 준 값 그대로 &nbsp;·&nbsp;
+  <span class="tag calc">계산</span> 서버 수치로 화면이 만듦
 </p>
 
 <div class="tbl">
@@ -19,7 +18,7 @@
     <tr>
       <td class="k">확신도</td>
       <td><span class="tag src">원천</span> <code>confidence</code></td>
-      <td>0~1 → <code>≥0.85</code> 높음 · <code>≥0.70</code> 중간 · 그 외 낮음</td>
+      <td>0~1 → <code>≥0.85</code> 높음 · <code>≥0.70</code> 중간 · 그 외 낮음. <b>수강생에게는 숨기고 강사·운영에게만 표시</b></td>
     </tr>
     <tr>
       <td class="k">등급 변화</td>
@@ -101,8 +100,13 @@
     <tr class="grp"><td colspan="3">맨 아래</td></tr>
     <tr>
       <td class="k">강사 피드백</td>
-      <td><span class="tag off">범위 밖</span></td>
-      <td>승인 흐름 미확정. 화면 코드는 남아 있어 필드만 오면 살아남</td>
+      <td><span class="tag src">LMS</span> <code>instructorFeedback</code></td>
+      <td>수강생은 <code>sentAt</code>이 있는 운영 발송본만 표시. 강사·운영은 임시저장본·저장 완료본·발송본을 구분</td>
+    </tr>
+    <tr>
+      <td class="k">위험 신호·결측·지도 제안</td>
+      <td><span class="tag src">원천</span> <code>riskFlags</code> · <code>missingMetrics</code> · <code>recommendationsForInstructor</code></td>
+      <td>위험 신호·지도 제안은 <b>강사·운영 전용</b>. 결측 지표는 수강생에게 —와 안내로, 강사·운영에게는 원천 키 목록까지 표시</td>
     </tr>
   </tbody>
 </table>
