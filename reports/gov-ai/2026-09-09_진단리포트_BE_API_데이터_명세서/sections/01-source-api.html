@@ -1,0 +1,14 @@
+<section id="source-api">
+  <h2>1. GOV-AI API 1~5 중 무엇을 쓰는가</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>번호</th><th>GOV-AI 주소</th><th>나오는 데이터</th><th>진단리포트 사용</th></tr></thead>
+    <tbody>
+      <tr><td><strong>API 1</strong></td><td><code>GET /reports/weekly/{studentUuid}?format=json</code></td><td>현재 주차 지표·등급·근거·위험 신호·지도 제안·피드백 초안</td><td><span class="rule">참고</span> API 4와 중복. 현재 LMS-BE는 호출하지 않음</td></tr>
+      <tr><td><strong>API 2</strong></td><td><code>GET /certificate/{studentUuid}</code></td><td>역량 증명서·전체 단계 수·증명서 단위 승인 정보</td><td><span class="rule">미사용</span> 주차별 진단 화면용이 아님</td></tr>
+      <tr><td><strong>API 3</strong></td><td><code>POST /analysis/diagnose/{studentUuid}</code></td><td>새 등급·근거·위험 신호·지도 제안·피드백 초안</td><td><span class="rule">미사용</span> 온디맨드 재분석용이며 현재 조회·저장 흐름에서는 호출하지 않음</td></tr>
+      <tr><td><strong>API 4</strong></td><td><code>GET /reports/history/{studentUuid}?limit=N</code></td><td>학생의 주차별 진단 이력과 지표 스냅샷</td><td><span class="now">현재 사용</span> LMS-BE가 수집·저장하는 진단리포트 원천</td></tr>
+      <tr><td><strong>API 5</strong></td><td><code>POST /feedback/approve</code></td><td>최종 피드백 승인 요청과 <code>log_id</code></td><td><span class="need">발송 시 선택</span> LMS 저장 상태를 대신할 수 없으며, 운영 발송 때 학생별 외부 승인 로그가 필요하면 호출</td></tr>
+    </tbody>
+  </table></div>
+  <div class="decision"><strong>BE 구현 기준:</strong> 화면 조회값은 API 4에서 수집합니다. 피드백 임시저장·저장·발송 상태는 API 1~5가 아니라 LMS DB에 저장합니다. API 5는 최종 발송 시 외부 승인 로그가 필요할 때만 별도로 연결합니다.</div>
+</section>

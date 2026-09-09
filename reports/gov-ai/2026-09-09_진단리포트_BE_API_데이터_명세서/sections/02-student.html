@@ -1,0 +1,30 @@
+<section id="student">
+  <h2>2. 수강생</h2>
+  <h3>LMS API</h3>
+  <div class="table-wrap"><table class="compact">
+    <thead><tr><th>주소</th><th>용도</th><th>상태</th></tr></thead>
+    <tbody>
+      <tr><td><code>GET /student/course/diagnosis/my-reports</code></td><td>본인 완료 주차 목록·에러 추세</td><td><span class="now">현재 BE</span></td></tr>
+      <tr><td><code>GET /student/course/diagnosis/my-reports/{week}</code></td><td>본인 선택 주차 상세</td><td><span class="now">현재 BE</span> 피드백 필드는 추가 필요</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>필드와 원천 API</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>LMS 응답 필드</th><th>GOV-AI 원천</th><th>API 번호</th><th>상태</th></tr></thead>
+    <tbody>
+      <tr><td><code>week</code>, <code>baseDate</code>, <code>endDate</code></td><td><code>year_week</code>, <code>week_range</code>를 기수 주차·날짜로 변환</td><td>API 4</td><td><span class="now">현재</span></td></tr>
+      <tr><td><code>level</code></td><td><code>grade</code></td><td>API 4<br><small>API 1·3에도 존재</small></td><td><span class="now">현재</span></td></tr>
+      <tr><td><code>gradeRationale</code></td><td><code>grade_rationale</code></td><td>API 4<br><small>API 1·3에도 존재</small></td><td><span class="now">현재</span></td></tr>
+      <tr><td><code>confidence</code></td><td><code>confidence</code></td><td>API 4<br><small>API 1·3에도 존재</small></td><td><span class="now">현재</span> 수강생 UI에서는 숨김</td></tr>
+      <tr><td><code>weakPatterns[]</code></td><td><code>weak_patterns</code></td><td>API 4<br><small>API 1·3에도 존재</small></td><td><span class="now">현재</span></td></tr>
+      <tr><td><code>dataFreshness</code></td><td><code>metrics_snapshot.data_freshness</code></td><td>API 4</td><td><span class="now">현재</span></td></tr>
+      <tr><td><code>missingMetrics[]</code></td><td>API 4 지표의 null·빈 배열을 LMS-BE가 판정</td><td>API 4 파생</td><td><span class="now">현재</span></td></tr>
+      <tr><td><code>metrics</code></td><td><code>metrics_snapshot</code></td><td>API 4</td><td><span class="now">현재</span></td></tr>
+      <tr><td><code>previous</code></td><td>직전 저장 주차의 API 4 스냅샷</td><td>API 4 파생</td><td><span class="now">현재</span></td></tr>
+      <tr><td><code>instructorFeedback</code></td><td>운영이 발송한 LMS 피드백</td><td>API 1~5 아님 · LMS DB</td><td><span class="need">추가 필요</span></td></tr>
+    </tbody>
+  </table></div>
+  <p><strong><code>metrics</code> 필드:</strong> <code>activeDays</code>, <code>daysSinceLastActivity</code>, <code>totalRuns</code>, <code>totalErrors</code>, <code>errorPerRun</code>, <code>hintRequestsCount</code>, <code>hintPerActiveDay</code>, <code>avgRetryGapMin</code>, <code>maxRetryGapMin</code>, <code>topErrorTypes[]</code>.</p>
+  <p><strong>추가할 수강생 피드백:</strong> <code>content</code>, <code>authorName</code>, <code>updatedAt</code>, <code>sentAt</code>. 발송되지 않았으면 null이며 임시저장본·저장 대기본은 내려주지 않습니다.</p>
+</section>

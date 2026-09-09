@@ -1,0 +1,31 @@
+<section id="instructor">
+  <h2>4. 강사</h2>
+  <h3>LMS API</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>주소</th><th>용도</th></tr></thead>
+    <tbody>
+      <tr><td><code>GET /instructor/cohorts/{cohortId}/diagnosis/students</code></td><td>담당 기수 학생 목록</td></tr>
+      <tr><td><code>GET /instructor/cohorts/{cohortId}/diagnosis/students/{studentUuid}/reports</code></td><td>학생별 완료 주차·피드백 상태</td></tr>
+      <tr><td><code>GET /instructor/cohorts/{cohortId}/diagnosis/students/{studentUuid}/reports/{week}</code></td><td>학생 진단 상세·AI 초안·저장 상태</td></tr>
+      <tr><td><code>PUT .../{week}/feedback/draft</code></td><td>강사 전용 임시저장</td></tr>
+      <tr><td><code>POST .../{week}/feedback/submit</code></td><td>강사 저장 완료·운영 알림</td></tr>
+    </tbody>
+  </table></div>
+  <p class="pending">위 강사 API는 모두 BE 추가 구현 대상입니다.</p>
+
+  <h3>강사 화면 필드와 원천</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>필드</th><th>원천</th><th>API 번호</th><th>BE 작업</th></tr></thead>
+    <tbody>
+      <tr><td><code>studentUuid</code>, <code>studentName</code>, <code>reportCount</code></td><td>LMS 담당 기수·학생 정본 + 저장 리포트 수</td><td>API 1~5 아님</td><td>담당 기수 권한 검사 후 목록 응답</td></tr>
+      <tr><td>수강생 공통 진단·<code>metrics</code>·<code>previous</code></td><td>저장된 API 4 데이터</td><td>API 4</td><td>수강생 상세 재사용</td></tr>
+      <tr><td><code>riskFlags[]</code></td><td><code>risk_flags</code></td><td>API 4<br><small>API 1·3에도 존재</small></td><td>현재 수집 누락 · 추가 저장</td></tr>
+      <tr><td><code>recommendationsForInstructor</code></td><td><code>recommendations</code></td><td>API 4<br><small>API 1·3에도 존재</small></td><td>현재 수집 누락 · 추가 저장</td></tr>
+      <tr><td><code>suggestedFeedbackDraft</code></td><td><code>feedback_draft</code></td><td>API 4<br><small>API 1·3에도 존재</small></td><td>현재 수집 누락 · 원본 초안으로 저장</td></tr>
+      <tr><td><code>analyzedAt</code></td><td><code>created_at</code></td><td>API 4</td><td>저장값을 강사 상세에 노출</td></tr>
+      <tr><td><code>temporaryDraft</code></td><td>강사 전용 LMS 임시저장</td><td>API 1~5 아님</td><td>운영 임시저장과 분리</td></tr>
+      <tr><td><code>savedFeedback</code>, <code>publishedFeedback</code>, 상태값</td><td>LMS 피드백 DB</td><td>API 1~5 아님</td><td>공유 저장본·발송본 조회</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>강사 저장 시:</strong> 초안 그대로든 수정했든 현재 편집창의 전체 <code>content</code>를 보내고, BE는 <code>authorRole=INSTRUCTOR</code>와 <code>managerNotifiedAt</code>을 기록합니다. 수강생 공개는 운영 일괄 발송 이후입니다.</p>
+</section>
