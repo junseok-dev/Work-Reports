@@ -100,13 +100,13 @@
     <tr class="grp"><td colspan="3">맨 아래</td></tr>
     <tr>
       <td class="k">강사 피드백</td>
-      <td><span class="tag src">LMS</span> <code>instructorFeedback</code></td>
-      <td>수강생은 <code>sentAt</code>이 있는 운영 발송본만 표시. 강사·운영은 임시저장본·저장 완료본·발송본을 구분</td>
+      <td><span class="tag off">예정</span> <code>instructorFeedback</code></td>
+      <td>FE 계약·mock에는 있으나 현재 BE 상세에는 없음. 추가 후 수강생은 <code>sentAt</code>이 있는 발송본만 표시하고, 강사·운영은 임시저장본·저장 완료본·발송본을 구분</td>
     </tr>
     <tr>
       <td class="k">위험 신호·결측·지도 제안</td>
-      <td><span class="tag src">원천</span> <code>riskFlags</code> · <code>missingMetrics</code> · <code>recommendationsForInstructor</code></td>
-      <td>위험 신호·지도 제안은 <b>강사·운영 전용</b>. 결측 지표는 수강생에게 —와 안내로, 강사·운영에게는 원천 키 목록까지 표시</td>
+      <td><span class="tag off">혼합</span> <code>riskFlags</code> · <code>missingMetrics</code> · <code>recommendationsForInstructor</code></td>
+      <td><code>missingMetrics</code>는 현재 BE 값. 위험 신호·지도 제안은 <b>강사·운영 전용 예정 필드</b>이며 현재는 로컬 규칙으로만 생성</td>
     </tr>
   </tbody>
 </table>

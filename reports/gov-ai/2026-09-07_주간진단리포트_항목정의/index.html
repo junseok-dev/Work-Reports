@@ -108,8 +108,8 @@ footer p{margin:.25rem 0; font-size:inherit; color:inherit}
 <div class="status">
   <div class="card done">
     <span class="card-k">수강생 조회</span>
-    <span class="card-v">목록·상세 연결</span>
-    <span class="card-s">발송 피드백만 공개</span>
+    <span class="card-v">실 BE 목록·상세 존재</span>
+    <span class="card-s">발송 피드백 필드는 BE 추가 필요</span>
   </div>
   <div class="card data">
     <span class="card-k">강사·운영 관리</span>
@@ -225,13 +225,13 @@ footer p{margin:.25rem 0; font-size:inherit; color:inherit}
     <tr class="grp"><td colspan="3">맨 아래</td></tr>
     <tr>
       <td class="k">강사 피드백</td>
-      <td><span class="tag src">LMS</span> <code>instructorFeedback</code></td>
-      <td>수강생은 <code>sentAt</code>이 있는 운영 발송본만 표시. 강사·운영은 임시저장본·저장 완료본·발송본을 구분</td>
+      <td><span class="tag off">예정</span> <code>instructorFeedback</code></td>
+      <td>FE 계약·mock에는 있으나 현재 BE 상세에는 없음. 추가 후 수강생은 <code>sentAt</code>이 있는 발송본만 표시하고, 강사·운영은 임시저장본·저장 완료본·발송본을 구분</td>
     </tr>
     <tr>
       <td class="k">위험 신호·결측·지도 제안</td>
-      <td><span class="tag src">원천</span> <code>riskFlags</code> · <code>missingMetrics</code> · <code>recommendationsForInstructor</code></td>
-      <td>위험 신호·지도 제안은 <b>강사·운영 전용</b>. 결측 지표는 수강생에게 —와 안내로, 강사·운영에게는 원천 키 목록까지 표시</td>
+      <td><span class="tag off">혼합</span> <code>riskFlags</code> · <code>missingMetrics</code> · <code>recommendationsForInstructor</code></td>
+      <td><code>missingMetrics</code>는 현재 BE 값. 위험 신호·지도 제안은 <b>강사·운영 전용 예정 필드</b>이며 현재는 로컬 규칙으로만 생성</td>
     </tr>
   </tbody>
 </table>
@@ -334,8 +334,13 @@ footer p{margin:.25rem 0; font-size:inherit; color:inherit}
 <h3>일반 열람은 저장된 주차 스냅샷을 사용합니다</h3>
 <p>
   수강생 화면은 진입할 때 완료 주차 목록을 받고, 주차를 선택할 때 해당 주차 상세를 한 번 조회해 캐시합니다.
-  일반 열람 중에는 저장된 스냅샷을 임의로 다시 계산하지 않습니다. <b>운영의 명시적인 현재 주차 재분석 요청만 별도 관리 API로 처리</b>합니다.
+  일반 열람 중에는 저장된 스냅샷을 임의로 다시 계산하지 않습니다. 운영 화면에는 재분석 버튼이 있지만, 현재는 실 API가 없고
+  로컬 mock이 <code>analyzedAt</code>만 클릭 시각으로 바꿉니다. 등급·근거·위험 신호·지표·지도 제안은 다시 계산하지 않으며 AI·GOV-AI도 호출하지 않습니다.
 </p>
+
+<div class="note">
+  <p><b>“현재 주차”는 달력상 현재 주차가 아닙니다.</b> 화면에서 선택한 수강생·주차를 뜻합니다. 실 재분석이 구현되기 전에는 버튼 명칭과 실제 동작이 일치하지 않습니다.</p>
+</div>
 
 <h3>서버와 화면의 경계</h3>
 <p>
@@ -343,49 +348,91 @@ footer p{margin:.25rem 0; font-size:inherit; color:inherit}
   기준이 바뀌면 서버가 아니라 화면을 고칩니다.
 </p>
 
-<h2>연동 현황</h2>
+<h2>연동 현황과 BE 전달 경계</h2>
 
-<pre>GOV-AI 데이터레이크        LMS-BE                         역할별 FE
-──────────────────────    ──────────────────────────    ─────────────────────────
-주차 마감 후 리포트 생성  →  주차 스냅샷·피드백 상태 저장  →  수강생: 목록·상세·발송본
-   (자동 수집 미연결)       · 기수 주차로 환산             · 강사: 조회·임시저장·저장
-                           · 역할·소속 권한 검사           · 운영: 수정·재분석·일괄 발송</pre>
+<h3>현재 실제 BE API는 3개입니다</h3>
+<div class="tbl"><table>
+  <thead><tr><th>경로</th><th>현재 기능</th></tr></thead>
+  <tbody>
+    <tr><td class="k"><code>GET /student/course/diagnosis/my-reports</code></td><td>수강생 본인의 완료 주차 요약 목록</td></tr>
+    <tr><td class="k"><code>GET /student/course/diagnosis/my-reports/{week}</code></td><td>선택 주차 상세와 직전 저장 주차 비교값</td></tr>
+    <tr><td class="k"><code>POST /admin/diagnosis/{studentUuid}/collect</code></td><td>GOV-AI DataLake의 완료 주차 수집·적재</td></tr>
+  </tbody>
+</table></div>
+<div class="note">
+  <p><b>수집 API는 재분석 API가 아닙니다.</b> 이미 저장된 주차는 <code>unchanged</code>로 건너뛰고 재분석하거나 덮어쓰지 않으므로 운영 재분석 버튼에 바로 연결할 수 없습니다.</p>
+</div>
 
 <h3>수강생 본인 조회</h3>
-<div class="note ok">
-  <p><b>FE는 주차 목록과 선택 주차 상세를 분리해 호출합니다.</b> 상세 응답에 운영이 발송한 피드백이 있으면 맨 아래에 표시하고, 미발송 값은 숨깁니다.</p>
-</div>
 <ul>
-  <li><code>GET /student/course/diagnosis/my-reports</code> — 완료 주차 목록과 추세 재료</li>
-  <li><code>GET /student/course/diagnosis/my-reports/{week}</code> — 선택 주차 본문·직전 주차 비교·선택적 <code>instructorFeedback</code></li>
-  <li><code>instructorFeedback.sentAt</code>이 있어야 본문·작성자·발송 시각을 수강생에게 표시</li>
-  <li>확신도 값은 계약과 내부 화면 모델에는 유지하지만 수강생 UI에서는 숨김</li>
+  <li>현재 BE 상세 필드는 주차·기간·등급·등급 근거·확신도·보완 패턴·지표 기준 시각·결측·지표·직전 주차입니다.</li>
+  <li>FE는 수강생 화면에서 <code>confidence</code>를 숨깁니다.</li>
+  <li>FE 계약에는 발송본용 <code>instructorFeedback</code>이 선택 필드로 정의되어 있지만 <b>현재 BE 상세 DTO에는 없습니다.</b></li>
+  <li>실 공개 흐름을 연결하려면 <code>content</code>, <code>authorName</code>, <code>updatedAt</code>, <code>sentAt</code>을 추가하고 발송본만 응답해야 합니다.</li>
 </ul>
 
-<h3>강사·운영 관리</h3>
-<p>지도자용 학생 목록·학생별 주차·상세와 피드백 쓰기 API는 FE 요청 계약으로 구현되어 있으며, 실 BE 구현은 대기 중입니다.</p>
+<h3>강사·운영 관리 — 모두 예정 계약입니다</h3>
+<p>학생 목록·학생별 주차 목록·상세 조회와 피드백 임시저장·저장, 운영 재분석·일괄 발송은 FE 요청 계약과 localStorage mock만 있고 BE에는 아직 없습니다.</p>
 <div class="tbl"><table>
   <thead><tr><th>역할</th><th>조회</th><th>변경</th><th>수강생 공개</th></tr></thead>
   <tbody>
-    <tr><td class="k">강사</td><td>담당 기수 학생·주차·상세</td><td>역할 전용 임시저장, 저장 완료 후 운영 알림</td><td>직접 공개하지 않음</td></tr>
-    <tr><td class="k">운영</td><td>운영 범위 학생·주차·상세</td><td>임시저장·저장, 현재 주차 재분석, 주차 일괄 발송</td><td>일괄 발송으로 공개본 생성</td></tr>
+    <tr><td class="k">강사</td><td>담당 기수 학생·주차·상세</td><td>역할 전용 임시저장 · 저장 완료 시 운영 알림</td><td>직접 공개하지 않음</td></tr>
+    <tr><td class="k">운영</td><td>운영 범위 학생·주차·상세</td><td>임시저장 · 저장 · 재분석 예정 · 주차 일괄 발송</td><td>일괄 발송으로 공개본 생성</td></tr>
     <tr><td class="k">수강생</td><td>본인 완료 주차만</td><td>없음</td><td>발송본만 열람</td></tr>
   </tbody>
 </table></div>
 
-<h3>로컬 mock과 실서버 전환</h3>
-<p>로컬 MSW는 세 역할의 조회와 <code>임시저장 → 저장 완료 → 일괄 발송 → 수강생 공개</code> 흐름을 같은 상태로 재현합니다. 브라우저 저장소를 사용해 강사·운영의 역할별 임시저장본, 공유 저장본, 운영 알림, 발송본을 구분합니다.</p>
+<h3>교직원 상세에 추가되는 예정 필드</h3>
 <ul>
-  <li>기본 로컬 모드: 진단리포트 handler가 수강생·강사·운영 경로를 처리</li>
-  <li><code>VITE_REAL_DIAGNOSIS=true</code>: 진단 handler를 등록하지 않고 요청을 실서버로 전달</li>
-  <li>실서버 요청 실패를 mock 데이터로 대체하는 fallback은 두지 않음</li>
+  <li><code>studentUuid</code>, <code>studentName</code>: 선택 학생 식별 정보</li>
+  <li><code>riskFlags</code>: 지도자 개입이 필요한 위험 신호</li>
+  <li><code>recommendationsForInstructor</code>: 수강생에게 직접 공개하지 않는 지도 행동 제안</li>
+  <li><code>suggestedFeedbackDraft</code>: 피드백 편집 초기 후보</li>
+  <li><code>analyzedAt</code>: 진단 생성 시각. <code>dataFreshness</code>와 의미가 다름</li>
+  <li><code>instructorFeedback</code>: 역할별 임시저장본, 공유 저장본, 발송본, 변경 상태, 운영 알림 시각</li>
+</ul>
+<p>위 필드 중 <code>riskFlags</code>, <code>recommendationsForInstructor</code>, <code>suggestedFeedbackDraft</code>, <code>analyzedAt</code>, <code>instructorFeedback</code>은 현재 staff API가 없어 로컬 mock 값입니다.</p>
+
+<h3>피드백 상태</h3>
+<pre>NONE → TEMP_SAVED → READY_TO_SEND → SENT
+       역할별 초안       공유 저장본       수강생 발송본</pre>
+<ul>
+  <li>초기 편집 내용은 현재 역할 임시저장본 → 저장 완료본 → AI 제안 초안 순으로 채웁니다.</li>
+  <li>강사와 운영의 임시저장본은 서로 보이지 않습니다.</li>
+  <li>강사 저장 시 <code>managerNotifiedAt</code>이 생기고, 운영 저장 시 일괄 발송 대기가 됩니다.</li>
+  <li>일괄 발송은 <code>readyCount &gt; 0</code>일 때만 활성화되고, 응답 예정값은 <code>requestedCount</code>, <code>sentCount</code>, <code>skippedStudentUuids</code>입니다.</li>
 </ul>
 
-<h3>남은 연동 경계</h3>
-<div class="note">
-  <p>GOV-AI 자동 수집, 지도자용 전용 API, 저장·발송 영속화, 수강생별 알림 fan-out은 BE 후속 작업입니다. 로컬 mock 성공은 이 서버 기능들의 완료 증거가 아닙니다.</p>
+<h3>실제 결측 판정</h3>
+<ul>
+  <li><code>daysSinceLastActivity == null</code> → <code>daysSinceLastActivity</code></li>
+  <li><code>hintRequestsCount</code> 또는 <code>hintPerActiveDay</code>가 null → <code>hintUsage</code></li>
+  <li><code>avgRetryGapMin</code> 또는 <code>maxRetryGapMin</code>이 null → <code>retryGap</code></li>
+  <li><code>topErrorTypes</code>가 비어 있음 → <code>topErrors</code></li>
+</ul>
+
+<h3>로컬 mock과 실서버 전환</h3>
+<ul>
+  <li>기본 로컬 모드에서는 진단 handler가 수강생·강사·운영 경로를 처리합니다.</li>
+  <li><code>VITE_REAL_DIAGNOSIS=true</code>이면 handler를 등록하지 않고 실서버로 전달합니다.</li>
+  <li>실서버 실패를 mock으로 대체하는 fallback은 없습니다. 미구현 지도자 API는 404가 날 가능성이 큽니다.</li>
+  <li>로컬 mock 성공은 BE 기능 완료나 AI 연동 완료의 증거가 아닙니다.</li>
+</ul>
+
+<h2>실행당 에러 추세 표시 수정</h2>
+
+<p>주차와 막대·수치가 서로 어긋나 보이지 않도록 실행당 에러 추세의 표시 단위를 수정했습니다. 이 변경은 FE 표현 방식만 바로잡으며 API 계약이나 지표 계산식은 바꾸지 않습니다.</p>
+
+<ul>
+  <li>서버·mock에서 받은 주차를 항상 <b>오름차순</b>으로 정렬합니다.</li>
+  <li>각 주차의 막대, 실행당 에러 수치, 주차 라벨을 하나의 포인트 안에 묶습니다.</li>
+  <li>주차가 많아도 포인트 최소 너비를 유지하고 가로 스크롤로 확인할 수 있게 합니다.</li>
+  <li><code>fix/student-diagnosis-error-trend</code> 작업과 기본 로컬 실행 소스에 같은 화면 변경을 반영했습니다.</li>
+</ul>
+
+<div class="note ok">
+  <p><b>BE 전달 사항:</b> 목록 응답의 각 <code>week</code>와 <code>errorPerRun</code> 쌍만 정확히 내려주면 됩니다. FE가 주차 오름차순 정렬과 시각 배치를 담당합니다.</p>
 </div>
-<p>원천의 <code>userId</code>와 LMS 로그인 계정이 다를 수 있으므로 자동 수집 시 공통 식별자인 <code>student_uuid</code>로 계정을 매핑해야 합니다.</p>
 
 <footer>
   <p>수치는 시연용 시드 데이터 기준입니다.</p>

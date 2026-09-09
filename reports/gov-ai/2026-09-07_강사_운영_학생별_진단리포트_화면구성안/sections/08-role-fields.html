@@ -1,0 +1,120 @@
+<section id="role-fields">
+  <h2>8. BE 전달용 역할별 데이터 필드</h2>
+  <p class="lead">수강생은 <strong>현재 BE 응답</strong>을 기준으로, 강사·운영은 <strong>FE 예정 계약</strong>을 기준으로 정리했다. 같은 이름의 필드라도 실제 저장값인지 로컬 생성값인지 구분해야 한다.</p>
+
+  <h3>수강생 — 현재 BE 주차 목록</h3>
+  <div class="table-wrap"><table class="index-table">
+    <thead><tr><th>필드</th><th>타입</th><th>의미</th></tr></thead>
+    <tbody>
+      <tr><td><code>week</code></td><td>integer</td><td>기수 기준 주차 번호</td></tr>
+      <tr><td><code>baseDate</code></td><td>date</td><td>주차 시작일</td></tr>
+      <tr><td><code>endDate</code></td><td>date</td><td>주차 종료일</td></tr>
+      <tr><td><code>level</code></td><td>string</td><td>입문·초급·중급·해결사 등급</td></tr>
+      <tr><td><code>errorPerRun</code></td><td>number | null</td><td>실행당 에러 추세에 사용하는 주차별 값</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>수강생 — 현재 BE 주차 상세</h3>
+  <div class="table-wrap"><table class="index-table">
+    <thead><tr><th>그룹</th><th>필드</th><th>타입·의미</th></tr></thead>
+    <tbody>
+      <tr><td>기본</td><td><code>week</code>, <code>baseDate</code>, <code>endDate</code>, <code>level</code></td><td>주차·기간·등급</td></tr>
+      <tr><td>AI 원문</td><td><code>gradeRationale</code>, <code>confidence</code>, <code>weakPatterns[]</code></td><td>등급 근거, 0~1 확신도, 보완 패턴. 수강생 UI는 <code>confidence</code>를 숨김</td></tr>
+      <tr><td>수집 상태</td><td><code>dataFreshness</code>, <code>missingMetrics[]</code></td><td>지표 기준 시각과 결측 키 목록. <code>dataFreshness</code>가 없으면 BE는 분석 시각을 대체값으로 사용</td></tr>
+      <tr><td>지표</td><td><code>metrics</code></td><td>아래 공통 지표 객체</td></tr>
+      <tr><td>직전 주차</td><td><code>previous</code></td><td>없으면 null. 있으면 <code>week</code>, <code>level</code>, <code>missingMetrics[]</code>, <code>metrics</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>공통 지표 객체</h3>
+  <div class="table-wrap"><table class="index-table">
+    <thead><tr><th>필드</th><th>타입</th><th>용도</th></tr></thead>
+    <tbody>
+      <tr><td><code>activeDays</code></td><td>integer | null</td><td>활동일 수</td></tr>
+      <tr><td><code>daysSinceLastActivity</code></td><td>integer | null</td><td>최근 활동 이후 경과일</td></tr>
+      <tr><td><code>totalRuns</code></td><td>integer | null</td><td>총 실행 횟수</td></tr>
+      <tr><td><code>totalErrors</code></td><td>integer | null</td><td>총 에러 횟수</td></tr>
+      <tr><td><code>errorPerRun</code></td><td>number | null</td><td>실행당 에러 비율</td></tr>
+      <tr><td><code>hintRequestsCount</code></td><td>integer | null</td><td>힌트 요청 횟수</td></tr>
+      <tr><td><code>hintPerActiveDay</code></td><td>number | null</td><td>활동일당 힌트 요청</td></tr>
+      <tr><td><code>avgRetryGapMin</code></td><td>number | null</td><td>평균 재시도 간격(분)</td></tr>
+      <tr><td><code>maxRetryGapMin</code></td><td>number | null</td><td>최대 재시도 간격(분)</td></tr>
+      <tr><td><code>topErrorTypes[]</code></td><td>array | null</td><td><code>{type, count}</code> 형태의 주요 에러와 횟수</td></tr>
+    </tbody>
+  </table></div>
+  <p><code>previous.metrics</code>는 현재 <code>activeDays</code>, <code>totalRuns</code>, <code>errorPerRun</code>, <code>hintPerActiveDay</code>, <code>avgRetryGapMin</code>만 포함한다.</p>
+
+  <h3>수강생 피드백 — BE 추가가 필요한 FE 확장 필드</h3>
+  <p>FE 수강생 상세 계약에는 선택 필드 <code>instructorFeedback</code>이 정의되어 있지만 <strong>현재 BE <code>WeekDetail</code>에는 없다.</strong> 수강생 공개 흐름을 실 API로 연결하려면 아래 필드를 추가해야 한다.</p>
+  <div class="table-wrap"><table class="index-table">
+    <thead><tr><th>필드</th><th>타입</th><th>공개 조건</th></tr></thead>
+    <tbody>
+      <tr><td><code>content</code></td><td>string</td><td rowspan="4"><code>sentAt</code>이 있는 발송본만 응답. 미발송이면 객체를 생략하거나 null</td></tr>
+      <tr><td><code>authorName</code></td><td>string</td></tr>
+      <tr><td><code>updatedAt</code></td><td>datetime</td></tr>
+      <tr><td><code>sentAt</code></td><td>datetime</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>강사·운영 — 예정 목록·주차 필드</h3>
+  <p>강사와 운영의 응답 모양은 같고 조회 권한만 다르다. 강사는 담당 기수, 운영은 운영 범위를 서버에서 제한한다.</p>
+  <div class="table-wrap"><table class="index-table">
+    <thead><tr><th>응답</th><th>필드</th><th>의미</th></tr></thead>
+    <tbody>
+      <tr><td>학생 목록</td><td><code>studentUuid</code>, <code>name</code>, <code>reportCount</code></td><td>기수 내 학생 식별자·이름·완료 리포트 수</td></tr>
+      <tr><td>학생별 주차 목록</td><td><code>week</code>, <code>baseDate</code>, <code>endDate</code></td><td>완료된 주차와 기간</td></tr>
+      <tr><td>학생별 주차 상태</td><td><code>feedbackStatus</code></td><td><code>NONE</code> · <code>TEMP_SAVED</code> · <code>READY_TO_SEND</code> · <code>SENT</code></td></tr>
+      <tr><td>주차 발송 집계</td><td><code>readyCount</code>, <code>sentCount</code></td><td>해당 기수·주차의 발송 대기 학생 수와 발송 완료 학생 수</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>강사·운영 — 예정 상세 필드</h3>
+  <div class="table-wrap"><table class="index-table">
+    <thead><tr><th>그룹</th><th>필드</th><th>의미·현재 출처</th></tr></thead>
+    <tbody>
+      <tr><td>학생·주차</td><td><code>studentUuid</code>, <code>studentName</code>, <code>week</code>, <code>baseDate</code>, <code>endDate</code></td><td>선택 학생과 완료 주차 식별값</td></tr>
+      <tr><td>공통 진단</td><td><code>level</code>, <code>gradeRationale</code>, <code>confidence</code>, <code>weakPatterns[]</code>, <code>metrics</code></td><td>수강생 진단과 같은 원천. 교직원 화면은 확신도까지 표시</td></tr>
+      <tr><td>위험 신호</td><td><code>riskFlags[]</code></td><td>개입이 필요한 신호. 현재 FE에서는 로컬 샘플 규칙으로 생성</td></tr>
+      <tr><td>지도 제안</td><td><code>recommendationsForInstructor</code></td><td>수강생 공개용이 아닌 강사·운영 행동 제안. 현재 로컬 생성 문자열</td></tr>
+      <tr><td>AI 제안 초안</td><td><code>suggestedFeedbackDraft</code></td><td>피드백 편집 초기 후보. 현재 실시간 AI 응답이 아닌 로컬 고정·템플릿 문장</td></tr>
+      <tr><td>분석·지표 시각</td><td><code>analyzedAt</code>, <code>dataFreshness</code></td><td>분석 생성 시각과 사용 지표의 마지막 관측 시각. 현재 staff API가 없어 mock 값</td></tr>
+      <tr><td>결측</td><td><code>missingMetrics[]</code></td><td>0이 아니라 수집되지 않은 지표의 키</td></tr>
+      <tr><td>피드백 관리</td><td><code>instructorFeedback</code></td><td>역할별 임시저장본, 공유 저장본, 수강생 발송본과 변경 상태</td></tr>
+    </tbody>
+  </table></div>
+  <p>지도자 상세 계약에서 <code>gradeRationale</code>, <code>confidence</code>, <code>riskFlags</code>, <code>recommendationsForInstructor</code>, <code>suggestedFeedbackDraft</code>, <code>analyzedAt</code>, <code>dataFreshness</code>, <code>missingMetrics</code>, <code>instructorFeedback</code>은 null을 허용한다. <code>metrics</code>의 개별 수치와 <code>topErrorTypes</code>도 수집 여부에 따라 null일 수 있으므로 0으로 치환하지 않는다.</p>
+
+  <h3>강사·운영 — 예정 피드백 객체</h3>
+  <div class="table-wrap"><table class="index-table">
+    <thead><tr><th>필드</th><th>형태</th><th>규칙</th></tr></thead>
+    <tbody>
+      <tr><td><code>temporaryDraft</code></td><td>FeedbackEntry | null</td><td>현재 역할만 볼 수 있는 임시저장본</td></tr>
+      <tr><td><code>savedFeedback</code></td><td>FeedbackEntry | null</td><td>강사·운영이 공유하는 저장 완료본</td></tr>
+      <tr><td><code>publishedFeedback</code></td><td>PublishedFeedback | null</td><td>수강생에게 발송된 본문과 <code>sentAt</code></td></tr>
+      <tr><td><code>hasUnsubmittedChanges</code></td><td>boolean</td><td>현재 역할의 임시저장본이 저장 완료본과 다른지</td></tr>
+      <tr><td><code>hasUnsentChanges</code></td><td>boolean</td><td>저장 완료본이 현재 발송본과 다른지</td></tr>
+      <tr><td><code>managerNotifiedAt</code></td><td>datetime | null</td><td>강사가 저장 완료해 운영에 알린 시각</td></tr>
+    </tbody>
+  </table></div>
+  <p><code>FeedbackEntry</code>는 <code>content</code>, <code>authorName</code>, <code>authorRole</code>(<code>INSTRUCTOR</code> 또는 <code>MANAGER</code>), <code>updatedAt</code>이며, <code>PublishedFeedback</code>은 여기에 <code>sentAt</code>을 더한다.</p>
+
+  <h3>실제 BE 결측 판정</h3>
+  <div class="table-wrap"><table class="index-table">
+    <thead><tr><th>조건</th><th><code>missingMetrics</code> 키</th></tr></thead>
+    <tbody>
+      <tr><td><code>daysSinceLastActivity == null</code></td><td><code>daysSinceLastActivity</code></td></tr>
+      <tr><td><code>hintRequestsCount == null</code> 또는 <code>hintPerActiveDay == null</code></td><td><code>hintUsage</code></td></tr>
+      <tr><td><code>avgRetryGapMin == null</code> 또는 <code>maxRetryGapMin == null</code></td><td><code>retryGap</code></td></tr>
+      <tr><td><code>topErrorTypes</code>가 비어 있음</td><td><code>topErrors</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>현재 mock 전용 생성 규칙</h3>
+  <ul>
+    <li><code>riskFlags</code>: 미접속 5일 이상, 또는 단계 정체 7일 이상일 때 생성한다. 공식 운영 정책이 아니라 로컬 샘플 기준이다.</li>
+    <li><code>recommendationsForInstructor</code>: 미접속 5일 이상이면 안부 확인·재접속 유도, 단계 정체 5일 이상이면서 미완주면 1:1 원인 확인을 제안한다.</li>
+    <li>등급별 지도 제안: 입문·초급은 반복 에러 기초 복습, 중급은 반복 에러 미니 과제·심화 질문, 해결사는 설계·오픈소스 등 심화 과제를 제안한다.</li>
+    <li><code>suggestedFeedbackDraft</code>와 AI 피드백 원문은 실시간 AI 호출 결과가 아니다. 20주차 일부는 고정 샘플이고 다른 주차는 등급·에러·미접속 값으로 만든 템플릿이다.</li>
+    <li>staff 상세 mock의 <code>dataFreshness</code>는 현재 <code>analyzedAt</code>과 같은 값이고 <code>missingMetrics</code>는 빈 배열이다. 실데이터 의미와 동일하다고 보면 안 된다.</li>
+  </ul>
+</section>

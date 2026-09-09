@@ -1,1 +1,22 @@
-<section id="states"><h2>5. 학생별 진단·피드백 관리 흐름</h2><ol><li><strong>수강생 선택:</strong> 역할이 조회 가능한 기수 수강생 목록을 받고 <code>studentUuid</code>를 선택한다.</li><li><strong>주차 표시:</strong> 선택 학생의 완료 주차를 받고 최신 주차부터 왼쪽 사이드 탭으로 나열한다.</li><li><strong>상세 확인:</strong> 선택 학생·주차의 공통 진단 본문과 교직원 확인 정보, AI 원문, 피드백 세 상태를 함께 받는다.</li><li><strong>임시저장:</strong> 강사·운영이 <code>PUT .../feedback/draft</code>로 현재 역할 전용 작업본을 보관한다. 다른 역할과 수강생에게는 보이지 않는다.</li><li><strong>저장 완료:</strong> 강사·운영이 <code>POST .../feedback/submit</code>으로 공유 저장본을 갱신한다. 강사 저장은 운영 알림을 만들고, 최신 저장본은 <code>READY_TO_SEND</code>가 된다.</li><li><strong>운영 재분석:</strong> 운영만 현재 학생·주차 재분석을 요청하고 성공 후 해당 상세를 다시 조회한다.</li><li><strong>운영 일괄 발송:</strong> 선택 주차를 POST한다. BE가 해당 기수·주차의 발송 대기 저장본을 조회해 수강생별 공개본·알림을 만들고 <code>SENT</code>로 변경한다.</li><li><strong>수강생 열람:</strong> 본인 상세 응답의 <code>sentAt</code>이 있는 피드백만 화면에 표시한다. 저장 중인 초안과 발송 대기본은 싣지 않는다.</li></ol><h3>반드시 구분할 화면 상태</h3><ul><li>기수 수강생 없음 / 수강생 목록 호출 실패 / URL의 학생이 허용 목록에 없음.</li><li>선택 학생의 주차 없음 / 주차 목록 호출 실패 / URL의 주차가 해당 학생에게 없음.</li><li>상세 호출 실패 / 일부 지표 null / AI 원문 없음 / 임시저장본·저장 완료본·발송본 없음.</li><li>피드백 임시저장·저장·재분석·일괄 발송 각각의 진행 중·실패·완료를 구분한다.</li><li>운영 일괄 발송은 해당 주차 <code>readyCount</code>가 1 이상일 때만 활성화한다.</li></ul><p>수강생 본인 API <code>/student/course/diagnosis/my-reports[/{week}]</code>에는 다른 학생 식별자를 붙이지 않는다. 지도자 화면은 전용 경로와 서버 권한 검사를 사용한다.</p></section>
+<section id="states">
+  <h2>5. 학생별 진단·피드백 관리 흐름</h2>
+  <ol>
+    <li><strong>수강생 선택:</strong> 역할이 조회 가능한 기수 수강생 목록을 받고 <code>studentUuid</code>를 선택한다.</li>
+    <li><strong>주차 표시:</strong> 선택 학생의 완료 주차를 받고 최신 주차부터 왼쪽 사이드 탭으로 나열한다.</li>
+    <li><strong>상세 확인:</strong> 선택 학생·주차의 공통 진단 본문과 교직원 확인 정보, AI 제안 초안, 피드백 세 상태를 함께 받는다.</li>
+    <li><strong>임시저장:</strong> 강사·운영이 <code>PUT .../feedback/draft</code>로 현재 역할 전용 작업본을 보관한다. 다른 역할과 수강생에게는 보이지 않는다.</li>
+    <li><strong>저장 완료:</strong> 강사·운영이 <code>POST .../feedback/submit</code>으로 공유 저장본을 갱신한다. 강사 저장은 운영 알림을 만들고 최신 저장본은 <code>READY_TO_SEND</code>가 된다.</li>
+    <li><strong>운영 재분석:</strong> 운영만 선택 학생·선택 주차 재분석을 요청한다. 현재 mock은 <code>analyzedAt</code>만 바꾸며 실제 재분석은 하지 않는다.</li>
+    <li><strong>운영 일괄 발송:</strong> 선택 주차를 POST한다. BE가 해당 기수·주차의 발송 대기 저장본을 조회해 수강생별 공개본·알림을 만들고 <code>SENT</code>로 변경한다.</li>
+    <li><strong>수강생 열람:</strong> 본인 상세 응답의 <code>sentAt</code>이 있는 피드백만 화면에 표시한다. 저장 중인 초안과 발송 대기본은 싣지 않는다.</li>
+  </ol>
+  <h3>반드시 구분할 화면 상태</h3>
+  <ul>
+    <li>기수 수강생 없음 / 수강생 목록 호출 실패 / URL의 학생이 허용 목록에 없음</li>
+    <li>선택 학생의 주차 없음 / 주차 목록 호출 실패 / URL의 주차가 해당 학생에게 없음</li>
+    <li>상세 호출 실패 / 일부 지표 null / AI 제안 초안 없음 / 임시저장본·저장 완료본·발송본 없음</li>
+    <li>피드백 임시저장·저장·재분석·일괄 발송 각각의 진행 중·실패·완료</li>
+    <li>운영 일괄 발송은 해당 주차 <code>readyCount</code>가 1 이상일 때만 활성화</li>
+  </ul>
+  <p>수강생 본인 API <code>/student/course/diagnosis/my-reports[/{week}]</code>에는 다른 학생 식별자를 붙이지 않는다. 지도자 화면은 전용 경로와 서버 권한 검사를 사용한다.</p>
+</section>
